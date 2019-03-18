@@ -18,12 +18,12 @@ package io.micronaut.configuration.acme.ssl;
 
 import io.micronaut.configuration.acme.events.CertificateEvent;
 import io.micronaut.context.annotation.Property;
-import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Replaces;
 import io.micronaut.core.io.ResourceResolver;
+import io.micronaut.http.server.netty.ssl.CertificateProvidedSslBuilder;
 import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
 import io.micronaut.http.ssl.ServerSslConfiguration;
 import io.micronaut.http.ssl.SslBuilder;
-import io.micronaut.http.ssl.SslConfiguration;
 import io.micronaut.http.ssl.SslConfigurationException;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.netty.handler.ssl.SslContext;
@@ -39,8 +39,6 @@ import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.Optional;
 
-import static io.micronaut.core.util.StringUtils.FALSE;
-import static io.micronaut.core.util.StringUtils.TRUE;
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.systemDefault;
 
@@ -49,8 +47,7 @@ import static java.time.ZoneId.systemDefault;
  * with to SSL support via a temporary self signed certificate that will be replaced by an ACME certificate once acquired.
  */
 @Singleton
-@Requires(property = SslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
-@Requires(property = SslConfiguration.PREFIX + ".build-self-signed", value = FALSE, defaultValue = FALSE)
+@Replaces(CertificateProvidedSslBuilder.class)
 public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements ServerSslBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcmeSSLContextBuilder.class);

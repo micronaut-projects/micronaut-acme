@@ -22,6 +22,8 @@
  */
 @Configuration
 @Requires(property = SslConfiguration.PREFIX + ".acme.enabled", value = TRUE, defaultValue = FALSE)
+@Requires(property = SslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
+@Requires(property = SslConfiguration.PREFIX + ".build-self-signed", value = FALSE, defaultValue = FALSE)
 package io.micronaut.configuration.acme;
 
 import io.micronaut.context.annotation.Configuration;
