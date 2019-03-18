@@ -33,8 +33,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
 import java.security.KeyPair;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Background task to automatically refresh the certificates from an ACME server on a configurable interval.
@@ -103,6 +104,13 @@ public final class AcmeCertRefresherTask {
             throw new IllegalStateException("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and place this property in your configuration once complete : 'micronaut.ssl.acme.tos.agree = true'");
         }
 
+        List<String> domains = new ArrayList<>();
+        domains.add(domain);
+        if (isWildcardDomain()) {
+            LOG.debug("Wildcard domain found, as per ACME4j spec we must include the wildcard domain and the base domain name in the order details.");
+            domains.add(domain.replace("*.", ""));
+        }
+
         try {
             Session session = new Session(acmeServerUrl);
 
@@ -116,7 +124,7 @@ public final class AcmeCertRefresherTask {
 
             Order order = login.getAccount()
                     .newOrder()
-                    .domains(domain)
+                    .domains(domains)
                     .create();
 
 
@@ -127,7 +135,7 @@ public final class AcmeCertRefresherTask {
             // Generate a CSR for all of the domains, and sign it with the domain key pair.
             KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyPairString));
             CSRBuilder csrb = new CSRBuilder();
-            csrb.addDomains(domain);
+            csrb.addDomains(domains);
             csrb.sign(domainKeyPair);
 
             // Write the CSR to a file, for later use.
@@ -177,6 +185,10 @@ public final class AcmeCertRefresherTask {
         } catch (AcmeException e) {
             LOG.error("Failed to communicate with Acme server", e);
         }
+    }
+
+    private boolean isWildcardDomain() {
+        return domain.startsWith("*.");
     }
 
     /**
