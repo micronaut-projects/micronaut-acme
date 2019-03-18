@@ -44,6 +44,10 @@ import static io.micronaut.core.util.StringUtils.TRUE;
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.systemDefault;
 
+/**
+ * The Netty implementation of {@link SslBuilder} that generates an {@link SslContext} to create a server handler
+ * with to SSL support via a temporary self signed certificate that will be replaced by an ACME certificate once acquired.
+ */
 @Singleton
 @Requires(property = SslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
 @Requires(property = SslConfiguration.PREFIX + ".build-self-signed", value = FALSE, defaultValue = FALSE)
@@ -53,8 +57,20 @@ public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements Ser
     private DelegatedSslContext delegatedSslContext;
 
     @Property(name = "micronaut.ssl.acme.domain")
-    protected String domain;
+    private String domain;
 
+    /**
+     * @param ssl              The SSL configuration
+     * @param resourceResolver The resource resolver
+     */
+    public AcmeSSLContextBuilder(ServerSslConfiguration ssl, ResourceResolver resourceResolver) {
+        super(ssl, resourceResolver);
+    }
+
+    /**
+     * Listens for CertificateEvent containing the ACME certificate and replaces the {@link SslContext} to now use that certificate.
+     * @param certificateEvent {@link CertificateEvent}
+     */
     @EventListener
     void onNewCertificate(CertificateEvent certificateEvent) {
         try {
@@ -68,19 +84,16 @@ public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements Ser
         }
     }
 
-    /**
-     * @param ssl              The SSL configuration
-     * @param resourceResolver The resource resolver
-     */
-    public AcmeSSLContextBuilder(ServerSslConfiguration ssl, ResourceResolver resourceResolver) {
-        super(ssl, resourceResolver);
-    }
-
     @Override
     public ServerSslConfiguration getSslConfiguration() {
         return (ServerSslConfiguration) ssl;
     }
 
+    /**
+     * Generates an SslContext that has an already expired self signed cert that should be replaced almost immediately by the ACME server once it is downloaded.
+     *
+     * @return Optional SslContext
+     */
     @Override
     public Optional<SslContext> build() {
         try {

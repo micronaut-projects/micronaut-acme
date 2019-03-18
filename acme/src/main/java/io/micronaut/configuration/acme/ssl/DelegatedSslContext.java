@@ -32,11 +32,21 @@ public class DelegatedSslContext extends SslContext {
 
     private SslContext ctx;
 
-    protected DelegatedSslContext(SslContext ctx) {
+    /**
+     * Creates a new DelegatedSslContext with the SslContext to be delegated to.
+     *
+     * @param ctx {@link SslContext}
+     */
+    DelegatedSslContext(SslContext ctx) {
         this.ctx = ObjectUtil.checkNotNull(ctx, "ctx");
     }
 
-    public void setNewSslContext(SslContext sslContext){
+    /**
+     * Overrides the existing delegated SslContext with the one passed.
+     *
+     * @param sslContext {@link SslContext}
+     */
+    final void setNewSslContext(SslContext sslContext) {
         this.ctx = sslContext;
     }
 
@@ -74,7 +84,6 @@ public class DelegatedSslContext extends SslContext {
     public final SSLEngine newEngine(ByteBufAllocator alloc, String peerHost, int peerPort) {
         return ctx.newEngine(alloc, peerHost, peerPort);
     }
-
 
     @Override
     public final SSLSessionContext sessionContext() {

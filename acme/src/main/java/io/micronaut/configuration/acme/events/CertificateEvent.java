@@ -24,21 +24,36 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+/**
+ * Event used to alert when a newACME certificate is ready for use.
+ */
 public class CertificateEvent {
     private File certificateFileLocation;
     private final KeyPair domainKeyPair;
 
+    /**
+     * Creates a new CertificateEvent.
+     * @param certificateFileLocation location on disk to the X509 certificate file
+     * @param domainKeyPair key pair used to encrypt the certificate
+     */
     public CertificateEvent(File certificateFileLocation, KeyPair domainKeyPair) {
         this.certificateFileLocation = certificateFileLocation;
         this.domainKeyPair = domainKeyPair;
     }
 
+    /**
+     * @return Certificate created by ACME server
+     * @throws CertificateException if error while turning File into X509Certificate
+     * @throws FileNotFoundException if file is not found
+     */
     public X509Certificate getCert() throws CertificateException, FileNotFoundException {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) cf.generateCertificate(new FileInputStream(certificateFileLocation));
-        return cert;
+        return (X509Certificate) cf.generateCertificate(new FileInputStream(certificateFileLocation));
     }
 
+    /**
+     * @return KeyPair used to encrypt the certificate.
+     */
     public KeyPair getDomainKeyPair() {
         return domainKeyPair;
     }

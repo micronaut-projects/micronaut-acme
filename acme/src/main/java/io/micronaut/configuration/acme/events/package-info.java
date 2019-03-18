@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Events used by ACME tasks
+ * Events used by ACME tasks.
  *
  * @author Nathan Zender
  * @since 1.0

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Background jobs used to integrate ACME
+ * Background jobs used to integrate ACME.
  *
  * @author Nathan Zender
  * @since 1.0

@@ -46,14 +46,13 @@ public final class AcmeCertRefresherTask {
     private static final Logger LOG = LoggerFactory.getLogger(AcmeCertRefresherTask.class);
 
     @Inject
-    ApplicationEventPublisher eventPublisher;
-
+    private ApplicationEventPublisher eventPublisher;
 
     @Value("${micronaut.ssl.acme.renew.within:30}")
-    protected int renewWithinDays = 30;
+    private int renewWithinDays = 30;
 
     @Value("${micronaut.ssl.acme.tos.agree:false}")
-    protected boolean agreeToTOS = false;
+    private boolean agreeToTOS = false;
 
     /**
      * Let's Encrypt has different production vs test servers.
@@ -66,31 +65,31 @@ public final class AcmeCertRefresherTask {
      * see here https://shredzone.org/maven/acme4j/ca/letsencrypt.html
      */
     @Property(name = "micronaut.ssl.acme.server.url")
-    protected String acmeServerUrl;
+    private String acmeServerUrl;
 
     @Property(name = "micronaut.ssl.acme.cert.output.path")
-    protected String certPath;
+    private String certPath;
 
     @Property(name = "micronaut.ssl.acme.domain.keypair")
-    protected String domainKeyPairString;
+    private String domainKeyPairString;
 
     @Property(name = "micronaut.ssl.acme.account.keypair")
-    protected String keyPairString;
+    private String keyPairString;
 
     @Property(name = "micronaut.ssl.acme.domain")
-    protected String domain;
+    private String domain;
 
     @Value("${micronaut.ssl.acme.auth.retry.attempts:10}")
-    protected int authRetryAttempts;
+    private int authRetryAttempts;
 
     @Value("${micronaut.ssl.acme.auth.pause.ms:3000}")
-    protected long authPauseMs;
+    private long authPauseMs;
 
     @Value("${micronaut.ssl.acme.order.retry.attempts:10}")
-    protected int orderRetryAttempts;
+    private int orderRetryAttempts;
 
     @Value("${micronaut.ssl.acme.order.pause.ms:3000}")
-    protected long orderPauseMs;
+    private long orderPauseMs;
 
 
     /**
