@@ -97,7 +97,7 @@ public final class AcmeCertRefresherTask {
      */
     @Scheduled(
             fixedDelay = "${micronaut.ssl.acme.refresh.frequency:24h}",
-            initialDelay = "${micronaut.ssl.acme.refresh.delay:1m}")
+            initialDelay = "${micronaut.ssl.acme.refresh.delay:1s}")
     void renewCertIfNeeded() {
         if (!agreeToTOS) {
             throw new IllegalStateException("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and place this property in your configuration once complete : 'micronaut.ssl.acme.tos.agree = true'");
