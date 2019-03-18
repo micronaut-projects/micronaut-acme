@@ -94,7 +94,6 @@ class AcmeCertWildcardRefresherTaskSpec extends Specification {
                         "micronaut.ssl.acme.tos.agree"       : true,
                         "micronaut.ssl.acme.cert.output.path": certFolder.toString(),
                         "micronaut.ssl.acme.domain"          : WILDCARD_DOMAIN,
-                        "micronaut.ssl.acme.refresh.delay"   : "1s",
                         "micronaut.ssl.acme.domain.keypair"  : domainKeyPairWriter.toString(),
                         "micronaut.ssl.acme.account.keypair" : accountKeyPairWriter.toString(),
                         'micronaut.ssl.acme.server.url'      : acmeServerUrl,
