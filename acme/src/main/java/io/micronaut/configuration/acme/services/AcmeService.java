@@ -100,7 +100,7 @@ public class AcmeService {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             return (X509Certificate) cf.generateCertificate(new FileInputStream(new File(certPath, DOMAIN_CRT)));
         } catch (CertificateException | FileNotFoundException e) {
-            LOG.error("Could not create certificate from file", e);
+            LOG.warn("Could not create certificate from file", e);
             return null;
         }
     }
