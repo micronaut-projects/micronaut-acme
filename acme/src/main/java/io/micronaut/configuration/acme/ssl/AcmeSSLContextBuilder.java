@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.net.ssl.SSLException;
-import java.io.FileNotFoundException;
-import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -76,8 +74,8 @@ public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements Ser
                     .build();
             LOG.debug("New certificate received, switching out ssl context now");
             delegatedSslContext.setNewSslContext(sslContext);
-        } catch (CertificateException | FileNotFoundException | SSLException e) {
-            LOG.error("Failed to access certficate", e);
+        } catch (SSLException e) {
+            LOG.error("Failed to access certificate", e);
         }
     }
 

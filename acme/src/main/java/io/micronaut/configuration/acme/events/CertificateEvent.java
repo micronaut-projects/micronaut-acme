@@ -16,39 +16,31 @@
 
 package io.micronaut.configuration.acme.events;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.security.KeyPair;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 /**
  * Event used to alert when a newACME certificate is ready for use.
  */
 public class CertificateEvent {
-    private File certificateFileLocation;
+    private X509Certificate certificate;
     private final KeyPair domainKeyPair;
 
     /**
      * Creates a new CertificateEvent.
-     * @param certificateFileLocation location on disk to the X509 certificate file
+     * @param certificate X509 certificate file
      * @param domainKeyPair key pair used to encrypt the certificate
      */
-    public CertificateEvent(File certificateFileLocation, KeyPair domainKeyPair) {
-        this.certificateFileLocation = certificateFileLocation;
+    public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair) {
+        this.certificate = certificate;
         this.domainKeyPair = domainKeyPair;
     }
 
     /**
      * @return Certificate created by ACME server
-     * @throws CertificateException if error while turning File into X509Certificate
-     * @throws FileNotFoundException if file is not found
      */
-    public X509Certificate getCert() throws CertificateException, FileNotFoundException {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        return (X509Certificate) cf.generateCertificate(new FileInputStream(certificateFileLocation));
+    public X509Certificate getCert() {
+        return certificate;
     }
 
     /**

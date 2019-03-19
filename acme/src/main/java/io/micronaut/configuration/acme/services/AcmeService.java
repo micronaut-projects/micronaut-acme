@@ -32,6 +32,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
 import java.security.KeyPair;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,7 @@ import java.util.Optional;
 public class AcmeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcmeService.class);
+    public static final String DOMAIN_CRT = "domain.crt";
 
     /**
      * Let's Encrypt has different production vs test servers.
@@ -86,6 +90,26 @@ public class AcmeService {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Gets the current X509Certificate.
+     *
+     * @return current domain certificate
+     */
+    public X509Certificate getCurrentCertificate() {
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(new FileInputStream(new File(certPath, DOMAIN_CRT)));
+        } catch (CertificateException | FileNotFoundException e) {
+            LOG.error("Could not create certificate from file", e);
+            return null;
+        }
+    }
+
+    /**
+     * Orders a new certificate using ACME protocol.
+     *
+     * @param domains List of domains to order a certificate for
+     */
     public void orderCertificate(List<String> domains) {
         try {
             Session session = new Session(acmeServerUrl);
@@ -149,12 +173,12 @@ public class AcmeService {
             LOG.info("Certificate URL: {}", certificate.getLocation());
 
             // Write a combined file containing the certificate and chain.
-            File certificateFile = new File(certPath, "domain.crt");
+            File certificateFile = new File(certPath, DOMAIN_CRT);
             try (Writer fw = new FileWriter(certificateFile)) {
                 certificate.writeCertificate(fw);
             }
 
-            eventPublisher.publishEvent(new CertificateEvent(certificateFile, domainKeyPair));
+            eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair));
 
         } catch (IOException e) {
             LOG.error("Failed to parse key pair", e);

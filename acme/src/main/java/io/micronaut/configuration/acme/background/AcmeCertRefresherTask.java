@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.security.cert.X509Certificate;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +83,16 @@ public final class AcmeCertRefresherTask {
             domains.add(domain.replace("*.", ""));
         }
 
-        acmeService.orderCertificate(domains);
+        X509Certificate currentCertificate = acmeService.getCurrentCertificate();
+        if (currentCertificate != null) {
+            long daysTillExpiration = ChronoUnit.DAYS.between(LocalDate.now(), currentCertificate.getNotAfter().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+            if (daysTillExpiration <= renewWithinDays) {
+                acmeService.orderCertificate(domains);
+            }
+        } else {
+            acmeService.orderCertificate(domains);
+        }
     }
 
     private boolean isWildcardDomain() {
