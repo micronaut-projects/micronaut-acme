@@ -68,6 +68,10 @@ public final class AcmeCertRefresherTask {
             throw new IllegalStateException("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and place this property in your configuration once complete : 'micronaut.ssl.acme.tos.agree = true'");
         }
 
+        if (domain == null || domain.trim().length() == 0) {
+            throw new IllegalArgumentException("Domain must be set. Single base domain or wildcard domain are allowed. 'micronaut.ssl.acme.domain = example.com' OR 'micronaut.ssl.acme.domain = *.example.com'");
+        }
+
         List<String> domains = new ArrayList<>();
         domains.add(domain);
         if (isWildcardDomain()) {
