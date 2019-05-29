@@ -17,28 +17,20 @@
 package io.micronaut.configuration.acme.ssl;
 
 import io.micronaut.configuration.acme.events.CertificateEvent;
-import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
-import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.http.server.netty.ssl.CertificateProvidedSslBuilder;
 import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
 import io.micronaut.http.ssl.ServerSslConfiguration;
 import io.micronaut.http.ssl.SslBuilder;
-import io.micronaut.http.ssl.SslConfigurationException;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.net.ssl.SSLException;
-import java.util.Date;
 import java.util.Optional;
-
-import static java.time.LocalDateTime.now;
-import static java.time.ZoneId.systemDefault;
 
 /**
  * The Netty implementation of {@link SslBuilder} that generates an {@link SslContext} to create a server handler
@@ -46,20 +38,18 @@ import static java.time.ZoneId.systemDefault;
  */
 @Singleton
 @Replaces(CertificateProvidedSslBuilder.class)
-public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements ServerSslBuilder {
+public class AcmeSSLContextBuilder implements ServerSslBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcmeSSLContextBuilder.class);
-    private DelegatedSslContext delegatedSslContext;
 
-    @Property(name = "micronaut.ssl.acme.domain")
-    private String domain;
+    private DelegatedSslContext delegatedSslContext = new DelegatedSslContext(null);
+    private final ServerSslConfiguration ssl;
 
     /**
      * @param ssl              The SSL configuration
-     * @param resourceResolver The resource resolver
      */
-    public AcmeSSLContextBuilder(ServerSslConfiguration ssl, ResourceResolver resourceResolver) {
-        super(ssl, resourceResolver);
+    public AcmeSSLContextBuilder(ServerSslConfiguration ssl) {
+        this.ssl = ssl;
     }
 
     /**
@@ -72,16 +62,20 @@ public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements Ser
             SslContext sslContext = SslContextBuilder
                     .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
                     .build();
-            LOG.debug("New certificate received, switching out ssl context now");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("New certificate received and replaced the proxied SSL context");
+            }
             delegatedSslContext.setNewSslContext(sslContext);
         } catch (SSLException e) {
-            LOG.error("Failed to access certificate", e);
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Failed to build the SSL context", e);
+            }
         }
     }
 
     @Override
     public ServerSslConfiguration getSslConfiguration() {
-        return (ServerSslConfiguration) ssl;
+        return ssl;
     }
 
     /**
@@ -91,18 +85,6 @@ public class AcmeSSLContextBuilder extends SslBuilder<SslContext> implements Ser
      */
     @Override
     public Optional<SslContext> build() {
-        try {
-            // Short expiring self signed cert put in place to make it so that the site can serve traffic even if the certificate from Acme has not been put in place yet.
-            Date yesterday = Date.from(now().minusDays(1).atZone(systemDefault()).toInstant());
-            Date nowishButExpired = Date.from(now().minusSeconds(1).atZone(systemDefault()).toInstant());
-            SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate(domain, yesterday, nowishButExpired);
-            SslContext sslContext = SslContextBuilder
-                    .forServer(selfSignedCertificate.key(), selfSignedCertificate.cert())
-                    .build();
-            delegatedSslContext = new DelegatedSslContext(sslContext);
-            return Optional.of(delegatedSslContext);
-        } catch (Exception e) {
-            throw new SslConfigurationException("Encountered an error while building a temporary self signed certificate", e);
-        }
+        return Optional.of(delegatedSslContext);
     }
 }

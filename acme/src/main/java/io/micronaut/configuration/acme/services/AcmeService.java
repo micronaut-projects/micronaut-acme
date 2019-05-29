@@ -16,33 +16,44 @@
 
 package io.micronaut.configuration.acme.services;
 
+import io.micronaut.configuration.acme.AcmeConfiguration;
 import io.micronaut.configuration.acme.events.CertificateEvent;
-import io.micronaut.context.annotation.Property;
-import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.scheduling.TaskScheduler;
 import org.shredzone.acme4j.*;
 import org.shredzone.acme4j.challenge.Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
+import org.shredzone.acme4j.exception.AcmeRetryAfterException;
 import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.KeyPairUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.*;
+import java.nio.file.Files;
 import java.security.KeyPair;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static java.nio.file.StandardOpenOption.*;
 
 @Singleton
 public class AcmeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcmeService.class);
-    public static final String DOMAIN_CRT = "domain.crt";
+    private static final String DOMAIN_CRT = "domain.crt";
+    private static final String DOMAIN_CSR = "domain.csr";
 
     /**
      * Let's Encrypt has different production vs test servers.
@@ -54,29 +65,14 @@ public class AcmeService {
      * <p>
      * see here https://shredzone.org/maven/acme4j/ca/letsencrypt.html
      */
-    @Property(name = "micronaut.ssl.acme.server.url")
-    private String acmeServerUrl;
-
-    @Property(name = "micronaut.ssl.acme.cert.output.path")
-    private String certPath;
-
-    @Property(name = "micronaut.ssl.acme.domain.keypair")
-    private String domainKeyPairString;
-
-    @Property(name = "micronaut.ssl.acme.account.keypair")
-    private String keyPairString;
-
-    @Value("${micronaut.ssl.acme.auth.retry.attempts:10}")
-    private int authRetryAttempts;
-
-    @Value("${micronaut.ssl.acme.auth.pause.ms:3000}")
-    private long authPauseMs;
-
-    @Value("${micronaut.ssl.acme.order.retry.attempts:10}")
-    private int orderRetryAttempts;
-
-    @Value("${micronaut.ssl.acme.order.pause.ms:3000}")
-    private long orderPauseMs;
+    private final String acmeServerUrl;
+    private final AcmeConfiguration acmeConfiguration;
+    private final TaskScheduler taskScheduler;
+    private final File certLocation;
+    private final String domainKeyPairString;
+    private final String keyPairString;
+    private final Duration authPause;
+    private final Duration orderPause;
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -85,9 +81,18 @@ public class AcmeService {
      *
      * @param eventPublisher Application Event Publisher
      */
-    @Inject
-    public AcmeService(ApplicationEventPublisher eventPublisher) {
+    public AcmeService(ApplicationEventPublisher eventPublisher,
+                       AcmeConfiguration acmeConfiguration,
+                       @Named("scheduled") TaskScheduler taskScheduler) {
         this.eventPublisher = eventPublisher;
+        this.orderPause = acmeConfiguration.getOrder().getPause();
+        this.authPause = acmeConfiguration.getAuth().getPause();
+        this.keyPairString = acmeConfiguration.getAccountKeypair();
+        this.domainKeyPairString = acmeConfiguration.getDomainKeypair();
+        this.certLocation = acmeConfiguration.getCertLocation();
+        this.acmeServerUrl = acmeConfiguration.getAcmeServer();
+        this.acmeConfiguration = acmeConfiguration;
+        this.taskScheduler = taskScheduler;
     }
 
     /**
@@ -98,9 +103,16 @@ public class AcmeService {
     public X509Certificate getCurrentCertificate() {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(new FileInputStream(new File(certPath, DOMAIN_CRT)));
-        } catch (CertificateException | FileNotFoundException e) {
-            LOG.warn("Could not create certificate from file", e);
+            File certificate = new File(certLocation, DOMAIN_CRT);
+            if (certificate.exists()) {
+                return (X509Certificate) cf.generateCertificate(Files.newInputStream(certificate.toPath()));
+            } else {
+                return null;
+            }
+        } catch (CertificateException | IOException e) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Could not create certificate from file", e);
+            }
             return null;
         }
     }
@@ -111,79 +123,179 @@ public class AcmeService {
      * @param domains List of domains to order a certificate for
      */
     public void orderCertificate(List<String> domains) {
+        AtomicInteger orderRetryAttempts = new AtomicInteger(acmeConfiguration.getOrder().getRefreshAttempts());
+
+        Session session = new Session(acmeServerUrl);
+
+        KeyPair accountKeyPair;
         try {
-            Session session = new Session(acmeServerUrl);
-
-            KeyPair accountKeyPair = KeyPairUtils.readKeyPair(new StringReader(keyPairString));
-
-            Login login = new AccountBuilder()
-                    .onlyExisting()
-                    .useKeyPair(accountKeyPair)
-                    .createLogin(session);
-
-
-            Order order = login.getAccount()
-                    .newOrder()
-                    .domains(domains)
-                    .create();
-
-
-            for (Authorization auth : order.getAuthorizations()) {
-                authorize(auth);
+            accountKeyPair = KeyPairUtils.readKeyPair(new StringReader(keyPairString));
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to read the account keypair", e);
             }
+            return;
+        }
 
-            // Generate a CSR for all of the domains, and sign it with the domain key pair.
-            KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyPairString));
-            CSRBuilder csrb = new CSRBuilder();
-            csrb.addDomains(domains);
-            csrb.sign(domainKeyPair);
-
-            // Write the CSR to a file, for later use.
-            File domainCsr = new File(certPath, "domain.csr");
-            try (Writer out = new FileWriter(domainCsr)) {
-                csrb.write(out);
+        Login login;
+        try {
+            login = new AccountBuilder()
+                        .onlyExisting()
+                        .useKeyPair(accountKeyPair)
+                        .createLogin(session);
+        } catch (AcmeException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to create the login", e);
             }
+            return;
+        }
 
-            // Order the certificate
-            order.execute(csrb.getEncoded());
 
-            // Wait for the order to complete
+        Order order;
+        try {
+            order = login.getAccount()
+                        .newOrder()
+                        .domains(domains)
+                        .create();
+        } catch (AcmeException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to create the order", e);
+            }
+            return;
+        }
+
+
+        for (Authorization auth : order.getAuthorizations()) {
             try {
-                while (order.getStatus() != Status.VALID && orderRetryAttempts-- > 0) {
-                    // Did the order fail?
-                    if (order.getStatus() == Status.INVALID) {
-                        throw new AcmeException("Order failed... Giving up.");
-                    }
-
-                    // Wait for a few seconds
-                    Thread.sleep(orderPauseMs);
-
-                    // Then update the status
-                    order.update();
+                authorize(auth);
+            } catch (AcmeException e) {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("ACME certificate order failed. Failed to authorize the domain [{}]", auth.getIdentifier(), e);
                 }
-            } catch (InterruptedException ex) {
-                LOG.error("interrupted", ex);
-                Thread.currentThread().interrupt();
+                return;
             }
+        }
 
-            // Get the certificate
-            Certificate certificate = order.getCertificate();
+        // Generate a CSR for all of the domains, and sign it with the domain key pair.
+        KeyPair domainKeyPair;
+        try {
+            domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyPairString));
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to read the domain keypair", e);
+            }
+            return;
+        }
+        CSRBuilder csrb = new CSRBuilder();
+        csrb.addDomains(domains);
+        try {
+            csrb.sign(domainKeyPair);
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to sign the domain keypair with the CSR", e);
+            }
+            return;
+        }
 
-            LOG.info("Success! The certificate for domain(s) {} has been generated!", domains);
-            LOG.info("Certificate URL: {}", certificate.getLocation());
+        // Write the CSR to a file, for later use.
+        try {
+            File domainCsr = new File(certLocation, DOMAIN_CSR);
+            OutputStream outputStream = Files.newOutputStream(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING);
+            csrb.write(outputStream);
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to write the CSR to the configured location", e);
+            }
+            return;
+        }
 
+        // Order the certificate
+        try {
+            order.execute(csrb.getEncoded());
+        } catch (AcmeException | IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. Failed to execute the certificate order", e);
+            }
+            return;
+        }
+
+        AtomicLong retryAfter = new AtomicLong();
+
+        SelfCancellable orderStatusPoll = new SelfCancellable() {
+            @Override
+            public void run() {
+                if (orderRetryAttempts.getAndDecrement() > 0) {
+                    if (retryAfter.get() < Instant.now().toEpochMilli()) {
+                        try {
+                            order.update();
+                            Status status = order.getStatus();
+                            if (status == Status.VALID) {
+                                cancel();
+                            } else if (status == Status.INVALID) {
+                                if (LOG.isErrorEnabled()) {
+                                    LOG.error("ACME certificate order failed. The certificate order was invalid: {}", order.getError());
+                                }
+                                cancel();
+                            }
+                        } catch (AcmeRetryAfterException e) {
+                            retryAfter.set(e.getRetryAfter().toEpochMilli());
+                        } catch (AcmeException e) {
+                            if (LOG.isErrorEnabled()) {
+                                LOG.error("ACME certificate order failed. Failed to update the certificate order", e);
+                            }
+                            cancel();
+                        }
+                    }
+                } else {
+                    if (LOG.isErrorEnabled()) {
+                        LOG.error("ACME certificate order failed. Status still not valid after [{}] attempts", acmeConfiguration.getOrder().getRefreshAttempts());
+                    }
+                    cancel();
+                }
+            }
+        };
+
+        ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(Duration.ZERO, orderPause, orderStatusPoll);
+        orderStatusPoll.setFuture(scheduledFuture);
+
+        try {
+            scheduledFuture.get();
+        } catch (InterruptedException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order poll interrupted", e);
+            }
+            return;
+        } catch (ExecutionException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order poll threw an error", e);
+            }
+            return;
+        }
+
+        // Get the certificate
+        Certificate certificate = order.getCertificate();
+
+        if (certificate != null) {
             // Write a combined file containing the certificate and chain.
-            File certificateFile = new File(certPath, DOMAIN_CRT);
-            try (Writer fw = new FileWriter(certificateFile)) {
-                certificate.writeCertificate(fw);
+            try {
+                File domainCsr = new File(certLocation, DOMAIN_CRT);
+                BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING);
+                certificate.writeCertificate(writer);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
+                }
+            } catch (IOException e) {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("ACME certificate order failed. Failed to write the certificate chain to the configured location", e);
+                }
+                return;
             }
 
             eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair));
-
-        } catch (IOException e) {
-            LOG.error("Failed to parse key pair", e);
-        } catch (AcmeException e) {
-            LOG.error("Failed to communicate with Acme server", e);
+        } else {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate order failed. The certificate was not found in the order");
+            }
         }
     }
 
@@ -194,7 +306,9 @@ public class AcmeService {
      * @param auth {@link Authorization} to perform
      */
     private void authorize(Authorization auth) throws AcmeException {
-        LOG.info("Authorization {} for domain {}", auth, auth.getIdentifier().getDomain());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authorization {} for domain {}", auth, auth.getIdentifier().getDomain());
+        }
 
         // The authorization is already valid. No need to process a challenge.
         if (auth.getStatus() == Status.VALID) {
@@ -208,36 +322,62 @@ public class AcmeService {
         }
 
         for (Challenge challenge : auth.getChallenges()) {
-            // Now trigger the challenge.
-            challenge.trigger();
 
-            // Poll for the challenge to complete.
-            try {
-                while (challenge.getStatus() != Status.VALID && authRetryAttempts-- > 0) {
-                    // Did the authorization fail?
-                    if (challenge.getStatus() == Status.INVALID) {
-                        throw new AcmeException("Challenge of type " + challenge.getType() + "failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
+            AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());
+
+            SelfCancellable authStatusPoll = new SelfCancellable() {
+                @Override
+                public void run() {
+                    if (authRetryAttempts.getAndDecrement() > 0) {
+                        try {
+                            challenge.trigger();
+                            Status status = challenge.getStatus();
+                            if (status == Status.VALID) {
+                                cancel();
+                            } else if (status == Status.INVALID) {
+                                throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
+                            }
+                        } catch (AcmeException e) {
+                            throw new AcmeRuntimeException("ACME certificate order failed. " + e.getMessage());
+                        }
+                    } else {
+                        throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. Still not valid after " + acmeConfiguration.getAuth().getRefreshAttempts() + " attempts");
                     }
-
-                    // Wait for a few seconds
-                    Thread.sleep(authPauseMs);
-
-                    // Then update the status
-                    challenge.update();
                 }
-                break;
-            } catch (InterruptedException ex) {
-                LOG.error("", ex);
-                Thread.currentThread().interrupt();
-            }
+            };
 
-            // All reattempts are used up and there is still no valid authorization?
-            if (challenge.getStatus() != Status.VALID) {
-                throw new AcmeException("Failed to pass the challenge for domain "
-                        + auth.getIdentifier().toString() + ", ... Giving up.");
+            ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleWithFixedDelay(Duration.ZERO, authPause, authStatusPoll);
+            authStatusPoll.setFuture(scheduledFuture);
+
+            try {
+                scheduledFuture.get();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Challenge of type " + challenge.getType() + " has been completed for domain : " + auth.getIdentifier().toString() + ".");
+                }
+            } catch (InterruptedException e) {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("ACME certificate auth poll interrupted", e);
+                }
+            } catch (ExecutionException e) {
+                if (e.getCause() instanceof AcmeRuntimeException) {
+                    throw new AcmeException(e.getCause().getMessage());
+                } else {
+                    throw new AcmeException("ACME certificate challenge poll threw an error", e);
+                }
             }
-            LOG.info("Challenge has been completed for domain : " + auth.getIdentifier().toString() + ".");
+        }
+    }
+
+    private abstract class SelfCancellable implements Runnable {
+
+        private ScheduledFuture<?> future;
+
+        void setFuture(ScheduledFuture<?> future) {
+            this.future = future;
         }
 
+        void cancel() {
+            future.cancel(false);
+        }
     }
 }
