@@ -38,11 +38,14 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service to contact an ACME server and setup a certificate on a given basis.
+ */
 @Singleton
 public class AcmeService {
 
+    private static final String DOMAIN_CRT = "domain.crt";
     private static final Logger LOG = LoggerFactory.getLogger(AcmeService.class);
-    public static final String DOMAIN_CRT = "domain.crt";
 
     /**
      * Let's Encrypt has different production vs test servers.
