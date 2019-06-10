@@ -19,8 +19,8 @@ import java.security.cert.X509Certificate
 @Stepwise
 class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
-    public static final String EXPECTED_BASE_DOMAIN = "testcontainers.internal"
-    public static final String EXPECTED_DOMAIN = "host." + EXPECTED_BASE_DOMAIN
+    public static final String EXPECTED_BASE_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
+    public static final String EXPECTED_DOMAIN = EXPECTED_BASE_DOMAIN
     public static final GString WILDCARD_DOMAIN = "*.${EXPECTED_BASE_DOMAIN}"
 
     Map<String, Object> getConfiguration(){
@@ -70,7 +70,7 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
             HttpResponse<String> response = flowable.blockingFirst()
 
         then:
-            response.body() == "Hello Wilcard"
+            response.body() == "Hello Wildcard"
     }
 
     @Controller('/')
@@ -78,7 +78,7 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
         @Get('/wildcardssl')
         String simple() {
-            return "Hello Wilcard"
+            return "Hello Wildcard"
         }
 
     }
