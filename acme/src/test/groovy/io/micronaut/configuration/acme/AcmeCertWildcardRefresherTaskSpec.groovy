@@ -49,17 +49,23 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
             sc.init(null, InsecureTrustManagerFactory.INSTANCE.trustManagers, new SecureRandom())
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
 
-        when: "we get the cert that has been setup"
+        expect: "we get the cert that has been setup and we make sure they are from the pebble test server and the domain is as expected"
+        new PollingConditions(timeout: 30).eventually {
             URL destinationURL = new URL(embeddedServer.getURL().toString() + "/wildcardssl")
             HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection()
-            conn.connect()
-            Certificate[] certs = conn.getServerCertificates()
-
-        then: "we make sure they are from the pebble test server and the domain is as expected"
-            certs.length == 1
-            def cert = (X509Certificate) certs[0]
-            cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
-            cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
+            try {
+                conn.connect()
+                Certificate[] certs = conn.getServerCertificates()
+                certs.length == 1
+                def cert = (X509Certificate) certs[0]
+                cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
+                cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
+            }finally{
+                if(conn != null){
+                    conn.disconnect()
+                }
+            }
+        }
     }
 
     void "test send https request when the cert is in place"() {
