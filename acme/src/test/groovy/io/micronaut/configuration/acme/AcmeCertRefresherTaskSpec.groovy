@@ -21,7 +21,7 @@ class AcmeCertRefresherTaskSpec extends AcmeBaseSpec {
 
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "micronaut.ssl.acme.domain": EXPECTED_DOMAIN,
+                "acme.domain": EXPECTED_DOMAIN,
         ]
     }
 

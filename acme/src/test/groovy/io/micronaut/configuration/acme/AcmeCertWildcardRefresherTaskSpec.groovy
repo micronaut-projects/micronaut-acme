@@ -25,7 +25,7 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "micronaut.ssl.acme.domain": WILDCARD_DOMAIN
+                "acme.domain": WILDCARD_DOMAIN
         ]
     }
 

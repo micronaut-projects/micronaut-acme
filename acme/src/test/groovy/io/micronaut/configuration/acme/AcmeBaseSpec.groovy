@@ -20,7 +20,7 @@ import spock.lang.Specification
 import java.security.KeyPair
 
 @Ignore
-class AcmeBaseSpec extends Specification{
+class AcmeBaseSpec extends Specification {
     public static final String EXPECTED_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
     public static final int EXPECTED_PORT = 8443
     @Shared
@@ -83,23 +83,23 @@ class AcmeBaseSpec extends Specification{
         certFolder = temporaryFolder.newFolder()
         embeddedServer = ApplicationContext.run(EmbeddedServer,
                 getConfiguration(),
-        "test")
+                "test")
 
         client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
     }
 
     Map<String, Object> getConfiguration() {
         [
-                "micronaut.ssl.enabled"              : true,
-                "micronaut.server.host"              : EXPECTED_DOMAIN,
-                "micronaut.ssl.acme.tos.agree"       : true,
-                "micronaut.ssl.acme.cert.output.path": certFolder.toString(),
-                "micronaut.ssl.acme.domain.keypair"  : domainKeyPairWriter.toString(),
-                "micronaut.ssl.acme.account.keypair" : accountKeyPairWriter.toString(),
-                'micronaut.ssl.acme.server.url'      : acmeServerUrl,
-                'micronaut.ssl.acme.enabled'         : true,
-                'micronaut.ssl.acme.order.pause.ms'  : 1000,
-                'micronaut.ssl.acme.auth.pause.ms'   : 1000
+                "micronaut.server.ssl.enabled": true,
+                "micronaut.server.host": EXPECTED_DOMAIN,
+                "acme.tosAgree"        : true,
+                "acme.cert-location"   : certFolder.toString(),
+                "acme.domain-keypair"  : domainKeyPairWriter.toString(),
+                "acme.account-keypair" : accountKeyPairWriter.toString(),
+                'acme.acme-server'     : acmeServerUrl,
+                'acme.enabled'         : true,
+                'acme.order.pause'     : "1s",
+                'acme.auth.pause'      : "1s"
         ]
     }
 }

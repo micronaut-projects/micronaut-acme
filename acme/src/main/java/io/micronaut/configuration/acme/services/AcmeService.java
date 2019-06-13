@@ -41,6 +41,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -232,28 +233,19 @@ public class AcmeService {
                         try {
                             order.update();
                             Status status = order.getStatus();
-                            if (status == Status.VALID) {
-                                cancel();
-                            } else if (status == Status.INVALID) {
-                                if (LOG.isErrorEnabled()) {
-                                    LOG.error("ACME certificate order failed. The certificate order was invalid: {}", order.getError());
-                                }
+                            if (status == Status.INVALID) {
+                                throw new AcmeRuntimeException("ACME certificate order failed. The certificate order was invalid: " + order.getError());
+                            }else{
                                 cancel();
                             }
                         } catch (AcmeRetryAfterException e) {
                             retryAfter.set(e.getRetryAfter().toEpochMilli());
                         } catch (AcmeException e) {
-                            if (LOG.isErrorEnabled()) {
-                                LOG.error("ACME certificate order failed. Failed to update the certificate order", e);
-                            }
-                            cancel();
+                            throw new AcmeRuntimeException("ACME certificate order failed. Failed to update the certificate order. Reason : " + e.getMessage());
                         }
                     }
                 } else {
-                    if (LOG.isErrorEnabled()) {
-                        LOG.error("ACME certificate order failed. Status still not valid after [{}] attempts", acmeConfiguration.getOrder().getRefreshAttempts());
-                    }
-                    cancel();
+                    throw new AcmeRuntimeException("ACME certificate order failed. Status still not valid after [" + acmeConfiguration.getOrder().getRefreshAttempts() + "] attempts");
                 }
             }
         };
@@ -273,6 +265,8 @@ public class AcmeService {
                 LOG.error("ACME certificate order poll threw an error", e);
             }
             return;
+        } catch(CancellationException e){
+            //cancel is used in happy path so, ignoring this
         }
 
         // Get the certificate
@@ -282,8 +276,10 @@ public class AcmeService {
             // Write a combined file containing the certificate and chain.
             try {
                 File domainCsr = new File(certLocation, DOMAIN_CRT);
-                BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING);
-                certificate.writeCertificate(writer);
+                try(BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)){
+                    certificate.writeCertificate(writer);
+                }
+                eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair));
                 if (LOG.isInfoEnabled()) {
                     LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
                 }
@@ -293,8 +289,6 @@ public class AcmeService {
                 }
                 return;
             }
-
-            eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair));
         } else {
             if (LOG.isErrorEnabled()) {
                 LOG.error("ACME certificate order failed. The certificate was not found in the order");
@@ -327,21 +321,22 @@ public class AcmeService {
         for (Challenge challenge : auth.getChallenges()) {
 
             AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());
-
+            challenge.trigger();
             SelfCancellable authStatusPoll = new SelfCancellable() {
                 @Override
                 public void run() {
                     if (authRetryAttempts.getAndDecrement() > 0) {
-                        try {
-                            challenge.trigger();
-                            Status status = challenge.getStatus();
-                            if (status == Status.VALID) {
-                                cancel();
-                            } else if (status == Status.INVALID) {
-                                throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
+                        Status status = challenge.getStatus();
+                        if (status == Status.VALID) {
+                            cancel();
+                        } else if (status == Status.INVALID) {
+                            throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
+                        }else{
+                            try {
+                                challenge.update();
+                            } catch (AcmeException e) {
+                                throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. Reason: " + e.getMessage());
                             }
-                        } catch (AcmeException e) {
-                            throw new AcmeRuntimeException("ACME certificate order failed. " + e.getMessage());
                         }
                     } else {
                         throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. Still not valid after " + acmeConfiguration.getAuth().getRefreshAttempts() + " attempts");
@@ -367,6 +362,8 @@ public class AcmeService {
                 } else {
                     throw new AcmeException("ACME certificate challenge poll threw an error", e);
                 }
+            }catch(CancellationException e){
+                //cancel is used in happy path so, ignoring this
             }
         }
     }
