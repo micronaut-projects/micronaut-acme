@@ -16,9 +16,13 @@
 
 package io.micronaut.configuration.acme.background;
 
+import io.micronaut.configuration.acme.AcmeConfiguration;
 import io.micronaut.configuration.acme.services.AcmeService;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.core.util.StringUtils;
+import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -40,54 +45,49 @@ public final class AcmeCertRefresherTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcmeCertRefresherTask.class);
 
-    @Value("${micronaut.ssl.acme.renew.within:30}")
-    private int renewWithinDays = 30;
-
-    @Value("${micronaut.ssl.acme.tos.agree:false}")
-    private boolean agreeToTOS = false;
-
-    @Property(name = "micronaut.ssl.acme.domain")
-    private String domain;
-
     private AcmeService acmeService;
+    private final AcmeConfiguration acmeConfiguration;
 
     /**
      * Constructs a new Acme cert refresher background task.
      *
      * @param acmeService Acme service
      */
-    @Inject
-    public AcmeCertRefresherTask(AcmeService acmeService) {
+    public AcmeCertRefresherTask(AcmeService acmeService, AcmeConfiguration acmeConfiguration) {
         this.acmeService = acmeService;
+        this.acmeConfiguration = acmeConfiguration;
     }
 
     /**
      * Schedule task to refresh certs from ACME server.
      */
     @Scheduled(
-            fixedDelay = "${micronaut.ssl.acme.refresh.frequency:24h}",
-            initialDelay = "${micronaut.ssl.acme.refresh.delay:1s}")
+            fixedDelay = "${acme.refresh.frequency:24h}",
+            initialDelay = "${acme.refresh.delay:24h}")
     void renewCertIfNeeded() {
-        if (!agreeToTOS) {
-            throw new IllegalStateException("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and place this property in your configuration once complete : 'micronaut.ssl.acme.tos.agree = true'");
+        if (!acmeConfiguration.isTosAgree()) {
+            throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
         }
 
-        if (domain == null || domain.trim().length() == 0) {
-            throw new IllegalArgumentException("Domain must be set. Single base domain or wildcard domain are allowed. 'micronaut.ssl.acme.domain = example.com' OR 'micronaut.ssl.acme.domain = *.example.com'");
-        }
-
+        String domain = StringUtils.trimToNull(acmeConfiguration.getDomain());
         List<String> domains = new ArrayList<>();
-        domains.add(domain);
-        if (isWildcardDomain()) {
-            LOG.debug("Wildcard domain found, as per ACME4j spec we must include the wildcard domain and the base domain name in the order details.");
-            domains.add(domain.replace("*.", ""));
+
+        if (domain != null) {
+            domains.add(domain);
+            if (domain.startsWith("*.")) {
+                String baseDomain = domain.substring(2);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Configured domain is a wildcard, including the base domain [{}] in addition", baseDomain);
+                }
+                domains.add(baseDomain);
+            }
         }
 
         X509Certificate currentCertificate = acmeService.getCurrentCertificate();
         if (currentCertificate != null) {
-            long daysTillExpiration = ChronoUnit.DAYS.between(LocalDate.now(), currentCertificate.getNotAfter().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            long daysTillExpiration = ChronoUnit.SECONDS.between(Instant.now(), currentCertificate.getNotAfter().toInstant());
 
-            if (daysTillExpiration <= renewWithinDays) {
+            if (daysTillExpiration <= acmeConfiguration.getRenewWitin().getSeconds()) {
                 acmeService.orderCertificate(domains);
             }
         } else {
@@ -95,9 +95,8 @@ public final class AcmeCertRefresherTask {
         }
     }
 
-    private boolean isWildcardDomain() {
-        return domain.startsWith("*.");
+    @EventListener
+    void onStartup(StartupEvent startupEvent) {
+        renewCertIfNeeded();
     }
-
 }
-

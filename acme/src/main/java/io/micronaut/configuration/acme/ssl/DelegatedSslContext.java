@@ -38,7 +38,7 @@ public class DelegatedSslContext extends SslContext {
      * @param ctx {@link SslContext}
      */
     DelegatedSslContext(SslContext ctx) {
-        this.ctx = ObjectUtil.checkNotNull(ctx, "ctx");
+        this.ctx = ctx;
     }
 
     /**

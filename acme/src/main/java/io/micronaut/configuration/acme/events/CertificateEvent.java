@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate;
  * Event used to alert when a newACME certificate is ready for use.
  */
 public class CertificateEvent {
-    private X509Certificate certificate;
+    private final X509Certificate certificate;
     private final KeyPair domainKeyPair;
 
     /**

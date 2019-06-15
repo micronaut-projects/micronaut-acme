@@ -21,14 +21,13 @@
  * @since 1.0
  */
 @Configuration
-@Requires(property = SslConfiguration.PREFIX + ".acme.enabled", value = TRUE, defaultValue = FALSE)
-@Requires(property = SslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
-@Requires(property = SslConfiguration.PREFIX + ".build-self-signed", value = FALSE, defaultValue = FALSE)
+@Requires(property = "acme.enabled", notEquals = FALSE)
+@Requires(property = ServerSslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
 package io.micronaut.configuration.acme;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.http.ssl.SslConfiguration;
+import io.micronaut.http.ssl.ServerSslConfiguration;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.core.util.StringUtils.TRUE;
