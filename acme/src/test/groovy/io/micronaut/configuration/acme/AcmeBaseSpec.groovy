@@ -13,13 +13,15 @@ import org.shredzone.acme4j.util.KeyPairUtils
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
 import spock.lang.AutoCleanup
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.security.KeyPair
 
-public class AcmeBaseSpec extends Specification{
-    public static final String EXPECTED_DOMAIN = "host.testcontainers.internal"
+@Ignore
+class AcmeBaseSpec extends Specification{
+    public static final String EXPECTED_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
     public static final int EXPECTED_PORT = 8443
     @Shared
     GenericContainer certServerContainer =

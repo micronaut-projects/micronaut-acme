@@ -48,6 +48,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.StandardOpenOption.*;
 
+/**
+ * Service to contact an ACME server and setup a certificate on a given basis.
+ */
 @Singleton
 public class AcmeService {
 
