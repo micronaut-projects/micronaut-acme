@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.http.server.netty.ssl.CertificateProvidedSslBuilder;
 import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
 import io.micronaut.http.ssl.ServerSslConfiguration;
-import io.micronaut.http.ssl.SslBuilder;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -33,7 +32,7 @@ import javax.net.ssl.SSLException;
 import java.util.Optional;
 
 /**
- * The Netty implementation of {@link SslBuilder} that generates an {@link SslContext} to create a server handler
+ * The Netty implementation of {@link ServerSslBuilder} that generates an {@link SslContext} to create a server handler
  * with to SSL support via a temporary self signed certificate that will be replaced by an ACME certificate once acquired.
  */
 @Singleton
@@ -46,7 +45,7 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
     private final ServerSslConfiguration ssl;
 
     /**
-     * @param ssl              The SSL configuration
+     * @param ssl The SSL configuration
      */
     public AcmeSSLContextBuilder(ServerSslConfiguration ssl) {
         this.ssl = ssl;
@@ -54,6 +53,7 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
 
     /**
      * Listens for CertificateEvent containing the ACME certificate and replaces the {@link SslContext} to now use that certificate.
+     *
      * @param certificateEvent {@link CertificateEvent}
      */
     @EventListener

@@ -18,8 +18,6 @@ package io.micronaut.configuration.acme.background;
 
 import io.micronaut.configuration.acme.AcmeConfiguration;
 import io.micronaut.configuration.acme.services.AcmeService;
-import io.micronaut.context.annotation.Property;
-import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.runtime.event.annotation.EventListener;
@@ -27,12 +25,9 @@ import io.micronaut.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +47,7 @@ public final class AcmeCertRefresherTask {
      * Constructs a new Acme cert refresher background task.
      *
      * @param acmeService Acme service
+     * @param acmeConfiguration Acme configuration
      */
     public AcmeCertRefresherTask(AcmeService acmeService, AcmeConfiguration acmeConfiguration) {
         this.acmeService = acmeService;
@@ -95,6 +91,11 @@ public final class AcmeCertRefresherTask {
         }
     }
 
+    /**
+     * Checks to see if certificate needs renewed on app startup.
+     *
+     * @param startupEvent Startup event
+     */
     @EventListener
     void onStartup(StartupEvent startupEvent) {
         renewCertIfNeeded();

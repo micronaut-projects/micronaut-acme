@@ -19,7 +19,6 @@ package io.micronaut.configuration.acme.ssl;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.handler.ssl.ApplicationProtocolNegotiator;
 import io.netty.handler.ssl.SslContext;
-import io.netty.util.internal.ObjectUtil;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSessionContext;

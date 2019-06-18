@@ -84,6 +84,8 @@ public class AcmeService {
      * Constructs a new Acme cert service.
      *
      * @param eventPublisher Application Event Publisher
+     * @param acmeConfiguration Acme Configuration
+     * @param taskScheduler Task scheduler for enabling background polling of the certificate refreshes
      */
     public AcmeService(ApplicationEventPublisher eventPublisher,
                        AcmeConfiguration acmeConfiguration,
@@ -144,9 +146,9 @@ public class AcmeService {
         Login login;
         try {
             login = new AccountBuilder()
-                        .onlyExisting()
-                        .useKeyPair(accountKeyPair)
-                        .createLogin(session);
+                    .onlyExisting()
+                    .useKeyPair(accountKeyPair)
+                    .createLogin(session);
         } catch (AcmeException e) {
             if (LOG.isErrorEnabled()) {
                 LOG.error("ACME certificate order failed. Failed to create the login", e);
@@ -158,9 +160,9 @@ public class AcmeService {
         Order order;
         try {
             order = login.getAccount()
-                        .newOrder()
-                        .domains(domains)
-                        .create();
+                    .newOrder()
+                    .domains(domains)
+                    .create();
         } catch (AcmeException e) {
             if (LOG.isErrorEnabled()) {
                 LOG.error("ACME certificate order failed. Failed to create the order", e);
@@ -235,7 +237,7 @@ public class AcmeService {
                             Status status = order.getStatus();
                             if (status == Status.INVALID) {
                                 throw new AcmeRuntimeException("ACME certificate order failed. The certificate order was invalid: " + order.getError());
-                            }else{
+                            } else {
                                 cancel();
                             }
                         } catch (AcmeRetryAfterException e) {
@@ -265,7 +267,7 @@ public class AcmeService {
                 LOG.error("ACME certificate order poll threw an error", e);
             }
             return;
-        } catch(CancellationException e){
+        } catch (CancellationException e) {
             //cancel is used in happy path so, ignoring this
         }
 
@@ -276,7 +278,7 @@ public class AcmeService {
             // Write a combined file containing the certificate and chain.
             try {
                 File domainCsr = new File(certLocation, DOMAIN_CRT);
-                try(BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)){
+                try (BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)) {
                     certificate.writeCertificate(writer);
                 }
                 eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair));
@@ -331,7 +333,7 @@ public class AcmeService {
                             cancel();
                         } else if (status == Status.INVALID) {
                             throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
-                        }else{
+                        } else {
                             try {
                                 challenge.update();
                             } catch (AcmeException e) {
@@ -362,12 +364,15 @@ public class AcmeService {
                 } else {
                     throw new AcmeException("ACME certificate challenge poll threw an error", e);
                 }
-            }catch(CancellationException e){
+            } catch (CancellationException e) {
                 //cancel is used in happy path so, ignoring this
             }
         }
     }
 
+    /**
+     * Enabled a task that can be cancelled by itself.
+     */
     private abstract class SelfCancellable implements Runnable {
 
         private ScheduledFuture<?> future;
