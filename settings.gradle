@@ -1,3 +1,15 @@
 rootProject.name = "acme"
 
 include "acme"
+
+String[] examples = [
+        "hello-world-acme",
+        "acme-utils"
+]
+
+examples.each { name ->
+    include name
+    def project = findProject(":${name}")
+    project.name = "acme-example-${name}"
+    project.projectDir = new File(settingsDir, "examples/${name}")
+}
