@@ -18,8 +18,8 @@ package io.micronaut.configuration.acme.background;
 
 import io.micronaut.configuration.acme.AcmeConfiguration;
 import io.micronaut.configuration.acme.services.AcmeService;
-import io.micronaut.context.event.StartupEvent;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Scheduled;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public final class AcmeCertRefresherTask {
     /**
      * Constructs a new Acme cert refresher background task.
      *
-     * @param acmeService Acme service
+     * @param acmeService       Acme service
      * @param acmeConfiguration Acme configuration
      */
     public AcmeCertRefresherTask(AcmeService acmeService, AcmeConfiguration acmeConfiguration) {
@@ -85,6 +85,8 @@ public final class AcmeCertRefresherTask {
 
             if (daysTillExpiration <= acmeConfiguration.getRenewWitin().getSeconds()) {
                 acmeService.orderCertificate(domains);
+            } else {
+                acmeService.setupCurrentCertificate();
             }
         } else {
             acmeService.orderCertificate(domains);
@@ -97,7 +99,7 @@ public final class AcmeCertRefresherTask {
      * @param startupEvent Startup event
      */
     @EventListener
-    void onStartup(StartupEvent startupEvent) {
+    void onStartup(ApplicationStartupEvent startupEvent) {
         renewCertIfNeeded();
     }
 }

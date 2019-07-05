@@ -22,8 +22,8 @@ import io.micronaut.http.server.netty.ssl.CertificateProvidedSslBuilder;
 import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
 import io.micronaut.http.ssl.ServerSslConfiguration;
 import io.micronaut.runtime.event.annotation.EventListener;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.*;
+import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,13 +59,27 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
     @EventListener
     void onNewCertificate(CertificateEvent certificateEvent) {
         try {
-            SslContext sslContext = SslContextBuilder
-                    .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
-                    .build();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("New certificate received and replaced the proxied SSL context");
             }
-            delegatedSslContext.setNewSslContext(sslContext);
+            if (certificateEvent.isValidationCert()) {
+                SslContext sslContext = SslContextBuilder
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                        .applicationProtocolConfig(new ApplicationProtocolConfig(
+                                ApplicationProtocolConfig.Protocol.ALPN,
+                                // NO_ADVERTISE is currently the only mode supported by both OpenSsl and JDK providers.
+                                ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
+                                // ACCEPT is currently the only mode supported by both OpenSsl and JDK providers.
+                                ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
+                                TlsAlpn01Challenge.ACME_TLS_1_PROTOCOL))
+                        .build();
+                delegatedSslContext.setNewSslContext(sslContext);
+            } else {
+                SslContext sslContext = SslContextBuilder
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                        .build();
+                delegatedSslContext.setNewSslContext(sslContext);
+            }
         } catch (SSLException e) {
             if (LOG.isErrorEnabled()) {
                 LOG.error("Failed to build the SSL context", e);

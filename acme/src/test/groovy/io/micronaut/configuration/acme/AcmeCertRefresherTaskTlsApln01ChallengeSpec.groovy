@@ -1,6 +1,6 @@
 package io.micronaut.configuration.acme
 
-
+import io.micronaut.configuration.acme.AcmeBaseSpec
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
@@ -17,16 +17,19 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 @Stepwise
-class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
-
-    public static final String EXPECTED_BASE_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
-    public static final String EXPECTED_DOMAIN = EXPECTED_BASE_DOMAIN
-    public static final GString WILDCARD_DOMAIN = "*.${EXPECTED_BASE_DOMAIN}"
-
+class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "acme.domain": WILDCARD_DOMAIN,
-                "acme.challenge.type" : "dns"
+                "acme.domain": EXPECTED_ACME_DOMAIN,
+                "acme.challenge.type" : "tls"
+        ]
+    }
+
+    @Override
+    Map<String, String> getPebbleEnv(){
+        return [
+                "PEBBLE_VA_ALWAYS_VALID": "0",
+                "PEBBLE_VA_NOSLEEP":"1"
         ]
     }
 
@@ -50,42 +53,36 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
             sc.init(null, InsecureTrustManagerFactory.INSTANCE.trustManagers, new SecureRandom())
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
 
-        expect: "we get the cert that has been setup and we make sure they are from the pebble test server and the domain is as expected"
-        new PollingConditions(timeout: 30).eventually {
-            URL destinationURL = new URL(embeddedServer.getURL().toString() + "/wildcardssl")
+        when: "we get the cert that has been setup"
+            URL destinationURL = new URL(embeddedServer.getURL().toString() + "/tlschallenge")
             HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection()
-            try {
-                conn.connect()
-                Certificate[] certs = conn.getServerCertificates()
-                certs.length == 1
-                def cert = (X509Certificate) certs[0]
-                cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
-                cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
-            }finally{
-                if(conn != null){
-                    conn.disconnect()
-                }
-            }
-        }
+            conn.connect()
+            Certificate[] certs = conn.getServerCertificates()
+
+        then: "we make sure they are from the pebble test server and the domain is as expected"
+            certs.length == 1
+            def cert = (X509Certificate) certs[0]
+            cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
+            cert.getSubjectDN().getName().contains(EXPECTED_ACME_DOMAIN)
     }
 
     void "test send https request when the cert is in place"() {
         when:
             Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                    HttpRequest.GET("/wildcardssl"), String
+                    HttpRequest.GET("/tlschallenge"), String
             ))
             HttpResponse<String> response = flowable.blockingFirst()
 
         then:
-            response.body() == "Hello Wildcard"
+            response.body() == "Hello"
     }
 
     @Controller('/')
     static class SslController {
 
-        @Get('/wildcardssl')
+        @Get('/tlschallenge')
         String simple() {
-            return "Hello Wildcard"
+            return "Hello"
         }
 
     }

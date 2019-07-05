@@ -36,15 +36,17 @@ public class AcmeConfiguration implements Toggleable {
     private static final int DEFAULT_REFRESH_ATTEMPTS = 10;
     private static final boolean DEFAULT_ACME_ENABLED = true;
     private static final boolean DEFAULT_TOS_AGREE = false;
+    private static final ChallengeType DEFAULT_CHALLENGE_TYPE = ChallengeType.TLS;
 
     private boolean enabled = DEFAULT_ACME_ENABLED;
     private boolean tosAgree = DEFAULT_TOS_AGREE;
     private Duration renewWitin = DEFAULT_RENEW_WITHIN;
     private String domain;
-    private String accountKeypair;
-    private String domainKeypair;
+    private String accountKey;
+    private String domainKey;
     private File certLocation;
     private String acmeServer;
+    private ChallengeType challengeType = DEFAULT_CHALLENGE_TYPE;
     private OrderConfiguration order = new OrderConfiguration();
     private AuthConfiguration auth = new AuthConfiguration();
 
@@ -155,41 +157,41 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Account keypair used to authenticate with the ACME server.
-     * @return the account keypair string
+     * Account key used to authenticate with the ACME server.
+     * @return the account key string
      */
     @Nonnull
     @NotBlank
     @NotNull
-    public String getAccountKeypair() {
-        return accountKeypair;
+    public String getAccountKey() {
+        return accountKey;
     }
 
     /**
-     * Sets the account keypair used for authentication.
-     * @param accountKeypair account keypair string
+     * Sets the account key used for authentication.
+     * @param accountKey account key string
      */
-    public void setAccountKeypair(@Nonnull String accountKeypair) {
-        this.accountKeypair = accountKeypair;
+    public void setAccountKey(@Nonnull String accountKey) {
+        this.accountKey = accountKey;
     }
 
     /**
-     * Keypair in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
-     * @return domain keypair string value
+     * Key in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
+     * @return domain key string value
      */
     @Nonnull
     @NotBlank
     @NotNull
-    public String getDomainKeypair() {
-        return domainKeypair;
+    public String getDomainKey() {
+        return domainKey;
     }
 
     /**
-     * Sets the keypair string in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
-     * @param domainKeypair keypair string
+     * Sets the key string in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
+     * @param domainKey key string
      */
-    public void setDomainKeypair(@Nonnull String domainKeypair) {
-        this.domainKeypair = domainKeypair;
+    public void setDomainKey(@Nonnull String domainKey) {
+        this.domainKey = domainKey;
     }
 
     /**
@@ -230,6 +232,47 @@ public class AcmeConfiguration implements Toggleable {
      */
     public void setAcmeServer(@Nonnull String acmeServer) {
         this.acmeServer = acmeServer;
+    }
+
+    /**
+     * Get the challenge type to be used to validate the account. Default {@value #DEFAULT_CHALLENGE_TYPE}.
+     * @return the challenge type
+     */
+    public ChallengeType getChallengeType() {
+        return challengeType;
+    }
+
+    /**
+     * Set the challenge type to be used to validate the account.
+     * @param challengeType challenge type to be used
+     */
+    public void setChallengeType(ChallengeType challengeType) {
+        this.challengeType = challengeType;
+    }
+
+    /**
+     * Defines the type of valid challenges.
+     */
+    public enum ChallengeType {
+        TLS("tls-alpn-01"),
+        DNS("dns-01"),
+        HTTP("http-01");
+
+        private String acmeChallengeName;
+
+        /**
+         * @param acmeChallengeName string name that is understood by the ACME server
+         */
+        ChallengeType(String acmeChallengeName) {
+            this.acmeChallengeName = acmeChallengeName;
+        }
+
+        /**
+         * @return acme challenge name
+         */
+        public String getAcmeChallengeName() {
+            return acmeChallengeName;
+        }
     }
 
     /**

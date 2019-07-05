@@ -20,20 +20,23 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
 /**
- * Event used to alert when a newACME certificate is ready for use.
+ * Event used to alert when a new ACME certificate is ready for use.
  */
 public class CertificateEvent {
     private final X509Certificate certificate;
     private final KeyPair domainKeyPair;
+    private boolean validationCert;
 
     /**
      * Creates a new CertificateEvent.
      * @param certificate X509 certificate file
      * @param domainKeyPair key pair used to encrypt the certificate
+     * @param validationCert if this certificate is to be used for tls-apln-01 account validation
      */
-    public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair) {
+    public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair, boolean validationCert) {
         this.certificate = certificate;
         this.domainKeyPair = domainKeyPair;
+        this.validationCert = validationCert;
     }
 
     /**
@@ -48,5 +51,12 @@ public class CertificateEvent {
      */
     public KeyPair getDomainKeyPair() {
         return domainKeyPair;
+    }
+
+    /**
+     * @return if this is a validation certificate to be used for tls-apln-01 account validation
+     */
+    public boolean isValidationCert() {
+        return validationCert;
     }
 }

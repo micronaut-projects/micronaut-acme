@@ -12,6 +12,8 @@ import org.shredzone.acme4j.Status
 import org.shredzone.acme4j.util.KeyPairUtils
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.Network
+import org.testcontainers.utility.MountableFile
 import spock.lang.AutoCleanup
 import spock.lang.Ignore
 import spock.lang.Shared
@@ -21,12 +23,16 @@ import java.security.KeyPair
 
 @Ignore
 class AcmeBaseSpec extends Specification {
+    // Must be this since the docker container can only call the host if its set to this value. See here https://www.testcontainers.org/features/networking#exposing-host-ports-to-the-container
+    public static final String EXPECTED_ACME_DOMAIN = "host.testcontainers.internal"
     public static final String EXPECTED_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
     public static final int EXPECTED_PORT = 8443
     @Shared
     GenericContainer certServerContainer =
             new GenericContainer("letsencrypt/pebble:latest")
-                    .withEnv("PEBBLE_VA_ALWAYS_VALID", "1")
+                    .withCopyFileToContainer(MountableFile.forClasspathResource("pebble-config.json"), "/test/config/pebble-config.json")
+            .withCommand("/usr/bin/pebble", "-strict", "false")
+                    .withEnv(getPebbleEnv())
                     .withExposedPorts(14000)
 
     @Shared
@@ -59,12 +65,12 @@ class AcmeBaseSpec extends Specification {
 
         certServerContainer.start()
 
-        // Create a new keypair to register the account with
+        // Create a new keys to register the account with
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
         accountKeyPairWriter = new StringWriter()
         KeyPairUtils.writeKeyPair(keyPair, accountKeyPairWriter)
 
-        // Create a new keypair to use for the domain
+        // Create a new keys to use for the domain
         KeyPair domainKeyPair = KeyPairUtils.createKeyPair(2048)
         domainKeyPairWriter = new StringWriter()
         KeyPairUtils.writeKeyPair(domainKeyPair, domainKeyPairWriter)
@@ -88,14 +94,25 @@ class AcmeBaseSpec extends Specification {
         client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
     }
 
+    def cleanupSpec(){
+        certServerContainer?.stop()
+        embeddedServer?.stop()
+    }
+
+    Map<String, String> getPebbleEnv(){
+        return [
+                "PEBBLE_VA_ALWAYS_VALID": "1"
+        ]
+    }
+
     Map<String, Object> getConfiguration() {
         [
                 "micronaut.server.ssl.enabled": true,
                 "micronaut.server.host": EXPECTED_DOMAIN,
                 "acme.tosAgree"        : true,
                 "acme.cert-location"   : certFolder.toString(),
-                "acme.domain-keypair"  : domainKeyPairWriter.toString(),
-                "acme.account-keypair" : accountKeyPairWriter.toString(),
+                "acme.domain-key"  : domainKeyPairWriter.toString(),
+                "acme.account-key" : accountKeyPairWriter.toString(),
                 'acme.acme-server'     : acmeServerUrl,
                 'acme.enabled'         : true,
                 'acme.order.pause'     : "1s",
