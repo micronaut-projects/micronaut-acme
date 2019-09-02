@@ -1,0 +1,10 @@
+acme:
+  challenge-type: 'http'
+
+micronaut:
+  server:
+    # Let's encrypt only talks to 80 and since we are not using a load balancer or anything
+    # fancy we will just do this but it will require running with `sudo` which is not idea
+    # in a production environment.
+    port : 80
+    dual-protocol: true
