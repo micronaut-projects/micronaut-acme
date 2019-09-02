@@ -17,11 +17,13 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 @Stepwise
-class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
+class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
                 "acme.domain": EXPECTED_ACME_DOMAIN,
-                "acme.challenge.type" : "tls"
+                "acme.challenge.type" : "http",
+                "micronaut.server.dualProtocol": true,
+                "micronaut.server.port" : 5002
         ]
     }
 
@@ -35,7 +37,7 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
 
     def "get new certificate using existing account"() {
         expect:
-            new PollingConditions(timeout: 30).eventually {
+            new PollingConditions(timeout: 90000).eventually {
                 certFolder.list().length == 2
                 certFolder.list().contains("domain.crt")
                 certFolder.list().contains("domain.csr")
@@ -54,7 +56,7 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
 
         when: "we get the cert that has been setup"
-            URL destinationURL = new URL(embeddedServer.getURL().toString() + "/tlschallenge")
+            URL destinationURL = new URL(embeddedServer.getURL().toString() + "/httpchallenge")
             HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection()
             conn.connect()
             Certificate[] certs = conn.getServerCertificates()
@@ -69,7 +71,7 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
     void "test send https request when the cert is in place"() {
         when:
             Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                    HttpRequest.GET("/tlschallenge"), String
+                    HttpRequest.GET("/httpchallenge"), String
             ))
             HttpResponse<String> response = flowable.blockingFirst()
 
@@ -80,7 +82,7 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
     @Controller('/')
     static class SslController {
 
-        @Get('/tlschallenge')
+        @Get('/httpchallenge')
         String simple() {
             return "Hello"
         }

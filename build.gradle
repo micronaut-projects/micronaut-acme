@@ -17,6 +17,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.2" apply false
     id "net.ltgt.apt-eclipse" version "0.18" apply false
     id "net.ltgt.apt-idea" version "0.18" apply false
+    id "com.google.osdetector" version "1.6.2" apply false
 }
 
 repositories {
@@ -49,6 +50,8 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
     apply plugin: "groovy"
     apply plugin: "checkstyle"
     apply plugin: "io.spring.dependency-management"
+    apply plugin: "com.google.osdetector"
+
 
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
@@ -99,8 +102,27 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
     }
 
     dependencies {
+        annotationProcessor("io.micronaut:micronaut-inject-java:${micronautVersion}")
+        compile("io.micronaut:micronaut-http:${micronautVersion}")
+        compile("io.micronaut:micronaut-http-server:${micronautVersion}")
+        compile("io.micronaut:micronaut-http-server-netty:${micronautVersion}")
+        compile("io.micronaut:micronaut-inject:${micronautVersion}")
+        compileOnly("io.micronaut:micronaut-inject-java:${micronautVersion}")
+
+        compile "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
+        compile "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
+
+
         documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
         documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
+
+        testCompile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.25.Final', classifier: "${osdetector.classifier}"
+        testCompile "org.testcontainers:spock:1.10.1"
+        testCompile("io.micronaut:micronaut-http-client:${micronautVersion}")
+        testCompile("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
+        testCompile("org.spockframework:spock-core:${spockVersion}") {
+            exclude(group: "org.codehaus.groovy", module: "groovy-all")
+        }
         testCompile "cglib:cglib-nodep:${cglibVersion}"
         testCompile "io.micronaut:micronaut-inject-groovy:${micronautVersion}"
         testCompile "io.micronaut.test:micronaut-test-spock:${micronautTestVersion}"

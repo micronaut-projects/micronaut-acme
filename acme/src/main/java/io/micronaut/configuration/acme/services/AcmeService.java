@@ -17,11 +17,14 @@
 package io.micronaut.configuration.acme.services;
 
 import io.micronaut.configuration.acme.AcmeConfiguration;
+import io.micronaut.configuration.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.configuration.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.scheduling.TaskScheduler;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.shredzone.acme4j.*;
 import org.shredzone.acme4j.challenge.Challenge;
+import org.shredzone.acme4j.challenge.Http01Challenge;
 import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.shredzone.acme4j.exception.AcmeRetryAfterException;
@@ -343,14 +346,27 @@ public class AcmeService {
 
         Challenge challenge = notValidChallenge.get();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("TLS challenge selected, creating keys");
-        }
-
-        if(challengeType == ChallengeType.TLS) {
+        if (challengeType == ChallengeType.TLS) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("TLS challenge selected, creating keys");
+            }
             KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyString));
             X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
             eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
+        } else if (challengeType == ChallengeType.HTTP) {
+            try {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("HTTP challenge selected, creating self signed key for now.");
+                }
+                Http01Challenge http01Challenge = (Http01Challenge) challenge;
+                eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
+
+                // Configuring self signed until a real cert is available.
+                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomain());
+                eventPublisher.publishEvent(new CertificateEvent(ssc.cert(), new KeyPair(null, ssc.key()), false));
+            } catch (CertificateException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());

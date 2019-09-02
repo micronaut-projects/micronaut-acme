@@ -47,6 +47,7 @@ public class AcmeConfiguration implements Toggleable {
     private File certLocation;
     private String acmeServer;
     private ChallengeType challengeType = DEFAULT_CHALLENGE_TYPE;
+    private Integer httpChallengeServerPort = 9999;
     private OrderConfiguration order = new OrderConfiguration();
     private AuthConfiguration auth = new AuthConfiguration();
 
@@ -248,6 +249,22 @@ public class AcmeConfiguration implements Toggleable {
      */
     public void setChallengeType(ChallengeType challengeType) {
         this.challengeType = challengeType;
+    }
+
+    /**
+     * Gets the current http challenge server port.
+     * @return http challenge server port
+     */
+    public Integer getHttpChallengeServerPort() {
+        return httpChallengeServerPort;
+    }
+
+    /**
+     * Sets the port to start the http challenge server on.
+     * @param httpChallengeServerPort expected http challenge server port
+     */
+    public void setHttpChallengeServerPort(Integer httpChallengeServerPort) {
+        this.httpChallengeServerPort = httpChallengeServerPort;
     }
 
     /**

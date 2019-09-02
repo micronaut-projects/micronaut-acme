@@ -61,7 +61,7 @@ class AcmeBaseSpec extends Specification {
     String acmeServerUrl
 
     def setupSpec() {
-        Testcontainers.exposeHostPorts(EXPECTED_PORT)
+        Testcontainers.exposeHostPorts(EXPECTED_PORT, 5002)
 
         certServerContainer.start()
 

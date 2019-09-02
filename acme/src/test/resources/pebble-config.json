@@ -3,7 +3,7 @@
     "listenAddress": "0.0.0.0:14000",
     "certificate": "test/certs/localhost/cert.pem",
     "privateKey": "test/certs/localhost/key.pem",
-    "httpPort": 8443,
+    "httpPort": 5002,
     "tlsPort": 8443
   }
 }

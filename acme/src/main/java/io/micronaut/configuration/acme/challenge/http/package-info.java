@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * Micronaut Acme integration.
+ * Http Challenge code used by ACME challenge server.
  *
  * @author Nathan Zender
  * @since 1.0
  */
 @Configuration
-@Requires(property = "acme.enabled", value = TRUE)
-@Requires(property = ServerSslConfiguration.PREFIX + ".enabled", value = TRUE, defaultValue = FALSE)
-package io.micronaut.configuration.acme;
+@Requires(property = "acme.challenge.type", value = "http")
+package io.micronaut.configuration.acme.challenge.http;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.http.ssl.ServerSslConfiguration;
-
-import static io.micronaut.core.util.StringUtils.FALSE;
-import static io.micronaut.core.util.StringUtils.TRUE;
