@@ -22,6 +22,7 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Scheduled;
+import org.shredzone.acme4j.exception.AcmeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +57,12 @@ public final class AcmeCertRefresherTask {
 
     /**
      * Schedule task to refresh certs from ACME server.
+     * @throws AcmeException if any issues occur during certificate renewal
      */
     @Scheduled(
             fixedDelay = "${acme.refresh.frequency:24h}",
             initialDelay = "${acme.refresh.delay:24h}")
-    void renewCertIfNeeded() {
+    void renewCertIfNeeded() throws AcmeException {
         if (!acmeConfiguration.isTosAgree()) {
             throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
         }
@@ -97,9 +99,10 @@ public final class AcmeCertRefresherTask {
      * Checks to see if certificate needs renewed on app startup.
      *
      * @param startupEvent Startup event
+     * @throws AcmeException if any issues occur during certificate renewal
      */
     @EventListener
-    void onStartup(ApplicationStartupEvent startupEvent) {
+    void onStartup(ApplicationStartupEvent startupEvent) throws AcmeException {
         renewCertIfNeeded();
     }
 }

@@ -24,10 +24,7 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.scheduling.TaskScheduler;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.shredzone.acme4j.*;
-import org.shredzone.acme4j.challenge.Challenge;
-import org.shredzone.acme4j.challenge.Dns01Challenge;
-import org.shredzone.acme4j.challenge.Http01Challenge;
-import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
+import org.shredzone.acme4j.challenge.*;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.shredzone.acme4j.exception.AcmeRetryAfterException;
 import org.shredzone.acme4j.util.CSRBuilder;
@@ -135,8 +132,9 @@ public class AcmeService {
      * Orders a new certificate using ACME protocol.
      *
      * @param domains List of domains to order a certificate for
+     * @throws AcmeException if any issues occur during ordering of certificate
      */
-    public void orderCertificate(List<String> domains) {
+    public void orderCertificate(List<String> domains) throws AcmeException {
         AtomicInteger orderRetryAttempts = new AtomicInteger(acmeConfiguration.getOrder().getRefreshAttempts());
 
         Session session = new Session(acmeServerUrl);
@@ -151,34 +149,8 @@ public class AcmeService {
             return;
         }
 
-        Login login;
-        try {
-            login = new AccountBuilder()
-                    .onlyExisting()
-                    .useKeyPair(accountKeyPair)
-                    .createLogin(session);
-        } catch (AcmeException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("ACME certificate order failed. Failed to create the login", e);
-            }
-            return;
-        }
-
-
-        Order order;
-        try {
-            order = login.getAccount()
-                    .newOrder()
-                    .domains(domains)
-                    .create();
-        } catch (AcmeException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("ACME certificate order failed. Failed to create the order", e);
-            }
-            return;
-        }
-
-
+        Login login = doLogin(session, accountKeyPair);
+        Order order = createOrder(domains, login);
         for (Authorization auth : order.getAuthorizations()) {
             try {
                 authorize(auth);
@@ -194,6 +166,26 @@ public class AcmeService {
             return;
         }
 
+        attemptCertificateOrder(domains, orderRetryAttempts, order, domainKeyPair);
+    }
+
+    private Order createOrder(List<String> domains, Login login) throws AcmeException {
+        Order order = login.getAccount()
+                    .newOrder()
+                    .domains(domains)
+                    .create();
+        return order;
+    }
+
+    private Login doLogin(Session session, KeyPair accountKeyPair) throws AcmeException {
+        Login login = new AccountBuilder()
+                    .onlyExisting()
+                    .useKeyPair(accountKeyPair)
+                    .createLogin(session);
+        return login;
+    }
+
+    private void attemptCertificateOrder(List<String> domains, AtomicInteger orderRetryAttempts, Order order, KeyPair domainKeyPair) {
         AtomicLong retryAfter = new AtomicLong();
         SelfCancellable orderStatusPoll = new SelfCancellable() {
             @Override
@@ -336,50 +328,23 @@ public class AcmeService {
             LOG.debug("Challenge type selected : {}", challengeType);
         }
 
-        Optional<Challenge> notValidChallenge = auth.getChallenges().stream()
+        Optional<Challenge> matchingChallengeRequiringAuth = auth.getChallenges().stream()
                 .filter(c -> c.getStatus() != Status.VALID)
                 .filter(c -> challengeType.getAcmeChallengeName().equals(c.getType()))
                 .findFirst();
 
-//        READS LIKE TRASH FIX IT
-        if (!notValidChallenge.isPresent()) {
+        if (!matchingChallengeRequiringAuth.isPresent()) {
             return;
         }
 
-        Challenge challenge = notValidChallenge.get();
+        Challenge challenge = matchingChallengeRequiringAuth.get();
 
-        if (challengeType == ChallengeType.TLS) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("TLS challenge selected, creating keys");
-            }
-            KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyString));
-            X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
-            eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
-        } else if (challengeType == ChallengeType.HTTP) {
-            try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("HTTP challenge selected, creating self signed key for now.");
-                }
-                Http01Challenge http01Challenge = (Http01Challenge) challenge;
-                eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
+        doChallengeSpecificSetup(auth, challenge);
 
-                // Configuring self signed until a real cert is available.
-                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomain());
-                eventPublisher.publishEvent(new CertificateEvent(ssc.cert(), new KeyPair(null, ssc.key()), false));
-            } catch (CertificateException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (challengeType == ChallengeType.DNS) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("DNS challenge selected, spitting out TXT record.");
-            }
-            Dns01Challenge dns01Challenge = (Dns01Challenge) challenge;
-            String digest = dns01Challenge.getDigest();
-            String domain = auth.getIdentifier().getDomain();
+        doChallengeAuthorization(auth, challenge);
+    }
 
-            new TxtRenderer().render(digest, domain);
-        }
-
+    private void doChallengeAuthorization(Authorization auth, Challenge challenge) throws AcmeException {
         AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());
         challenge.trigger();
         SelfCancellable authStatusPoll = new SelfCancellable() {
@@ -430,6 +395,40 @@ public class AcmeService {
             }
         } catch (CancellationException e) {
             //cancel is used in happy path so, ignoring this
+        }
+    }
+
+    private void doChallengeSpecificSetup(Authorization auth, Challenge challenge) throws IOException {
+        if (challenge instanceof TlsAlpn01Challenge) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("TLS challenge selected, creating keys");
+            }
+            KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyString));
+            X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
+            eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
+        } else if (challenge instanceof Http01Challenge) {
+            try {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("HTTP challenge selected, creating self signed key for now.");
+                }
+                Http01Challenge http01Challenge = (Http01Challenge) challenge;
+                eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
+
+                // Configuring self signed until a real cert is available.
+                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomain());
+                eventPublisher.publishEvent(new CertificateEvent(ssc.cert(), new KeyPair(null, ssc.key()), false));
+            } catch (CertificateException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (challenge instanceof Dns01Challenge) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DNS challenge selected, spitting out TXT record.");
+            }
+            Dns01Challenge dns01Challenge = (Dns01Challenge) challenge;
+            String digest = dns01Challenge.getDigest();
+            String domain = auth.getIdentifier().getDomain();
+
+            new TxtRenderer().render(digest, domain);
         }
     }
 
