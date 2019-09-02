@@ -17,6 +17,7 @@
 package io.micronaut.configuration.acme.services;
 
 import io.micronaut.configuration.acme.AcmeConfiguration;
+import io.micronaut.configuration.acme.challenge.dns.TxtRenderer;
 import io.micronaut.configuration.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.configuration.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
@@ -24,6 +25,7 @@ import io.micronaut.scheduling.TaskScheduler;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.shredzone.acme4j.*;
 import org.shredzone.acme4j.challenge.Challenge;
+import org.shredzone.acme4j.challenge.Dns01Challenge;
 import org.shredzone.acme4j.challenge.Http01Challenge;
 import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
@@ -367,6 +369,15 @@ public class AcmeService {
             } catch (CertificateException e) {
                 throw new RuntimeException(e);
             }
+        } else if (challengeType == ChallengeType.DNS) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DNS challenge selected, spitting out TXT record.");
+            }
+            Dns01Challenge dns01Challenge = (Dns01Challenge) challenge;
+            String digest = dns01Challenge.getDigest();
+            String domain = auth.getIdentifier().getDomain();
+
+            new TxtRenderer().render(digest, domain);
         }
 
         AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());
