@@ -12,7 +12,6 @@ import org.shredzone.acme4j.Status
 import org.shredzone.acme4j.util.KeyPairUtils
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.Network
 import org.testcontainers.utility.MountableFile
 import spock.lang.AutoCleanup
 import spock.lang.Ignore
