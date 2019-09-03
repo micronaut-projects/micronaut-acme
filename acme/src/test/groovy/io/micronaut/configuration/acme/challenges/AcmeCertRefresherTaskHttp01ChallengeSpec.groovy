@@ -37,7 +37,7 @@ class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
 
     def "get new certificate using existing account"() {
         expect:
-            new PollingConditions(timeout: 90000).eventually {
+            new PollingConditions(timeout: 30).eventually {
                 certFolder.list().length == 2
                 certFolder.list().contains("domain.crt")
                 certFolder.list().contains("domain.csr")
