@@ -10,3 +10,10 @@ the front runner for integration with Acme and is completely free.
 ## Documentation ##
 
 See the [Documentation](https://micronaut-projects.github.io/micronaut-acme/latest/guide/index.html) for more information.
+
+## Acme Utils ##
+Since ACME servers do require some pre setup there is a acme-utils subproject that can be found [here](https://github.com/zendern/micronaut-acme/blob/master/examples/acme-utils). Which can help you create keys, create/deactivate accounts, etc.
+
+## Example Application ##
+
+See the [Examples](https://github.com/zendern/micronaut-acme/tree/master/examples/hello-world-acme) for more information.

@@ -1,0 +1,19 @@
+Utilizing `http` challenge type you will need to do one of the following two things :
+
+1. enable dual protocol support
+2. setup redirect from http -> https in any load balancer/proxy server you have in front of your application.
+
+
+The reason for this is that Let's Encrypt for example will only call out to
+the http challenge type over http and nothing else but will follow redirects.
+
+.src/main/resources/application.yml
+[source,yaml]
+----
+acme:
+  challenge-type: 'http'
+
+micronaut:
+  server:
+    dual-protocol: true
+----

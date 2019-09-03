@@ -1,20 +1,6 @@
-Micronaut 1.1.0 or above is required and you must have the `micronaut-acme` dependency on your classpath:
+Micronaut 1.3.0 or above is required and you must have the `micronaut-acme` dependency on your classpath:
 
-.build.gradle
-[source,groovy,subs="attributes"]
-----
-compile "io.micronaut.acme:micronaut-acme:{version}"
-----
-
-.pom.xml
-[source,xml]
-----
-<dependency>
-    <groupId>io.micronaut.acme</groupId>
-    <artifactId>micronaut-acme</artifactId>
-    <version>{version}</version>
-</dependency>
-----
+dependency:micronaut-acme[version="{version}", groupId="io.micronaut.acme"]
 
 The `micronaut-acme` module transitively includes the `org.shredzone.acme4j:acme4j-client` and `org.shredzone.acme4j:acme4j-utils` dependency.
 
@@ -56,6 +42,7 @@ micronaut:
                 pause.ms: 3000 // <13>
                 retry.attempts: 10 // <14>
             renew.within: 30 // <15>
+            acme.challenge.type: [http,tls,dns] // <16>
 ----
 <1> Enables ssl for micronaut.
 <2> Enables ACME integration for micronaut. Default is `false`
@@ -72,4 +59,4 @@ micronaut:
 <13> Time to wait in between polling authorization status of the ACME server. Default is `3000 milliseconds`
 <14> Number of times to poll an authorization status of the ACME server. Default is `10`
 <15> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
-
+<16> The challenge type you would like to use. Default is `tls`

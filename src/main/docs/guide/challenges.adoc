@@ -1,0 +1,1 @@
+ACME supports 3 different challenge types which will be used to validate that you in fact own the domain before a certificate is issued.
