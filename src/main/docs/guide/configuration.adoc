@@ -8,41 +8,45 @@ The `micronaut-acme` module transitively includes the `org.shredzone.acme4j:acme
 [source,yaml]
 ----
 micronaut:
-    ssl:
-        enabled: true // <1>
-        acme:
-            enabled: true // <2>
-            tos.agree: true // <3>
-            cert.output.path: /path/to/store/certficates // <4>
-            domain: domain.com //<5>
-            refresh:
-                delay: 1m // <6>
-                frequency: 24h // <7>
-            domain.keypair: | // <8>
-                -----BEGIN RSA PRIVATE KEY-----
-                MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-                al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-                ....
-                MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-                al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-                -----END RSA PRIVATE KEY-----
-            account.keypair: | // <9>
-                -----BEGIN RSA PRIVATE KEY-----
-                MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-                al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-                ....
-                MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-                al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-                -----END RSA PRIVATE KEY-----
-            server.url: acme://server.com // <10>
-            order:
-                pause.ms: 3000 // <11>
-                retry.attempts: 10 // <12>
-            auth:
-                pause.ms: 3000 // <13>
-                retry.attempts: 10 // <14>
-            renew.within: 30 // <15>
-            acme.challenge.type: [http,tls,dns] // <16>
+    server:
+        ssl:
+            enabled: true // <1>
+    acme:
+        enabled: true // <2>
+        tos-agree: true // <3>
+        cert-location: /path/to/store/certificates // <4>
+        domain: domain.com //<5>
+        refresh:
+            delay: 1m // <6>
+            frequency: 24h // <7>
+        domain-key: | // <8>
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+            ....
+            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+            -----END RSA PRIVATE KEY-----
+        account-key: | // <9>
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+            ....
+            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+            -----END RSA PRIVATE KEY-----
+        acme-server: acme://server.com // <10>
+        order:
+            pause: 3s // <11>
+            refresh-attempts: 10 // <14>
+        auth:
+            pause: 1m // <13>
+            refresh-attempts: 10 // <14>
+        renew-within: 30 // <15>
+        challenge-type: [http,tls,dns] // <16>
+        refresh:  //<17>
+            frequency: 24h
+            delay: 24h
 ----
 <1> Enables ssl for micronaut.
 <2> Enables ACME integration for micronaut. Default is `false`
@@ -54,9 +58,10 @@ micronaut:
 <8> Private key used to encrypt the certificate. *DO NOT CHECK THIS IN TO SOURCE CODE*
 <9> Private key used to when setting up your accoutn with the ACME provider. *DO NOT CHECK THIS IN TO SOURCE CODE*
 <10> Url of the ACME server (ex. acme://letsencrypt.org/staging)
-<11> Time to wait in between polling order status of the ACME server. Default is `3000 milliseconds`
+<11> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
 <12> Number of times to poll an order status of the ACME server. Default is `10`
-<13> Time to wait in between polling authorization status of the ACME server. Default is `3000 milliseconds`
+<13> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
 <14> Number of times to poll an authorization status of the ACME server. Default is `10`
 <15> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
 <16> The challenge type you would like to use. Default is `tls`
+<17> The interval to check on if the certificate needs to be refreshed. Default is 24h (aka daily)
