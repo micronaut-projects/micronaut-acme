@@ -17,7 +17,7 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
    1. acme.account-key
    1. acme.domain-key
 1. From inside the `hello-world-acme` project execute the following
-   1. `./gradlew build` 
+   1. `../../gradlew build` 
 
 ###AWS only example : 
 1. Launch an EC2 instance with >= java 8 installed
