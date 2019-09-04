@@ -26,7 +26,7 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
                 "acme.domain": WILDCARD_DOMAIN,
-                "acme.challenge.type" : "dns"
+                "acme.challenge-type" : "dns"
         ]
     }
 

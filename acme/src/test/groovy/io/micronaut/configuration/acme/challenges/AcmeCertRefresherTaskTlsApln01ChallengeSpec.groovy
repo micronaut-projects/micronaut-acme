@@ -21,7 +21,7 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
                 "acme.domain": EXPECTED_ACME_DOMAIN,
-                "acme.challenge.type" : "tls"
+                "acme.challenge-type" : "tls"
         ]
     }
 

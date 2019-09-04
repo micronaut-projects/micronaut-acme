@@ -20,7 +20,7 @@
  * @since 1.0
  */
 @Configuration
-@Requires(property = "acme.challenge.type", value = "http")
+@Requires(property = "acme.challenge-type", value = "http")
 package io.micronaut.configuration.acme.challenge.http;
 
 import io.micronaut.context.annotation.Configuration;
