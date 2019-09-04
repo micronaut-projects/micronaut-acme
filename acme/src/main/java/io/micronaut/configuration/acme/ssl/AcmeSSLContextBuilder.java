@@ -63,8 +63,10 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
                 LOG.debug("New certificate received and replaced the proxied SSL context");
             }
             if (certificateEvent.isValidationCert()) {
+                SslProvider provider = OpenSsl.isAlpnSupported() ? SslProvider.OPENSSL : SslProvider.JDK;
                 SslContext sslContext = SslContextBuilder
                         .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                        .sslProvider(provider)
                         .applicationProtocolConfig(new ApplicationProtocolConfig(
                                 ApplicationProtocolConfig.Protocol.ALPN,
                                 // NO_ADVERTISE is currently the only mode supported by both OpenSsl and JDK providers.
