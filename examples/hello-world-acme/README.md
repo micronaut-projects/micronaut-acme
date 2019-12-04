@@ -34,7 +34,8 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
     1. `ssh -i ~/aws-keypair.pem ec2-user@ec2-52-15-231-234.us-east-2.compute.amazonaws.com`
 1. Setup your environment 
     1. You will need to define the following environment variables or in this case environment yaml to successfully start the application. Using environment yaml/variables keeps you from committing
-    your private key into source control. Define the properties you want to override in this yaml. Usually this would be domain, account and domain key. But also could include anything else you would like to override. 
+    your private key into source control. Define the properties you want to override in this yaml. Usually this would be domain, account and domain key. But also could include anything else you would like to override.
+    1. Create an `env.yml` file on your ec2 server
     ```
      domain: <your domain here>
      domain-key: |
