@@ -4,14 +4,14 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
 
 ## Steps to get up and running
 
-###Pre-reqs
+### Pre-reqs
 1. You have created an account with Let's Encrypt
 1. You have generated a domain key
    1. acme-utils project can help with steps 1 and 2
    1. See [here](../acme-utils/README.md)
 1. You have purchased a domain name and have a way to configure DNS. In the AWS example below we will use Route53.
 
-###Build and Deploy : 
+### Build and Deploy : 
 1. Configure the hello world [application.yml](src/main/resources/application.yml) with the following properties
    1. acme.domain
    1. acme.account-key
@@ -19,7 +19,7 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
 1. From inside the `hello-world-acme` project execute the following
    1. `../../gradlew build` 
 
-###AWS only example : 
+### AWS only example : 
 1. Launch an EC2 instance with >= java 8 installed
    1. Tested with `amzn2-ami-hvm-2.0.20190612-x86_64-gp2 (ami-00c79db59589996b9)` but anything with >= java 8 installed should work
 1. Configure EC2 Security Group to allow SSH port 22 and HTTPS port 443 traffic through
@@ -44,8 +44,8 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
     1. You should now see something like this when you navigate to `https://<you domain name>/helloWorld`
     1. ![Secured site with Let's Encrypt certificate](docs/images/Acme_cert_micronaut.png)
 
-###GCP example : 
+### GCP example : 
 //TODO
 
-###Azure example : 
+### Azure example : 
 //TODO
