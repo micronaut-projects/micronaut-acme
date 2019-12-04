@@ -12,10 +12,6 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
 1. You have purchased a domain name and have a way to configure DNS. In the AWS example below we will use Route53.
 
 ### Build and Deploy : 
-1. Configure the hello world [application.yml](src/main/resources/application.yml) with the following properties
-   1. acme.domain
-   1. acme.account-key
-   1. acme.domain-key
 1. From inside the `hello-world-acme` project execute the following
    1. `../../gradlew build` 
 
@@ -35,11 +31,25 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
    1. `scp -i ~/aws-keypair.pem examples/hello-world-acme/build/libs/acme-example-hello-world-acme-1.0.0.BUILD-SNAPSHOT-all.jar ec2-user@ec2-52-15-231-234.us-east-2.compute.amazonaws.com:~`
 1. ssh into your EC2 server  
     1. Example command might look something like this if using the terminal
-    1. `ssh -i ~/aws-keypair.pem ec2-user@ec2-52-15-231-234.us-east-2.compute.amazonaws.com:~`
+    1. `ssh -i ~/aws-keypair.pem ec2-user@ec2-52-15-231-234.us-east-2.compute.amazonaws.com`
+1. Setup your environment 
+    1. You will need to define the following environment variables or in this case environment yaml to successfully start the application. Using environment yaml/variables keeps you from committing
+    your private key into source control. Define the properties you want to override in this yaml. Usually this would be domain, account and domain key. But also could include anything else you would like to override. 
+    ```
+     domain: <your domain here>
+     domain-key: |
+       -----BEGIN RSA PRIVATE KEY-----
+       <your account key here>
+       -----END RSA PRIVATE KEY-----
+     account-key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        <your account key here>
+        -----END RSA PRIVATE KEY-----    
+    ```
 1. Start the application
     1. Note this will require sudo since we are running on 80/443. This is not ideal in a production environment and some form of load balancer
     should generally be used to accept traffic on 80/443 and forward to generally 8080/8443 (default micronaut ports). 
-    1. `sudo java -Dmicronaut.environments=<challenge type [http,tls,dns]> -jar acme-example-hello-world-acme-1.0.0.BUILD-SNAPSHOT-all.jar` 
+    1. `sudo java -Dmicronaut.config.files=env.yml -Dmicronaut.environments=<challenge type [http,tls,dns]> -jar acme-example-hello-world-acme-1.0.0.BUILD-SNAPSHOT-all.jar` 
 1. Celebrate
     1. You should now see something like this when you navigate to `https://<you domain name>/helloWorld`
     1. ![Secured site with Let's Encrypt certificate](docs/images/Acme_cert_micronaut.png)

@@ -14,10 +14,6 @@ acme:
   enabled: true
   tos-agree: true
   acme-server: https://acme-v02.api.letsencrypt.org/directory
+  # If you want to use the staging server, it would look something like so.
+  # acme-server: https://acme-staging-v02.api.letsencrypt.org/directory
   cert-location: /tmp
-  domain: <your domain here>
-  domain-key: |
-    <your domain key here>
-  account-key: |
-    <your account key here>
-
