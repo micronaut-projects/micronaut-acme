@@ -63,7 +63,7 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
                 LOG.debug("New certificate received and replaced the proxied SSL context");
             }
             if (certificateEvent.isValidationCert()) {
-                SslProvider provider = OpenSsl.isAlpnSupported() ? SslProvider.OPENSSL : SslProvider.JDK;
+                SslProvider provider = SslProvider.isAlpnSupported(SslProvider.OPENSSL) ? SslProvider.OPENSSL : SslProvider.JDK;
                 SslContext sslContext = SslContextBuilder
                         .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
                         .sslProvider(provider)
