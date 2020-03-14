@@ -10,6 +10,8 @@ import org.shredzone.acme4j.AccountBuilder
 import org.shredzone.acme4j.Session
 import org.shredzone.acme4j.Status
 import org.shredzone.acme4j.util.KeyPairUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
@@ -26,6 +28,8 @@ import java.time.Duration
 
 @Ignore
 class AcmeBaseSpec extends Specification {
+    private static final Logger log = LoggerFactory.getLogger(AcmeBaseSpec.class)
+
     // Must be this since the docker container can only call the host if its set to this value. See here https://www.testcontainers.org/features/networking#exposing-host-ports-to-the-container
     public static final String EXPECTED_ACME_DOMAIN = "host.testcontainers.internal"
     public static final String EXPECTED_DOMAIN = "localhost"
@@ -101,8 +105,18 @@ class AcmeBaseSpec extends Specification {
     }
 
     def cleanupSpec(){
-        certServerContainer?.stop()
-        embeddedServer?.stop()
+        try{
+            log.info("Stopping pebble container")
+            certServerContainer?.stop()
+        }catch(Exception e){
+            log.error("Failed to stop pebble container", e)
+        }
+        try{
+            log.info("Stopping embedded server")
+            embeddedServer?.stop()
+        }catch(Exception e){
+            log.error("Failed to stop embedded server", e)
+        }
     }
 
     Map<String, String> getPebbleEnv(){
