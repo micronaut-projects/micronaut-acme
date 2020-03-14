@@ -12,6 +12,9 @@ import org.shredzone.acme4j.Status
 import org.shredzone.acme4j.util.KeyPairUtils
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy
 import org.testcontainers.utility.MountableFile
 import spock.lang.AutoCleanup
 import spock.lang.Ignore
@@ -33,6 +36,9 @@ class AcmeBaseSpec extends Specification {
             .withCommand("/usr/bin/pebble", "-strict", "false")
                     .withEnv(getPebbleEnv())
                     .withExposedPorts(14000)
+            .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
+                    .withStrategy(new HostPortWaitStrategy())
+                    .withStartupTimeout(Duration.ofMinutes(2)));
 
     @Shared
     @AutoCleanup
