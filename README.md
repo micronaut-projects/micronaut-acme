@@ -1,6 +1,6 @@
 # Micronaut Acme
 
-[![Build Status](https://github.com/micronaut-projects/micronaut-acme/workflows/Java%20CI/badge.svg)](https://github.com/micronaut-projects/micronaut-acme/actions)
+![Build Status](https://github.com/micronaut-projects/micronaut-acme/workflows/Java%20Branch%20CI/badge.svg)
 
 This project includes integration between [Micronaut](http://micronaut.io) and [ACME ](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) via [Acme4j](https://shredzone.org/maven/acme4j/index.html).
 
