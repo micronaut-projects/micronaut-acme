@@ -5,8 +5,8 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import io.reactivex.Flowable
-import org.testcontainers.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
 

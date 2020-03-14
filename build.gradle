@@ -122,7 +122,7 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
 
         compile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.25.Final'
 
-        testCompile "org.testcontainers:spock:1.10.1"
+        testCompile "org.testcontainers:spock:1.13.0"
         testCompile("io.micronaut:micronaut-http-client:${micronautVersion}")
         testCompile("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
         testCompile("org.spockframework:spock-core:${spockVersion}") {
