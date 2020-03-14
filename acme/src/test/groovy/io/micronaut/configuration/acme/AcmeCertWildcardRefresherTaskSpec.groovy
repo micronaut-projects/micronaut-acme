@@ -19,7 +19,7 @@ import java.security.cert.X509Certificate
 @Stepwise
 class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
-    public static final String EXPECTED_BASE_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
+    public static final String EXPECTED_BASE_DOMAIN = "localhost"
     public static final String EXPECTED_DOMAIN = EXPECTED_BASE_DOMAIN
     public static final GString WILDCARD_DOMAIN = "*.${EXPECTED_BASE_DOMAIN}"
 

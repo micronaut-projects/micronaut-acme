@@ -22,12 +22,13 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.security.KeyPair
+import java.time.Duration
 
 @Ignore
 class AcmeBaseSpec extends Specification {
     // Must be this since the docker container can only call the host if its set to this value. See here https://www.testcontainers.org/features/networking#exposing-host-ports-to-the-container
     public static final String EXPECTED_ACME_DOMAIN = "host.testcontainers.internal"
-    public static final String EXPECTED_DOMAIN = InetAddress.getLocalHost().getHostName().toLowerCase()
+    public static final String EXPECTED_DOMAIN = "localhost"
     public static final int EXPECTED_PORT = 8443
     @Shared
     GenericContainer certServerContainer =
