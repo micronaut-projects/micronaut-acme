@@ -114,6 +114,8 @@ class AcmeBaseSpec extends Specification {
     Map<String, Object> getConfiguration() {
         [
                 "micronaut.server.ssl.enabled": true,
+                "micronaut.server.port": EXPECTED_PORT,
+                "micronaut.server.ssl.port": EXPECTED_PORT,
                 "micronaut.server.host": EXPECTED_DOMAIN,
                 "acme.tosAgree"        : true,
                 "acme.cert-location"   : certFolder.toString(),
