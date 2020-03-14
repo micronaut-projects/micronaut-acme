@@ -73,6 +73,9 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
 
     tasks.withType(Test) {
 
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        forkEvery = 100
+
         jvmArgs "-Duser.country=US"
         jvmArgs "-Duser.language=en"
 

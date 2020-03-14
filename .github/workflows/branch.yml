@@ -23,4 +23,4 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build with Gradle
-        run: ./gradlew check --continue
+        run: ./gradlew check --parallel --continue

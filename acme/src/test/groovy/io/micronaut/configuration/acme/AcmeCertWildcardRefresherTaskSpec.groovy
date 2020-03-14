@@ -41,7 +41,7 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
     void "expect the url to be https"() {
         expect:
-            embeddedServer.getURL().toString() == "https://$EXPECTED_DOMAIN:$EXPECTED_PORT"
+            embeddedServer.getURL().toString() == "https://$EXPECTED_DOMAIN:$expectedSecurePort"
     }
 
     void "test certificate is one from pebble server"() {

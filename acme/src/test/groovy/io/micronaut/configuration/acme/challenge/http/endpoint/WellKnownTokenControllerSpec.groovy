@@ -17,7 +17,7 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
                 "acme.domain": EXPECTED_ACME_DOMAIN,
                 "acme.challenge-type" : "http",
                 "micronaut.server.dualProtocol": true,
-                "micronaut.server.port" : 5002
+                "micronaut.server.port" : expectedHttpPort
         ]
     }
 

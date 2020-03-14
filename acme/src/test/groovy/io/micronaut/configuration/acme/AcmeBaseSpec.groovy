@@ -1,6 +1,7 @@
 package io.micronaut.configuration.acme
 
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import org.junit.ClassRule
@@ -35,15 +36,7 @@ class AcmeBaseSpec extends Specification {
     public static final String EXPECTED_DOMAIN = "localhost"
     public static final int EXPECTED_PORT = 8443
     @Shared
-    GenericContainer certServerContainer =
-            new GenericContainer("letsencrypt/pebble:latest")
-                    .withCopyFileToContainer(MountableFile.forClasspathResource("pebble-config.json"), "/test/config/pebble-config.json")
-            .withCommand("/usr/bin/pebble", "-strict", "false")
-                    .withEnv(getPebbleEnv())
-                    .withExposedPorts(14000)
-            .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
-                    .withStrategy(new HostPortWaitStrategy())
-                    .withStartupTimeout(Duration.ofMinutes(2)));
+    GenericContainer certServerContainer
 
     @Shared
     @AutoCleanup
@@ -70,9 +63,44 @@ class AcmeBaseSpec extends Specification {
     @Shared
     String acmeServerUrl
 
-    def setupSpec() {
-        Testcontainers.exposeHostPorts(EXPECTED_PORT, 5002)
+    @Shared
+    int expectedHttpPort
 
+    @Shared
+    int expectedSecurePort
+
+    @Shared
+    int expectedPebbleServerPort
+
+    def setupSpec() {
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedPebbleServerPort = SocketUtils.findAvailableTcpPort()
+
+        Testcontainers.exposeHostPorts(expectedHttpPort, expectedSecurePort)
+
+        def file = File.createTempFile("pebble", "config")
+        file.write """{
+              "pebble": {
+                "listenAddress": "0.0.0.0:${expectedPebbleServerPort}",
+                "certificate": "test/certs/localhost/cert.pem",
+                "privateKey": "test/certs/localhost/key.pem",
+                "httpPort": $expectedHttpPort,
+                "tlsPort": $expectedSecurePort
+              }
+            }"""
+
+        log.info("Expected micronaut ports - http : {}, secure : {} ", expectedHttpPort, expectedSecurePort)
+        log.info("Expected pebble config : {}", file.text)
+
+        certServerContainer = new GenericContainer("letsencrypt/pebble:latest")
+                .withCopyFileToContainer(MountableFile.forHostPath(file.toPath()), "/test/config/pebble-config.json")
+                .withCommand("/usr/bin/pebble", "-strict", "false")
+                .withEnv(getPebbleEnv())
+                .withExposedPorts(expectedPebbleServerPort)
+                .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
+                        .withStrategy(new HostPortWaitStrategy())
+                        .withStartupTimeout(Duration.ofMinutes(2)));
         certServerContainer.start()
 
         // Create a new keys to register the account with
@@ -85,7 +113,7 @@ class AcmeBaseSpec extends Specification {
         domainKeyPairWriter = new StringWriter()
         KeyPairUtils.writeKeyPair(domainKeyPair, domainKeyPairWriter)
 
-        acmeServerUrl = "acme://pebble/${certServerContainer.containerIpAddress}:${certServerContainer.getMappedPort(14000)}"
+        acmeServerUrl = "acme://pebble/${certServerContainer.containerIpAddress}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}"
 
         // Create an account with the acme server
         Session session = new Session(acmeServerUrl)
@@ -106,16 +134,17 @@ class AcmeBaseSpec extends Specification {
 
     def cleanupSpec(){
         try{
+            log.info("Stopping embedded client & server")
+            client?.stop()
+            embeddedServer?.stop()
+        }catch(Exception e){
+            log.error("Failed to stop embedded server", e)
+        }
+        try{
             log.info("Stopping pebble container")
             certServerContainer?.stop()
         }catch(Exception e){
             log.error("Failed to stop pebble container", e)
-        }
-        try{
-            log.info("Stopping embedded server")
-            embeddedServer?.stop()
-        }catch(Exception e){
-            log.error("Failed to stop embedded server", e)
         }
     }
 
@@ -128,8 +157,7 @@ class AcmeBaseSpec extends Specification {
     Map<String, Object> getConfiguration() {
         [
                 "micronaut.server.ssl.enabled": true,
-                "micronaut.server.port": EXPECTED_PORT,
-                "micronaut.server.ssl.port": EXPECTED_PORT,
+                "micronaut.server.ssl.port": expectedSecurePort,
                 "micronaut.server.host": EXPECTED_DOMAIN,
                 "acme.tosAgree"        : true,
                 "acme.cert-location"   : certFolder.toString(),
