@@ -47,7 +47,7 @@ ext {
 }
 
 subprojects { Project subproject ->
-    group "io.micronaut.acme"
+    group "io.micronaut"
     version project.projectVersion
 
     ext {
