@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Configuration Reference | Micronaut</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <link rel="stylesheet" href="../css/highlight/agate.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script src="../js/guide.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+</head>
+<body class="body">
+    <div id="main">
+        <div id="navigation" class="no-print">
+            <div class="navTitle">
+                <span id="logo"><a href="http://micronaut.io" title="Go to Micronaut Website"><img src="../img/micronaut-logo-white.svg" alt="Micronaut"/></a></span>
+            </div>
+            <div class="navLinks">
+                <ul>
+                    <li id="table-of-content-nav-link-mobile" class="mobile">
+                        <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
+                    </li>
+                    <li>
+                        <a title="Go to documentation" href="index.html" class="button">Docs</a>
+                    </li>
+                    <li class="desktop">
+                        <a title="Go to API documentation" href="../api/index.html" class="button">API Reference</a>
+                    </li>
+                    <li class="mobile">
+                        <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
+                    </li>
+                    <li class="desktop">
+                        <a title="Go to Configuration Reference documentation" href="configurationreference.html" class="button">Configuration Reference</a>
+                    </li>
+                    <li class="mobile">
+                        <a title="Go to Configuration Reference documentation" href="configurationreference.html" class="button">Conf</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="docs-content">
+            <div class="project">
+                <h1>Configuration Reference</h1>
+                <p><strong>Version:</strong>1.3.0.BUILD-SNAPSHOT</p>
+                <p></p>
+            </div>
+<div class="sect2">
+<h3 id="_acme_config_properties">Acme Config Properties</h3>
+<a id="io.micronaut.configuration.acme.AcmeConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.html">AcmeConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets if acme certificate backgroun and setup process is enabled. Default true.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.tos-agree</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether or not you agree to the terms of service.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.renew-witin</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the duration in which the application will trigger the renew process to get a new certificate.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.domain</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the domain in which to order the certificate for.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.account-key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the account key used for authentication.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.domain-key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the key string in which to be used to generate the CSR which will be used to order the certificate from the ACME server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.cert-location</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.io.File</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the location to save the certificate on disk to.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.acme-server</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the acme server to authenticate and order the certificate from.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.challenge-type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.ChallengeType.html">AcmeConfiguration$ChallengeType</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the challenge type to be used to validate the account.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.http-challenge-server-port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the port to start the http challenge server on.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.acme.AcmeConfiguration$AuthConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration$AuthConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.AuthConfiguration.html">AcmeConfiguration$AuthConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between authentication attempts. Default Duration.ofSeconds(3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default 10.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.acme.AcmeConfiguration$OrderConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration$OrderConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.OrderConfiguration.html">AcmeConfiguration$OrderConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between ordering attempts. Default Duration.ofSeconds(3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server. Default 10.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+        </div>
+    </div>
+</body>
+</html>
