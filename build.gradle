@@ -1,43 +1,58 @@
 buildscript {
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:${grailsVersion}"
-        classpath "org.grails:grails-docs:${grailsVersion}"
-        classpath "com.bmuschko:gradle-nexus-plugin:2.3.1"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
-        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "org.grails:grails-docs:$grailsVersion"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
+        classpath "gradle.plugin.org.aim42:htmlSanityCheck:$htmlSanityCheckVersion"
 
         classpath "io.micronaut.docs:micronaut-docs-asciidoc-extensions:$micronautDocsVersion"
-        classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:$micronautDocsVersion"
+        classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:$micronautDocsVersion", {
+            exclude module: 'shadow'
+            exclude module: 'plugin-shadow'
+        }
     }
 }
 
 plugins {
-    id "io.spring.dependency-management" version "1.0.6.RELEASE" apply false
-    id "com.github.hierynomus.license" version "0.14.0" apply false
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id 'com.github.hierynomus.license' version '0.15.0' apply false
+    id 'com.github.ben-manes.versions' version '0.28.0'
     id "com.github.johnrengelman.shadow" version "4.0.2" apply false
     id "net.ltgt.apt-eclipse" version "0.18" apply false
     id "net.ltgt.apt-idea" version "0.18" apply false
-    id "com.google.osdetector" version "1.6.2" apply false
 }
+
+apply plugin: 'org.aim42.htmlSanityCheck'
 
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://oss.jfrog.org/oss-snapshot-local" }
     maven { url "https://repo.grails.org/grails/core" }
 }
 
 version project.projectVersion
 
-configure(subprojects.findAll { !it.name.contains("example") }) { Project subproject ->
+ext {
+    distInstallDir = file("$buildDir/dist-tmp")
+    homeBinDir = file("bin")
+    homeLibDir = file("lib")
+    homeSrcDir = file("src")
+}
 
-    group "io.micronaut.acme"
+subprojects { Project subproject ->
+    group "io.micronaut"
     version project.projectVersion
 
     ext {
+        userOrg = "grails"
+        isGrailsPlugin = false
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
         isConfiguration = subproject.projectDir.parentFile.name == "configurations"
     }
@@ -47,41 +62,37 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
         mavenLocal()
         maven { url "https://oss.jfrog.org/oss-snapshot-local" }
         maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
     }
 
-    apply plugin: "java"
     apply plugin: "groovy"
-    apply plugin: "checkstyle"
+    apply plugin: "java"
     apply plugin: "io.spring.dependency-management"
-    apply plugin: "com.google.osdetector"
 
-
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-
-    apply from: "https://raw.githubusercontent.com/micronaut-projects/micronaut-core/01e2b1ef1255b584e9e5c1965d334e1190e2ade5/gradle/publishing.gradle"
-
-    jar {
-        manifest {
-            attributes("Automatic-Module-Name": "${subproject.group}.${subproject.name}".replaceAll('[^\\w\\.\\$_]', "_"))
-            attributes("Implementation-Version": projectVersion)
-            attributes("Implementation-Title": title)
+    dependencyManagement {
+        imports {
+            mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
         }
     }
 
-    bintray.publish = true
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    compileJava.options.compilerArgs.add '-parameters'
+    compileTestJava.options.compilerArgs.add '-parameters'
+
+    jar {
+        manifest {
+            attributes('Automatic-Module-Name': "${subproject.group}.${subproject.name}".replaceAll('[^\\w\\.\\$_]', "_"))
+            attributes('Implementation-Version': projectVersion)
+            attributes('Implementation-Title': 'Micronaut')
+        }
+    }
 
     tasks.withType(Test) {
-
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-        forkEvery = 100
-
-        jvmArgs "-Duser.country=US"
-        jvmArgs "-Duser.language=en"
-
+        jvmArgs '-Duser.country=US'
+        jvmArgs '-Duser.language=en'
         testLogging {
-            showStandardStreams = true
-            exceptionFormat = "full"
+            exceptionFormat = 'full'
         }
 
         afterSuite {
@@ -98,7 +109,7 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
         all {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 String group = details.requested.group
-                if (group == "org.codehaus.groovy") {
+                if (group == 'org.codehaus.groovy') {
                     details.useVersion(groovyVersion)
                 }
                 if (group == "org.ow2.asm") {
@@ -110,6 +121,7 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
 
     dependencies {
         annotationProcessor("io.micronaut:micronaut-inject-java:${micronautVersion}")
+        annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
         compile("io.micronaut:micronaut-http:${micronautVersion}")
         compile("io.micronaut:micronaut-http-server:${micronautVersion}")
         compile("io.micronaut:micronaut-http-server-netty:${micronautVersion}")
@@ -145,9 +157,15 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
 
     task allDeps(type: DependencyReportTask) {}
 
+    apply plugin: "checkstyle"
     checkstyle {
         toolVersion = project.checkstyleToolVersion
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+
+        // Per submodule
+        maxErrors = 1
+        maxWarnings = 10
+
         showViolations = true
     }
 
@@ -155,3 +173,41 @@ configure(subprojects.findAll { !it.name.contains("example") }) { Project subpro
 }
 
 apply from: "https://raw.githubusercontent.com/micronaut-projects/micronaut-docs/v${micronautDocsVersion}/gradle/docs.gradle"
+
+allprojects {
+    apply plugin: 'idea'
+
+    idea {
+        module {
+            outputDir file('build/classes/java/main')
+            testOutputDir file('build/classes/groovy/test')
+        }
+    }
+    apply from: rootProject.file('gradle/license.gradle')
+
+    tasks.withType(Test) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        forkEvery = 100
+    }
+}
+
+htmlSanityCheck {
+    sourceDir = new File("${rootProject.buildDir}/docs/")
+    sourceDocuments = ["index.html"]
+
+}
+
+docs.finalizedBy(htmlSanityCheck)
+
+dependencyUpdates.resolutionStrategy {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'b', 'ea'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]$qualifier[.\d-+]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}

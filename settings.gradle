@@ -1,4 +1,4 @@
-rootProject.name = "acme"
+rootProject.name = "micronaut-acme"
 
 include "acme"
 
