@@ -1,1 +1,3 @@
 apply from: "https://raw.githubusercontent.com/micronaut-projects/micronaut-build/v1.1.5/publishing.gradle"
+
+bintray.publish = true

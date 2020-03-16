@@ -51,8 +51,6 @@ subprojects { Project subproject ->
     version project.projectVersion
 
     ext {
-        userOrg = "grails"
-        isGrailsPlugin = false
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
         isConfiguration = subproject.projectDir.parentFile.name == "configurations"
     }
