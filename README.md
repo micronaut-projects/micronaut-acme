@@ -1,6 +1,7 @@
 # Micronaut Acme
 
-![Build Status](https://github.com/micronaut-projects/micronaut-acme/workflows/Java%20Branch%20CI/badge.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/io.micronaut/micronaut-acme.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut%22%20AND%20a:%22micronaut-acme%22)
+[![Build Status](https://github.com/micronaut-projects/micronaut-acme/workflows/Java%20CI/badge.svg)](https://github.com/micronaut-projects/micronaut-acme/actions)
 
 This project includes integration between [Micronaut](http://micronaut.io) and [ACME ](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) via [Acme4j](https://shredzone.org/maven/acme4j/index.html).
 
@@ -9,7 +10,7 @@ the front runner for integration with Acme and is completely free.
 
 ## Documentation ##
 
-See the [Documentation](https://micronaut-projects.github.io/micronaut-acme/latest/guide/index.html) for more information.
+See the [stable](https://micronaut-projects.github.io/micronaut-acme/latest/guide) or [snapshot](https://micronaut-projects.github.io/micronaut-acme/snapshot/guide) documentation for more information.
 
 ## Acme Utils ##
 Since ACME servers do require some pre setup there is a acme-utils subproject that can be found [here](https://github.com/zendern/micronaut-acme/blob/master/examples/acme-utils). Which can help you create keys, create/deactivate accounts, etc.
@@ -17,3 +18,18 @@ Since ACME servers do require some pre setup there is a acme-utils subproject th
 ## Example Application ##
 
 See the [Examples](https://github.com/zendern/micronaut-acme/tree/master/examples/hello-world-acme) for more information.
+
+## Snapshots and Releases
+
+Snapshots are automatically published to [JFrog OSS](https://oss.jfrog.org/artifactory/oss-snapshot-local/) using [Github Actions](https://github.com/micronaut-projects/micronaut-acme/actions).
+
+See the documentation in the [Micronaut Docs](https://docs.micronaut.io/latest/guide/index.html#usingsnapshots) for how to configure your build to use snapshots.
+
+Releases are published to JCenter and Maven Central via [Github Actions](https://github.com/micronaut-projects/micronaut-acme/actions).
+
+A release is performed with the following steps:
+
+* [Edit the version](https://github.com/micronaut-projects/micronaut-acme/edit/master/gradle.properties) specified by `projectVersion` in `gradle.properties` to a semantic, unreleased version. Example `1.0.0`
+* [Create a new release](https://github.com/micronaut-projects/micronaut-acme/releases/new). The Git Tag should start with `v`. For example `v1.0.0`.
+* [Monitor the Workflow](https://github.com/micronaut-projects/micronaut-acme/actions?query=workflow%3ARelease) to check it passed successfully.
+* Celebrate!
