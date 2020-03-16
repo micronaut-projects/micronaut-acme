@@ -1,7 +1,7 @@
 Micronaut supports https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment[ACME] via the `micronaut-acme` module.
 
 === Release History
-==== 1.3.0
+==== 1.0.0
 * Initial Release.
 ** Support for ordering, renewing and automatically installing certificates.
 ** Validating challenges using http, tls and dns (limited) challenges.
