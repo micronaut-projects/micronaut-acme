@@ -47,9 +47,6 @@ ext {
 }
 
 subprojects { Project subproject ->
-    group "io.micronaut"
-    version project.projectVersion
-
     repositories {
         mavenCentral()
         mavenLocal()
@@ -61,6 +58,9 @@ subprojects { Project subproject ->
     if(subproject.name.contains("example")){
         return
     }
+
+    version project.projectVersion
+    group "io.micronaut"
 
     ext {
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
@@ -88,7 +88,7 @@ subprojects { Project subproject ->
         manifest {
             attributes('Automatic-Module-Name': "${subproject.group}.${subproject.name}".replaceAll('[^\\w\\.\\$_]', "_"))
             attributes('Implementation-Version': projectVersion)
-            attributes('Implementation-Title': 'Micronaut')
+            attributes('Implementation-Title': title)
         }
     }
 
@@ -189,12 +189,10 @@ allprojects {
             testOutputDir file('build/classes/groovy/test')
         }
     }
-    apply from: rootProject.file('gradle/license.gradle')
-
-    tasks.withType(Test) {
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-        forkEvery = 100
+    if (it.name.contains('example') || it.name.startsWith('benchmark')) {
+        return
     }
+    apply from: rootProject.file('gradle/license.gradle')
 }
 
 htmlSanityCheck {
