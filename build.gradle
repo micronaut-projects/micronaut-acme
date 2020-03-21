@@ -50,11 +50,6 @@ subprojects { Project subproject ->
     group "io.micronaut"
     version project.projectVersion
 
-    ext {
-        isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
-        isConfiguration = subproject.projectDir.parentFile.name == "configurations"
-    }
-
     repositories {
         mavenCentral()
         mavenLocal()
@@ -63,8 +58,17 @@ subprojects { Project subproject ->
         jcenter()
     }
 
+    if(subproject.name.contains("example")){
+        return
+    }
+
+    ext {
+        isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
+        isConfiguration = subproject.projectDir.parentFile.name == "configurations"
+    }
+
     apply plugin: "groovy"
-    apply plugin: "java"
+    apply plugin:"java-library"
     apply plugin: "io.spring.dependency-management"
 
     dependencyManagement {
@@ -78,6 +82,8 @@ subprojects { Project subproject ->
     compileJava.options.compilerArgs.add '-parameters'
     compileTestJava.options.compilerArgs.add '-parameters'
 
+    apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-build/v${micronautBuildVersion}/publishing.gradle"
+
     jar {
         manifest {
             attributes('Automatic-Module-Name': "${subproject.group}.${subproject.name}".replaceAll('[^\\w\\.\\$_]', "_"))
@@ -85,6 +91,8 @@ subprojects { Project subproject ->
             attributes('Implementation-Title': 'Micronaut')
         }
     }
+
+    bintray.publish = true
 
     tasks.withType(Test) {
         jvmArgs '-Duser.country=US'
@@ -98,8 +106,8 @@ subprojects { Project subproject ->
             System.out.flush()
         }
 
-        reports.html.enabled = !System.getenv("TRAVIS")
-        reports.junitXml.enabled = !System.getenv("TRAVIS")
+        reports.html.enabled = !System.getenv("GITHUB_ACTIONS")
+        reports.junitXml.enabled = !System.getenv("GITHUB_ACTIONS")
     }
 
     configurations {
@@ -120,33 +128,33 @@ subprojects { Project subproject ->
     dependencies {
         annotationProcessor("io.micronaut:micronaut-inject-java:${micronautVersion}")
         annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
-        compile("io.micronaut:micronaut-http:${micronautVersion}")
-        compile("io.micronaut:micronaut-http-server:${micronautVersion}")
-        compile("io.micronaut:micronaut-http-server-netty:${micronautVersion}")
-        compile("io.micronaut:micronaut-inject:${micronautVersion}")
+        implementation("io.micronaut:micronaut-http:${micronautVersion}")
+        implementation("io.micronaut:micronaut-http-server:${micronautVersion}")
+        implementation("io.micronaut:micronaut-http-server-netty:${micronautVersion}")
+        implementation("io.micronaut:micronaut-inject:${micronautVersion}")
         compileOnly("io.micronaut:micronaut-inject-java:${micronautVersion}")
 
-        compile "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
-        compile "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
+        implementation "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
+        implementation "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
 
 
         documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
         documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
 
-        compile group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.25.Final'
+        implementation group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.25.Final'
 
-        testCompile "org.testcontainers:spock:1.13.0"
-        testCompile("io.micronaut:micronaut-http-client:${micronautVersion}")
-        testCompile("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
-        testCompile("org.spockframework:spock-core:${spockVersion}") {
+        testImplementation "org.testcontainers:spock:1.13.0"
+        testImplementation("io.micronaut:micronaut-http-client:${micronautVersion}")
+        testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
+        testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude(group: "org.codehaus.groovy", module: "groovy-all")
         }
-        testCompile "cglib:cglib-nodep:${cglibVersion}"
-        testCompile "io.micronaut:micronaut-inject-groovy:${micronautVersion}"
-        testCompile "io.micronaut.test:micronaut-test-spock:${micronautTestVersion}"
-        testCompile "org.codehaus.groovy:groovy-test:${groovyVersion}"
-        testCompile "org.objenesis:objenesis:${objenesisVersion}"
-        testRuntime "ch.qos.logback:logback-classic:${logbackClassicVersion}"
+        testImplementation "cglib:cglib-nodep:${cglibVersion}"
+        testImplementation "io.micronaut:micronaut-inject-groovy:${micronautVersion}"
+        testImplementation "io.micronaut.test:micronaut-test-spock:${micronautTestVersion}"
+        testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
+        testImplementation "org.objenesis:objenesis:${objenesisVersion}"
+        testRuntimeOnly "ch.qos.logback:logback-classic:${logbackClassicVersion}"
     }
 
     groovydoc {
