@@ -1,6 +1,3 @@
-com.acme.example
-com.acme.keys
-com.acme.letsencrypt
 io.micronaut.configuration.acme
 io.micronaut.configuration.acme.background
 io.micronaut.configuration.acme.challenge.dns
