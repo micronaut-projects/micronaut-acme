@@ -9,17 +9,19 @@ The `micronaut-acme` module transitively includes the `org.shredzone.acme4j:acme
 ----
 micronaut:
     server:
+        port : 80 //<1>
+        dual-protocol: true //<2>
         ssl:
-            enabled: true // <1>
+            enabled: true // <3>
 acme:
-    enabled: true // <2>
-    tos-agree: true // <3>
-    cert-location: /path/to/store/certificates // <4>
-    domain: domain.com //<5>
+    enabled: true // <4>
+    tos-agree: true // <5>
+    cert-location: /path/to/store/certificates // <6>
+    domain: domain.com //<7>
     refresh:
-        delay: 1m // <6>
-        frequency: 24h // <7>
-    domain-key: | // <8>
+        delay: 1m // <8>
+        frequency: 24h // <9>
+    domain-key: | // <10>
         -----BEGIN RSA PRIVATE KEY-----
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
@@ -27,7 +29,7 @@ acme:
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
         -----END RSA PRIVATE KEY-----
-    account-key: | // <9>
+    account-key: | // <11>
         -----BEGIN RSA PRIVATE KEY-----
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
@@ -35,33 +37,31 @@ acme:
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
         -----END RSA PRIVATE KEY-----
-    acme-server: acme://server.com // <10>
+    acme-server: acme://server.com // <12>
     order:
-        pause: 3s // <11>
+        pause: 3s // <13>
         refresh-attempts: 10 // <14>
     auth:
-        pause: 1m // <13>
-        refresh-attempts: 10 // <14>
-    renew-within: 30 // <15>
-    challenge-type: tls // <16>
-    refresh:  //<17>
-        frequency: 24h
-        delay: 24h
+        pause: 1m // <15>
+        refresh-attempts: 10 // <16>
+    renew-within: 30 // <17>
+    challenge-type: tls // <18>
 ----
-<1> Enables ssl for micronaut.
-<2> Enables ACME integration for micronaut. Default is `false`
-<3> Agrees to the Terms of Service of the ACME provider. Default is `false`
-<4> Location to store certificate on the server.
-<5> Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)
-<6> How long to wait until the server starts up the ACME background process. Default is `1 minute`
-<7> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
-<8> Private key used to encrypt the certificate. *DO NOT CHECK THIS IN TO SOURCE CODE*
-<9> Private key used to when setting up your accoutn with the ACME provider. *DO NOT CHECK THIS IN TO SOURCE CODE*
-<10> Url of the ACME server (ex. acme://letsencrypt.org/staging)
-<11> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
-<12> Number of times to poll an order status of the ACME server. Default is `10`
-<13> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
-<14> Number of times to poll an authorization status of the ACME server. Default is `10`
-<15> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
-<16> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
-<17> The interval to check on if the certificate needs to be refreshed. Default is 24h (aka daily)
+<1> Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let's Encrypt for example only sends request to port 80.
+<2> Enables dual port mode that allows for both http and https to be bound. Default is `false`
+<3> Enables ssl for micronaut. Default is `false`
+<4> Enables ACME integration for micronaut. Default is `false`
+<5> Agrees to the Terms of Service of the ACME provider. Default is `false`
+<6> Location to store the certificate on the server.
+<7> Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)
+<8> How long to wait until the server starts up the ACME background process. Default is `1 minute`
+<9> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
+<10> Private key used to encrypt the certificate. *DO NOT CHECK THIS IN TO SOURCE CODE*
+<11> Private key used to when setting up your accoutn with the ACME provider. *DO NOT CHECK THIS IN TO SOURCE CODE*
+<12> Url of the ACME server (ex. acme://letsencrypt.org/staging)
+<13> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
+<14> Number of times to poll an order status of the ACME server. Default is `10`
+<15> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
+<16> Number of times to poll an authorization status of the ACME server. Default is `10`
+<17> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
+<18> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
