@@ -55,10 +55,10 @@ class AcmeBaseSpec extends Specification {
     File certFolder
 
     @Shared
-    StringWriter accountKeyPairWriter
+    String accountKey
 
     @Shared
-    StringWriter domainKeyPairWriter
+    String domainKey
 
     @Shared
     String acmeServerUrl
@@ -103,15 +103,8 @@ class AcmeBaseSpec extends Specification {
                         .withStartupTimeout(Duration.ofMinutes(2)));
         certServerContainer.start()
 
-        // Create a new keys to register the account with
-        KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
-        accountKeyPairWriter = new StringWriter()
-        KeyPairUtils.writeKeyPair(keyPair, accountKeyPairWriter)
-
-        // Create a new keys to use for the domain
-        KeyPair domainKeyPair = KeyPairUtils.createKeyPair(2048)
-        domainKeyPairWriter = new StringWriter()
-        KeyPairUtils.writeKeyPair(domainKeyPair, domainKeyPairWriter)
+        KeyPair keyPair = getAccountKeypair()
+        getDomainKeypair()
 
         acmeServerUrl = "acme://pebble/${certServerContainer.containerIpAddress}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}"
 
@@ -130,6 +123,24 @@ class AcmeBaseSpec extends Specification {
                 "test")
 
         client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
+    }
+
+    KeyPair getDomainKeypair() {
+        // Create a new keys to use for the domain
+        KeyPair domainKeyPair = KeyPairUtils.createKeyPair(2048)
+        StringWriter domainKeyWriter = new StringWriter()
+        KeyPairUtils.writeKeyPair(domainKeyPair, domainKeyWriter)
+        domainKey = domainKeyWriter.toString()
+        domainKeyPair
+    }
+
+    KeyPair getAccountKeypair() {
+        // Create a new keys to register the account with
+        KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
+        StringWriter accountKeyWriter = new StringWriter()
+        KeyPairUtils.writeKeyPair(keyPair, accountKeyWriter)
+        accountKey = accountKeyWriter.toString()
+        keyPair
     }
 
     def cleanupSpec(){
@@ -161,8 +172,8 @@ class AcmeBaseSpec extends Specification {
                 "micronaut.server.host": EXPECTED_DOMAIN,
                 "acme.tosAgree"        : true,
                 "acme.cert-location"   : certFolder.toString(),
-                "acme.domain-key"  : domainKeyPairWriter.toString(),
-                "acme.account-key" : accountKeyPairWriter.toString(),
+                "acme.domain-key"  : domainKey,
+                "acme.account-key" : accountKey,
                 'acme.acme-server'     : acmeServerUrl,
                 'acme.enabled'         : true,
                 'acme.order.pause'     : "1s",

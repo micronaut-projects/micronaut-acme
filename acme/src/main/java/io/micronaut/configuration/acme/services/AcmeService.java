@@ -21,6 +21,8 @@ import io.micronaut.configuration.acme.challenge.dns.TxtRenderer;
 import io.micronaut.configuration.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.configuration.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.core.io.IOUtils;
+import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.shredzone.acme4j.*;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.security.KeyPair;
 import java.security.cert.CertificateException;
@@ -76,6 +79,7 @@ public class AcmeService {
      */
     private final String acmeServerUrl;
     private final AcmeConfiguration acmeConfiguration;
+    private ResourceResolver resourceResolver;
     private final TaskScheduler taskScheduler;
     private final File certLocation;
     private final String domainKeyString;
@@ -89,11 +93,13 @@ public class AcmeService {
      * Constructs a new Acme cert service.
      *
      * @param eventPublisher    Application Event Publisher
+     * @param resourceResolver  Resource resolver for finding keys from classpath or disk
      * @param acmeConfiguration Acme Configuration
      * @param taskScheduler     Task scheduler for enabling background polling of the certificate refreshes
      */
     public AcmeService(ApplicationEventPublisher eventPublisher,
                        AcmeConfiguration acmeConfiguration,
+                       ResourceResolver resourceResolver,
                        @Named("scheduled") TaskScheduler taskScheduler) {
         this.eventPublisher = eventPublisher;
         this.orderPause = acmeConfiguration.getOrder().getPause();
@@ -103,6 +109,7 @@ public class AcmeService {
         this.certLocation = acmeConfiguration.getCertLocation();
         this.acmeServerUrl = acmeConfiguration.getAcmeServer();
         this.acmeConfiguration = acmeConfiguration;
+        this.resourceResolver = resourceResolver;
         this.taskScheduler = taskScheduler;
     }
 
@@ -141,7 +148,7 @@ public class AcmeService {
 
         KeyPair accountKeyPair;
         try {
-            accountKeyPair = KeyPairUtils.readKeyPair(new StringReader(accountKeyString));
+            accountKeyPair = getKeyPairFromConfigValue(this.accountKeyString);
         } catch (IOException e) {
             if (LOG.isErrorEnabled()) {
                 LOG.error("ACME certificate order failed. Failed to read the account keys", e);
@@ -169,19 +176,30 @@ public class AcmeService {
         attemptCertificateOrder(domains, orderRetryAttempts, order, domainKeyPair);
     }
 
+    private KeyPair getKeyPairFromConfigValue(String keyString) throws IOException {
+        String pem = keyString;
+        if (keyString.startsWith("file:") || keyString.startsWith("classpath:")) {
+            Optional<URL> resource = resourceResolver.getResource(keyString);
+            if (resource.isPresent()) {
+                pem = IOUtils.readText(new BufferedReader(new InputStreamReader(resource.get().openStream())));
+            }
+        }
+        return KeyPairUtils.readKeyPair(new StringReader(pem));
+    }
+
     private Order createOrder(List<String> domains, Login login) throws AcmeException {
         Order order = login.getAccount()
-                    .newOrder()
-                    .domains(domains)
-                    .create();
+                .newOrder()
+                .domains(domains)
+                .create();
         return order;
     }
 
     private Login doLogin(Session session, KeyPair accountKeyPair) throws AcmeException {
         Login login = new AccountBuilder()
-                    .onlyExisting()
-                    .useKeyPair(accountKeyPair)
-                    .createLogin(session);
+                .onlyExisting()
+                .useKeyPair(accountKeyPair)
+                .createLogin(session);
         return login;
     }
 
@@ -298,7 +316,7 @@ public class AcmeService {
         // Generate a CSR for all of the domains, and sign it with the domain key pair.
         KeyPair domainKeyPair = null;
         try {
-            domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyString));
+            domainKeyPair = getKeyPairFromConfigValue(domainKeyString);
         } catch (IOException e) {
             if (LOG.isErrorEnabled()) {
                 LOG.error("ACME certificate order failed. Failed to read the domain keys", e);
@@ -403,7 +421,7 @@ public class AcmeService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("TLS challenge selected, creating keys");
             }
-            KeyPair domainKeyPair = KeyPairUtils.readKeyPair(new StringReader(domainKeyString));
+            KeyPair domainKeyPair = getDomainKeyPair();
             X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
             eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
         } else if (challenge instanceof Http01Challenge) {
