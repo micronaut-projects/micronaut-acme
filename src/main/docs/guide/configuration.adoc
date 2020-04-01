@@ -43,7 +43,7 @@ acme:
         pause: 1m // <13>
         refresh-attempts: 10 // <14>
     renew-within: 30 // <15>
-    challenge-type: [http,tls,dns] // <16>
+    challenge-type: tls // <16>
     refresh:  //<17>
         frequency: 24h
         delay: 24h
@@ -63,5 +63,5 @@ acme:
 <13> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
 <14> Number of times to poll an authorization status of the ACME server. Default is `10`
 <15> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
-<16> The challenge type you would like to use. Default is `tls`
+<16> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
 <17> The interval to check on if the certificate needs to be refreshed. Default is 24h (aka daily)
