@@ -11,42 +11,42 @@ micronaut:
     server:
         ssl:
             enabled: true // <1>
-    acme:
-        enabled: true // <2>
-        tos-agree: true // <3>
-        cert-location: /path/to/store/certificates // <4>
-        domain: domain.com //<5>
-        refresh:
-            delay: 1m // <6>
-            frequency: 24h // <7>
-        domain-key: | // <8>
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            ....
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            -----END RSA PRIVATE KEY-----
-        account-key: | // <9>
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            ....
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            -----END RSA PRIVATE KEY-----
-        acme-server: acme://server.com // <10>
-        order:
-            pause: 3s // <11>
-            refresh-attempts: 10 // <14>
-        auth:
-            pause: 1m // <13>
-            refresh-attempts: 10 // <14>
-        renew-within: 30 // <15>
-        challenge-type: [http,tls,dns] // <16>
-        refresh:  //<17>
-            frequency: 24h
-            delay: 24h
+acme:
+    enabled: true // <2>
+    tos-agree: true // <3>
+    cert-location: /path/to/store/certificates // <4>
+    domain: domain.com //<5>
+    refresh:
+        delay: 1m // <6>
+        frequency: 24h // <7>
+    domain-key: | // <8>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    account-key: | // <9>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    acme-server: acme://server.com // <10>
+    order:
+        pause: 3s // <11>
+        refresh-attempts: 10 // <14>
+    auth:
+        pause: 1m // <13>
+        refresh-attempts: 10 // <14>
+    renew-within: 30 // <15>
+    challenge-type: [http,tls,dns] // <16>
+    refresh:  //<17>
+        frequency: 24h
+        delay: 24h
 ----
 <1> Enables ssl for micronaut.
 <2> Enables ACME integration for micronaut. Default is `false`
