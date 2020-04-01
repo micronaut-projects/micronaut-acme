@@ -129,8 +129,9 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/acme/services/AcmeService.html#AcmeService-io.micronaut.context.event.ApplicationEventPublisher-io.micronaut.configuration.acme.AcmeConfiguration-io.micronaut.scheduling.TaskScheduler-">AcmeService</a></span>(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/acme/services/AcmeService.html#AcmeService-io.micronaut.context.event.ApplicationEventPublisher-io.micronaut.configuration.acme.AcmeConfiguration-io.micronaut.core.io.ResourceResolver-io.micronaut.scheduling.TaskScheduler-">AcmeService</a></span>(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
            <a href="../../../../../io/micronaut/configuration/acme/AcmeConfiguration.html" title="class in io.micronaut.configuration.acme">AcmeConfiguration</a>&nbsp;acmeConfiguration,
+           io.micronaut.core.io.ResourceResolver&nbsp;resourceResolver,
            io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler)</code>
 <div class="block">Constructs a new Acme cert service.</div>
 </td>
@@ -190,7 +191,7 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="AcmeService-io.micronaut.context.event.ApplicationEventPublisher-io.micronaut.configuration.acme.AcmeConfiguration-io.micronaut.scheduling.TaskScheduler-">
+<a name="AcmeService-io.micronaut.context.event.ApplicationEventPublisher-io.micronaut.configuration.acme.AcmeConfiguration-io.micronaut.core.io.ResourceResolver-io.micronaut.scheduling.TaskScheduler-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -198,12 +199,14 @@ extends java.lang.Object</pre>
 <h4>AcmeService</h4>
 <pre>public&nbsp;AcmeService(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
                    <a href="../../../../../io/micronaut/configuration/acme/AcmeConfiguration.html" title="class in io.micronaut.configuration.acme">AcmeConfiguration</a>&nbsp;acmeConfiguration,
+                   io.micronaut.core.io.ResourceResolver&nbsp;resourceResolver,
                    @Named(value="scheduled")
                    io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler)</pre>
 <div class="block">Constructs a new Acme cert service.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>eventPublisher</code> - Application Event Publisher</dd>
+<dd><code>resourceResolver</code> - Resource resolver for finding keys from classpath or disk</dd>
 <dd><code>acmeConfiguration</code> - Acme Configuration</dd>
 <dd><code>taskScheduler</code> - Task scheduler for enabling background polling of the certificate refreshes</dd>
 </dl>

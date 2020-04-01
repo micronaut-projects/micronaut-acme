@@ -175,115 +175,118 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
     server:
+        port : 80 <i class="conum" data-value="1"></i><b>(1)</b>
+        dual-protocol: true <i class="conum" data-value="2"></i><b>(2)</b>
         ssl:
-            enabled: true <i class="conum" data-value="1"></i><b>(1)</b>
-    acme:
-        enabled: true <i class="conum" data-value="2"></i><b>(2)</b>
-        tos-agree: true <i class="conum" data-value="3"></i><b>(3)</b>
-        cert-location: /path/to/store/certificates <i class="conum" data-value="4"></i><b>(4)</b>
-        domain: domain.com <i class="conum" data-value="5"></i><b>(5)</b>
-        refresh:
-            delay: 1m <i class="conum" data-value="6"></i><b>(6)</b>
-            frequency: 24h <i class="conum" data-value="7"></i><b>(7)</b>
-        domain-key: | <i class="conum" data-value="8"></i><b>(8)</b>
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            ....
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            -----END RSA PRIVATE KEY-----
-        account-key: | <i class="conum" data-value="9"></i><b>(9)</b>
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            ....
-            MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
-            al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
-            -----END RSA PRIVATE KEY-----
-        acme-server: acme://server.com <i class="conum" data-value="10"></i><b>(10)</b>
-        order:
-            pause: 3s <i class="conum" data-value="11"></i><b>(11)</b>
-            refresh-attempts: 10 <i class="conum" data-value="14"></i><b>(14)</b>
-        auth:
-            pause: 1m <i class="conum" data-value="13"></i><b>(13)</b>
-            refresh-attempts: 10 <i class="conum" data-value="14"></i><b>(14)</b>
-        renew-within: 30 <i class="conum" data-value="15"></i><b>(15)</b>
-        challenge-type: [http,tls,dns] <i class="conum" data-value="16"></i><b>(16)</b>
-        refresh:  <i class="conum" data-value="17"></i><b>(17)</b>
-            frequency: 24h
-            delay: 24h</code></pre>
+            enabled: true <i class="conum" data-value="3"></i><b>(3)</b>
+acme:
+    enabled: true <i class="conum" data-value="4"></i><b>(4)</b>
+    tos-agree: true <i class="conum" data-value="5"></i><b>(5)</b>
+    cert-location: /path/to/store/certificates <i class="conum" data-value="6"></i><b>(6)</b>
+    domain: domain.com <i class="conum" data-value="7"></i><b>(7)</b>
+    refresh:
+        delay: 1m <i class="conum" data-value="8"></i><b>(8)</b>
+        frequency: 24h <i class="conum" data-value="9"></i><b>(9)</b>
+    domain-key: | <i class="conum" data-value="10"></i><b>(10)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    account-key: | <i class="conum" data-value="11"></i><b>(11)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    acme-server: acme://server.com <i class="conum" data-value="12"></i><b>(12)</b>
+    order:
+        pause: 3s <i class="conum" data-value="13"></i><b>(13)</b>
+        refresh-attempts: 10 <i class="conum" data-value="14"></i><b>(14)</b>
+    auth:
+        pause: 1m <i class="conum" data-value="15"></i><b>(15)</b>
+        refresh-attempts: 10 <i class="conum" data-value="16"></i><b>(16)</b>
+    renew-within: 30 <i class="conum" data-value="17"></i><b>(17)</b>
+    challenge-type: tls <i class="conum" data-value="18"></i><b>(18)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Enables ssl for micronaut.</td>
+<td>Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let&#8217;s Encrypt for example only sends request to port 80.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Enables ACME integration for micronaut. Default is <code>false</code></td>
+<td>Enables dual port mode that allows for both http and https to be bound. Default is <code>false</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Agrees to the Terms of Service of the ACME provider. Default is <code>false</code></td>
+<td>Enables ssl for micronaut. Default is <code>false</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Location to store certificate on the server.</td>
+<td>Enables ACME integration for micronaut. Default is <code>false</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)</td>
+<td>Agrees to the Terms of Service of the ACME provider. Default is <code>false</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>How long to wait until the server starts up the ACME background process. Default is <code>1 minute</code></td>
+<td>Location to store the certificate on the server.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>How often the server will check for a new ACME cert and refresh it if needed. Default is <code>24 hours</code></td>
+<td>Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>Private key used to encrypt the certificate. <strong>DO NOT CHECK THIS IN TO SOURCE CODE</strong></td>
+<td>How long to wait until the server starts up the ACME background process. Default is <code>1 minute</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>Private key used to when setting up your accoutn with the ACME provider. <strong>DO NOT CHECK THIS IN TO SOURCE CODE</strong></td>
+<td>How often the server will check for a new ACME cert and refresh it if needed. Default is <code>24 hours</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="10"></i><b>10</b></td>
-<td>Url of the ACME server (ex. acme://letsencrypt.org/staging)</td>
+<td>Private key used to encrypt the certificate. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>. It is advisable to not check this into source control as this is the secret to handle the domain encryption.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="11"></i><b>11</b></td>
-<td>Time to wait in between polling order status of the ACME server. Default is <code>3 seconds</code></td>
+<td>Private key used to when setting up your account with the ACME provider. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>.  It is advisable to not check this into source control as this is your account identifier.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="12"></i><b>12</b></td>
-<td>Number of times to poll an order status of the ACME server. Default is <code>10</code></td>
+<td>Url of the ACME server (ex. acme://letsencrypt.org/staging)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="13"></i><b>13</b></td>
-<td>Time to wait in between polling authorization status of the ACME server. Default is <code>3 seconds</code></td>
+<td>Time to wait in between polling order status of the ACME server. Default is <code>3 seconds</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="14"></i><b>14</b></td>
-<td>Number of times to poll an authorization status of the ACME server. Default is <code>10</code></td>
+<td>Number of times to poll an order status of the ACME server. Default is <code>10</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="15"></i><b>15</b></td>
-<td>Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is <code>30 days</code></td>
+<td>Time to wait in between polling authorization status of the ACME server. Default is <code>3 seconds</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="16"></i><b>16</b></td>
-<td>The challenge type you would like to use. Default is <code>tls</code></td>
+<td>Number of times to poll an authorization status of the ACME server. Default is <code>10</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="17"></i><b>17</b></td>
-<td>The interval to check on if the certificate needs to be refreshed. Default is 24h (aka daily)</td>
+<td>Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is <code>30 days</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="18"></i><b>18</b></td>
+<td>The challenge type you would like to use. Default is <code>tls</code>. Possible options : http, tls, dns</td>
 </tr>
 </table>
 </div>
