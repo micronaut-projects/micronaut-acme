@@ -1,0 +1,12 @@
+Once you have downloaded or built from source you now need to setup your PATH
+
+* Extract the binary to appropriate location (For example: `C:\micronaut-acme-cli`)
+* Create an environment variable `MICRONAUT_ACME_HOME` which points to the installation directory i.e. `C:\micronaut-acme-cli`
+* Update the `PATH` environment variable, append `%MICRONAUT_ACME_HOME%\bin`.
+
+You should now be able to run the Micronaut CLI from the command prompt as follows:
+
+[source,bash]
+----
+$ acme-cli --help
+----

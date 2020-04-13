@@ -1,10 +1,10 @@
 rootProject.name = "micronaut-acme"
 
 include "acme"
+include "acme-cli"
 
 String[] examples = [
-        "hello-world-acme",
-        "acme-utils"
+        "hello-world-acme"
 ]
 
 examples.each { name ->

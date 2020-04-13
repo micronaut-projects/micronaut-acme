@@ -1,0 +1,2 @@
+To be able to secure your application using ACME there will be a few setup steps necessary before you can start using
+the new certificates. A cli application can be found to assist in those steps, such as creating key pairs and creating accounts.
