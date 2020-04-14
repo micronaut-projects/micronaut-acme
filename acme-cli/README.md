@@ -1,5 +1,5 @@
 # ACME-cli
-Helper cli that uses Mirconaut cli framework to create utilities that will aid you in doing tasks needed for ACME integration.
+Helper cli that uses Micronaut cli framework to create utilities that will aid you in doing tasks needed for ACME integration.
 
 ## Documentation ##
 
