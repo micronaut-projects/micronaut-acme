@@ -31,7 +31,7 @@ import java.util.concurrent.Callable;
  */
 @CommandLine.Command(name = "create-account",
         aliases = {"create", "ca"},
-        description = "Creates an a new Let's Encrypt account",
+        description = "Creates a new account on the given ACME server",
         usageHelpWidth = 95
 )
 public final class CreateAccountCommand implements Callable<Integer> {

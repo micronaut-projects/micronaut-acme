@@ -31,7 +31,7 @@ Usage:
 
 ```
 Usage: acme-cli create-account [-h] -e=<email> [-k=<keyDir>] [-n=<keyName>] -u=<serverUrl>
-Creates an a new Let's Encrypt account
+Creates a new account on the given ACME server
   -e, --email=<email>        Email address to create account with.
   -h, --help                 Show usage of this command
   -k, --key-dir=<keyDir>     Directory to create/find the key to be used for this account.
@@ -53,7 +53,7 @@ Usage:
 
 ```
 Usage: acme-cli deactivate-account [-h] [-k=<keyDir>] [-n=<keyName>] -u=<serverUrl>
-Deactivates an existing Let's Encrypt account
+Deactivates an existing ACME account
   -h, --help                 Show usage of this command
   -k, --key-dir=<keyDir>     Directory to find the key to be used for this account.
                                Default: /tmp

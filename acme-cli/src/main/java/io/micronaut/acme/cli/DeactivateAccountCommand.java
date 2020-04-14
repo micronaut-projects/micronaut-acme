@@ -35,7 +35,7 @@ import java.util.concurrent.Callable;
  */
 @CommandLine.Command(name = "deactivate-account",
         aliases = {"deactivate", "da"},
-        description = "Deactivates an existing Let's Encrypt account",
+        description = "Deactivates an existing ACME account",
         usageHelpWidth = 95
 )
 public final class DeactivateAccountCommand implements Callable<Integer> {
