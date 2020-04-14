@@ -4,8 +4,6 @@ plugins {
     id "application"
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-
 configurations {
     // for dependencies that are needed for development only
     developmentOnly
