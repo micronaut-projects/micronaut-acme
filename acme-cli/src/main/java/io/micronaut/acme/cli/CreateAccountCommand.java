@@ -44,8 +44,8 @@ public final class CreateAccountCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-k", "--key-dir"}, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, defaultValue = "/tmp", description = "Directory to create/find the key to be used for this account.")
     String keyDir;
 
-    @CommandLine.Option(names = {"-u", "--url"}, required = true, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "Location of acme server to use.%nLet's Encrypt Prod :%n@|bold https://acme-v02.api.letsencrypt.org/directory|@%nLet's Encrypt Staging :%n@|bold https://acme-staging-v02.api.letsencrypt.org/directory|@")
-    String serverUrl;
+    @CommandLine.ArgGroup(multiplicity = "1")
+    AcmeServerOption acmeServerOption;
 
     @CommandLine.Option(names = {"-h", "--help"}, showDefaultValue = CommandLine.Help.Visibility.NEVER, defaultValue = "false", description = "Show usage of this command")
     boolean showHelp;
@@ -81,8 +81,8 @@ public final class CreateAccountCommand implements Callable<Integer> {
             return 1;
         }
 
-        System.out.println(">>> Opening session with " + serverUrl);
-        Session session = new Session(serverUrl);
+        System.out.println(">>> Opening session with " + acmeServerOption.serverUrl());
+        Session session = new Session(acmeServerOption.serverUrl());
 
         System.out.println(">>> Creating account with key and email : " + email);
         Account account = null;
