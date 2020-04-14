@@ -36,8 +36,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "deactivate-account",
         aliases = {"deactivate", "da"},
         description = "Deactivates an existing Let's Encrypt account",
-        usageHelpWidth = 95,
-        helpCommand = true
+        usageHelpWidth = 95
 )
 public final class DeactivateAccountCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-n", "--key-name"}, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, defaultValue = "acme.pem", description = "Name of the key to be used")

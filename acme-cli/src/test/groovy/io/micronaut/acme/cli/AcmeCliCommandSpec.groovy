@@ -22,7 +22,7 @@ class AcmeCliCommandSpec extends Specification {
 
         expect:
         baos.toString().contains("Please invoke a subcommand")
-        baos.toString().contains("Usage: acme-cli [COMMAND]")
+        baos.toString().contains("Usage: acme-cli [-h] [COMMAND]")
         baos.toString().contains("create-account")
         baos.toString().contains("deactivate-account")
         baos.toString().contains("create-key")
