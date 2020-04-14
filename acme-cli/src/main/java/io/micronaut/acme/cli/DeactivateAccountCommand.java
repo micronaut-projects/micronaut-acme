@@ -45,8 +45,8 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-k", "--key-dir"}, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, defaultValue = "/tmp", description = "Directory to find the key to be used for this account.")
     String keyDir;
 
-    @CommandLine.Option(names = {"-u", "--url"}, required = true, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "Location of acme server to use.%nLet's Encrypt Prod :%n@|bold https://acme-v02.api.letsencrypt.org/directory|@%nLet's Encrypt Staging :%n@|bold https://acme-staging-v02.api.letsencrypt.org/directory|@")
-    String serverUrl;
+    @CommandLine.ArgGroup(multiplicity = "1")
+    AcmeServerOption acmeServerOption;
 
     @CommandLine.Option(names = {"-h", "--help"}, showDefaultValue = CommandLine.Help.Visibility.NEVER, defaultValue = "false", description = "Show usage of this command")
     boolean showHelp;
@@ -56,6 +56,7 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
 
     /**
      * Public interface for deactivating an account, arguments will be passed.
+     *
      * @param args arguments as defined above
      */
     public static void main(String[] args) {
@@ -66,9 +67,11 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
 
     /**
      * Uses arguments passed to do all account deactivation.
+     *
      * @return exit code of the program
      */
     public Integer call() {
+        System.out.println(acmeServerOption.serverUrl());
         if (showHelp) {
             spec.commandLine().usage(System.out);
             return 0;
@@ -85,8 +88,8 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
                 return 1;
             }
 
-            System.out.println(">>> Opening session with " + serverUrl);
-            Session session = new Session(serverUrl);
+            System.out.println(">>> Opening session with " + acmeServerOption.serverUrl());
+            Session session = new Session(acmeServerOption.serverUrl());
 
             System.out.println(">>> Logging in to account...");
             Login login = null;
