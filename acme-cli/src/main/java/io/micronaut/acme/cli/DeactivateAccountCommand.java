@@ -45,7 +45,7 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-k", "--key-dir"}, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, defaultValue = "/tmp", description = "Directory to find the key to be used for this account.")
     String keyDir;
 
-    @CommandLine.ArgGroup(multiplicity = "1")
+    @CommandLine.ArgGroup(multiplicity = "1", heading = "ACME server URL%n")
     AcmeServerOption acmeServerOption;
 
     @CommandLine.Option(names = {"-h", "--help"}, showDefaultValue = CommandLine.Help.Visibility.NEVER, defaultValue = "false", description = "Show usage of this command")
@@ -71,7 +71,6 @@ public final class DeactivateAccountCommand implements Callable<Integer> {
      * @return exit code of the program
      */
     public Integer call() {
-        System.out.println(acmeServerOption.serverUrl());
         if (showHelp) {
             spec.commandLine().usage(System.out);
             return 0;

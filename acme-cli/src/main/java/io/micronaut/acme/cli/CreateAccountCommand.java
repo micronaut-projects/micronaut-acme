@@ -44,7 +44,7 @@ public final class CreateAccountCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-k", "--key-dir"}, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, defaultValue = "/tmp", description = "Directory to create/find the key to be used for this account.")
     String keyDir;
 
-    @CommandLine.ArgGroup(multiplicity = "1")
+    @CommandLine.ArgGroup(multiplicity = "1", heading = "ACME server URL%n")
     AcmeServerOption acmeServerOption;
 
     @CommandLine.Option(names = {"-h", "--help"}, showDefaultValue = CommandLine.Help.Visibility.NEVER, defaultValue = "false", description = "Show usage of this command")

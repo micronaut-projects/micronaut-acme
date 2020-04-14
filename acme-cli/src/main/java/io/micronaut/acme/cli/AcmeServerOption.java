@@ -27,13 +27,13 @@ public final class AcmeServerOption {
 
     public static final String LE_STAGING_URL = "https://acme-staging-v02.api.letsencrypt.org/directory";
 
-    @CommandLine.Option(names = {"-u", "--url"}, required = true, showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "Location of acme server to use.%nLet's Encrypt Prod :%n@|bold " + LE_PROD_URL + "|@%nLet's Encrypt Staging :%n@|bold " + LE_STAGING_URL + "|@")
+    @CommandLine.Option(names = {"-u", "--url"}, required = true, description = "URL of ACME server to use")
     private String serverUrl;
 
-    @CommandLine.Option(names = {"--lets-encrypt-prod"}, required = true, description = "Use the Let's Encrypt prod URL")
+    @CommandLine.Option(names = {"--lets-encrypt-prod"}, required = true, description = "Use the Let's Encrypt prod URL.")
     private boolean letsEncryptProd;
 
-    @CommandLine.Option(names = {"--lets-encrypt-staging"}, required = true, description = "Use the Let's Encrypt prod URL")
+    @CommandLine.Option(names = {"--lets-encrypt-staging"}, required = true, description = "Use the Let's Encrypt staging URL")
     private boolean letsEncryptStaging;
 
     /**

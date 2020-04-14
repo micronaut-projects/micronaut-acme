@@ -36,7 +36,8 @@ Usage:
 
 [source,bash]
 ----
-Usage: acme-cli create-account [-h] -e=<email> [-k=<keyDir>] [-n=<keyName>] -u=<serverUrl>
+Usage: create-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                      -e=<email> [-k=<keyDir>] [-n=<keyName>]
 Creates a new account on the given ACME server
   -e, --email=<email>        Email address to create account with.
   -h, --help                 Show usage of this command
@@ -44,12 +45,10 @@ Creates a new account on the given ACME server
                                Default: /tmp
   -n, --key-name=<keyName>   Name of the key to be created/used
                                Default: acme.pem
-  -u, --url=<serverUrl>      Location of acme server to use.
-                             Let's Encrypt Prod :
-                             https://acme-v02.api.letsencrypt.org/directory
-                             Let's Encrypt Staging :
-                             https://acme-staging-v02.api.letsencrypt.org/directory
-                               Default: null
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=<serverUrl>      URL of ACME server to use
 ----
 
 == Deactivating an Account
@@ -60,17 +59,16 @@ Usage:
 
 [source,bash]
 ----
-Usage: acme-cli deactivate-account [-h] [-k=<keyDir>] [-n=<keyName>] -u=<serverUrl>
+Usage: deactivate-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                          [-k=<keyDir>] [-n=<keyName>]
 Deactivates an existing ACME account
   -h, --help                 Show usage of this command
   -k, --key-dir=<keyDir>     Directory to find the key to be used for this account.
                                Default: /tmp
   -n, --key-name=<keyName>   Name of the key to be used
                                Default: acme.pem
-  -u, --url=<serverUrl>      Location of acme server to use.
-                             Let's Encrypt Prod :
-                             https://acme-v02.api.letsencrypt.org/directory
-                             Let's Encrypt Staging :
-                             https://acme-staging-v02.api.letsencrypt.org/directory
-                               Default: null
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=<serverUrl>      URL of ACME server to use
 ----
