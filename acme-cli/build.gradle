@@ -69,9 +69,14 @@ distributions {
     }
 }
 
+
+bintray {
+    publications = ['maven', 'shadowCli']
+}
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        shadowCli(MavenPublication) {
             artifactId( "micronaut-$project.name" )
             from components.java
             artifact shadowDistZip
