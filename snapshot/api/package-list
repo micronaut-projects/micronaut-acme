@@ -1,3 +1,4 @@
+io.micronaut.acme.cli
 io.micronaut.configuration.acme
 io.micronaut.configuration.acme.background
 io.micronaut.configuration.acme.challenge.dns

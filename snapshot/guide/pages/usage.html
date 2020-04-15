@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script src="/cdn-cgi/apps/head/3cOPSgo5Omz84ycX7CvigfX4cpw.js"></script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-82213539-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-82213539-2');
+    </script>
+    <title>4.2 Usage 1.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut Acme
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configuration.html"><strong>2</strong><span>Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/challenges.html"><strong>3</strong><span>Challenge Types</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/cli.html"><strong>4</strong><span>CLI</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/challenges.html">&lt;&lt; <strong>3</strong><span>Challenge Types</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+
+
+                <div class="project">
+                    <h1>4.2 Usage</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
+                </div>
+
+                
+
+                
+<h2 id="usage"><a class="anchor" href="#usage"></a>4.2 Usage</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/cli/usage.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_creating_keypairs">Creating keypairs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A utility to help with creating keypairs. This is akin to doing something like so with openssl</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ openssl genrsa -out /tmp/mydomain.com-key.pem 4096</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These keypairs will be used for both ACME accounts as well as each domain will also need its own keypair defined.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: acme-cli create-key [-h] [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;] [-s=&lt;keySize&gt;]
+Creates an keypair for use with account creation
+  -h, --help                 Show usage of this command
+  -k, --key-dir=&lt;keyDir&gt;     Custom location on disk to put the key to be used
+                               with this account.
+                               Default: /tmp
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be created
+                               Default: acme.pem
+  -s, --key-size=&lt;keySize&gt;   Size of the key to be generated
+                               Default: 4096</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_an_account">Creating an Account</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
+the account keypair that you have generated using the <code>acme-cli create-key</code> or via <code>openssl</code> or other means in as a parameter.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://certbot.eff.org/">Certbot</a> or many of the other tools out there can also accomplish this step if you dont want to use this tool.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: create-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                      -e=&lt;email&gt; [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
+Creates a new account on the given ACME server
+  -e, --email=&lt;email&gt;        Email address to create account with.
+  -h, --help                 Show usage of this command
+  -k, --key-dir=&lt;keyDir&gt;     Directory to create/find the key to be used for this account.
+                               Default: /tmp
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be created/used
+                               Default: acme.pem
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=&lt;serverUrl&gt;      URL of ACME server to use</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deactivating_an_account">Deactivating an Account</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Deactivates a given account based on the account key that was used to create the account.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: deactivate-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                          [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
+Deactivates an existing ACME account
+  -h, --help                 Show usage of this command
+  -k, --key-dir=&lt;keyDir&gt;     Directory to find the key to be used for this account.
+                               Default: /tmp
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be used
+                               Default: acme.pem
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=&lt;serverUrl&gt;      URL of ACME server to use</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/challenges.html">&lt;&lt; <strong>3</strong><span>Challenge Types</span></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
