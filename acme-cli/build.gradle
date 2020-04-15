@@ -4,14 +4,8 @@ plugins {
     id "application"
 }
 
-configurations {
-    // for dependencies that are needed for development only
-    developmentOnly
-}
-
 dependencies {
     annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-    testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
 
     annotationProcessor "io.micronaut.configuration:micronaut-picocli"
     annotationProcessor "io.micronaut:micronaut-inject-java"
@@ -39,8 +33,6 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.5.0"
 }
 
-test.classpath += configurations.developmentOnly
-
 mainClassName = "io.micronaut.acme.cli.AcmeCliCommand"
 
 jar {
@@ -61,7 +53,6 @@ shadowJar {
     mergeServiceFiles()
 }
 
-run.classpath += configurations.developmentOnly
 run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
 
 shadowJar {
