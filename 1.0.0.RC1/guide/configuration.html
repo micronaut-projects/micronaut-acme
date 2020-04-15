@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script src="/cdn-cgi/apps/head/3cOPSgo5Omz84ycX7CvigfX4cpw.js"></script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-82213539-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-82213539-2');
+    </script>
+    <title>2 Configuration 1.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut Acme
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>2</strong><span>Configuration</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/challenges.html"><strong>3</strong><span>Challenge Types</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cli.html"><strong>4</strong><span>CLI</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/challenges.html"><strong>3</strong><span>Challenge Types</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Configuration</h1>
+
+                    <p><strong>Version:</strong> 1.0.0.RC1</p>
+                </div>
+
+                
+
+                
+<h1 id="configuration"><a class="anchor" href="#configuration"></a>2 Configuration</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/configuration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut 1.3.0 or above is required and you must have the <code>micronaut-acme</code> dependency on your classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:1.0.0.RC1")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.acme&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-acme&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0.RC1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-acme</code> module transitively includes the <code>org.shredzone.acme4j:acme4j-client</code> and <code>org.shredzone.acme4j:acme4j-utils</code> dependency.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    server:
+        port : 80 <i class="conum" data-value="1"></i><b>(1)</b>
+        dual-protocol: true <i class="conum" data-value="2"></i><b>(2)</b>
+        ssl:
+            enabled: true <i class="conum" data-value="3"></i><b>(3)</b>
+acme:
+    enabled: true <i class="conum" data-value="4"></i><b>(4)</b>
+    tos-agree: true <i class="conum" data-value="5"></i><b>(5)</b>
+    cert-location: /path/to/store/certificates <i class="conum" data-value="6"></i><b>(6)</b>
+    domain: domain.com <i class="conum" data-value="7"></i><b>(7)</b>
+    refresh:
+        delay: 1m <i class="conum" data-value="8"></i><b>(8)</b>
+        frequency: 24h <i class="conum" data-value="9"></i><b>(9)</b>
+    domain-key: | <i class="conum" data-value="10"></i><b>(10)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    account-key: | <i class="conum" data-value="11"></i><b>(11)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    acme-server: acme://server.com <i class="conum" data-value="12"></i><b>(12)</b>
+    order:
+        pause: 3s <i class="conum" data-value="13"></i><b>(13)</b>
+        refresh-attempts: 10 <i class="conum" data-value="14"></i><b>(14)</b>
+    auth:
+        pause: 1m <i class="conum" data-value="15"></i><b>(15)</b>
+        refresh-attempts: 10 <i class="conum" data-value="16"></i><b>(16)</b>
+    renew-within: 30 <i class="conum" data-value="17"></i><b>(17)</b>
+    challenge-type: tls <i class="conum" data-value="18"></i><b>(18)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let&#8217;s Encrypt for example only sends request to port 80.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Enables dual port mode that allows for both http and https to be bound. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Enables ssl for micronaut. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Enables ACME integration for micronaut. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Agrees to the Terms of Service of the ACME provider. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Location to store the certificate on the server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>How long to wait until the server starts up the ACME background process. Default is <code>1 minute</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>How often the server will check for a new ACME cert and refresh it if needed. Default is <code>24 hours</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>Private key used to encrypt the certificate. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>. It is advisable to not check this into source control as this is the secret to handle the domain encryption.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>Private key used to when setting up your account with the ACME provider. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>.  It is advisable to not check this into source control as this is your account identifier.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="12"></i><b>12</b></td>
+<td>Url of the ACME server (ex. acme://letsencrypt.org/staging)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="13"></i><b>13</b></td>
+<td>Time to wait in between polling order status of the ACME server. Default is <code>3 seconds</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="14"></i><b>14</b></td>
+<td>Number of times to poll an order status of the ACME server. Default is <code>10</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="15"></i><b>15</b></td>
+<td>Time to wait in between polling authorization status of the ACME server. Default is <code>3 seconds</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="16"></i><b>16</b></td>
+<td>Number of times to poll an authorization status of the ACME server. Default is <code>10</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="17"></i><b>17</b></td>
+<td>Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is <code>30 days</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="18"></i><b>18</b></td>
+<td>The challenge type you would like to use. Default is <code>tls</code>. Possible options : http, tls, dns</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/challenges.html"><strong>3</strong><span>Challenge Types</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
