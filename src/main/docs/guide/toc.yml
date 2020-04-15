@@ -9,4 +9,18 @@ challenges:
     title: TLS-APLN-01
   dns:
     title: DNS-01
+cli:
+  title: CLI
+  installation:
+    title: Installation
+    download:
+      title: Download
+    fromsource:
+      title: Build from source
+    windows:
+      title: Install through Binary on Windows
+    notwindows:
+      title: Install through Binary on Linux/MacOSx
+  usage:
+    title: Usage
 

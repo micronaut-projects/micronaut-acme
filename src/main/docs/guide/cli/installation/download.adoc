@@ -1,0 +1,10 @@
+A zip containing the cli is uploaded to maven central for release artifacts or jfrog oss repository for snapshot artifacts.
+
+Snapshots:
+https://oss.jfrog.org/artifactory/oss-snapshot-local/io/micronaut/micronaut-acme-cli/
+
+Releases:
+https://repo1.maven.org/maven2/io/micronaut/micronaut-acme-cli/
+
+Select the version you want to install and download the artifact with the name.
+`micronaut-acme-cli-<version>.zip`

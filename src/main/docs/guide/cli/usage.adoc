@@ -1,0 +1,74 @@
+== Creating keypairs
+
+A utility to help with creating keypairs. This is akin to doing something like so with openssl
+
+[source,bash]
+----
+$ openssl genrsa -out /tmp/mydomain.com-key.pem 4096
+----
+
+These keypairs will be used for both ACME accounts as well as each domain will also need its own keypair defined.
+
+Usage:
+
+[source,bash]
+----
+Usage: acme-cli create-key [-h] [-k=<keyDir>] [-n=<keyName>] [-s=<keySize>]
+Creates an keypair for use with account creation
+  -h, --help                 Show usage of this command
+  -k, --key-dir=<keyDir>     Custom location on disk to put the key to be used
+                               with this account.
+                               Default: /tmp
+  -n, --key-name=<keyName>   Name of the key to be created
+                               Default: acme.pem
+  -s, --key-size=<keySize>   Size of the key to be generated
+                               Default: 4096
+----
+
+== Creating an Account
+
+Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
+the account keypair that you have generated using the `acme-cli create-key` or via `openssl` or other means in as a parameter.
+
+https://certbot.eff.org/[Certbot] or many of the other tools out there can also accomplish this step if you dont want to use this tool.
+
+Usage:
+
+[source,bash]
+----
+Usage: create-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                      -e=<email> [-k=<keyDir>] [-n=<keyName>]
+Creates a new account on the given ACME server
+  -e, --email=<email>        Email address to create account with.
+  -h, --help                 Show usage of this command
+  -k, --key-dir=<keyDir>     Directory to create/find the key to be used for this account.
+                               Default: /tmp
+  -n, --key-name=<keyName>   Name of the key to be created/used
+                               Default: acme.pem
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=<serverUrl>      URL of ACME server to use
+----
+
+== Deactivating an Account
+
+Deactivates a given account based on the account key that was used to create the account.
+
+Usage:
+
+[source,bash]
+----
+Usage: deactivate-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
+                          [-k=<keyDir>] [-n=<keyName>]
+Deactivates an existing ACME account
+  -h, --help                 Show usage of this command
+  -k, --key-dir=<keyDir>     Directory to find the key to be used for this account.
+                               Default: /tmp
+  -n, --key-name=<keyName>   Name of the key to be used
+                               Default: acme.pem
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=<serverUrl>      URL of ACME server to use
+----
