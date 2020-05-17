@@ -54,7 +54,7 @@ acme:
 <5> Agrees to the Terms of Service of the ACME provider. Default is `false`
 <6> Location to store the certificate on the server.
 <7> Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)
-<8> How long to wait until the server starts up the ACME background process. Default is `1 minute`
+<8> How long to wait until the server starts up the ACME background process. Default is `24 hours`
 <9> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
 <10> Private key used to encrypt the certificate. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. It is advisable to not check this into source control as this is the secret to handle the domain encryption.
 <11> Private key used to when setting up your account with the ACME provider. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`.  It is advisable to not check this into source control as this is your account identifier.
