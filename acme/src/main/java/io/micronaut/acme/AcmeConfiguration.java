@@ -73,7 +73,7 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Gets the domain(s) in which the certificate will be ordered for. This can be a list of domain names like so (ex. test.com) or a wildcard domain (*.test.com).
+     * Gets the domain(s) in which the certificate will be ordered for. This can be one to many domain names or a wildcard domain.
      *
      * @return the domain(s) name configured
      */
