@@ -15,5 +15,5 @@
 
 
     <logger name="org.shredzone" level="DEBUG" />
-    <logger name="io.micronaut.configuration.acme" level="DEBUG" />
+    <logger name="io.micronaut.acme" level="DEBUG" />
 </configuration>
