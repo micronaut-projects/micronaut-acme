@@ -57,6 +57,7 @@ public final class AcmeCertRefresherTask {
 
     /**
      * Schedule task to refresh certs from ACME server.
+     *
      * @throws AcmeException if any issues occur during certificate renewal
      */
     @Scheduled(
@@ -67,10 +68,8 @@ public final class AcmeCertRefresherTask {
             throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
         }
 
-        String domain = StringUtils.trimToNull(acmeConfiguration.getDomain());
         List<String> domains = new ArrayList<>();
-
-        if (domain != null) {
+        for (String domain : acmeConfiguration.getDomains()) {
             domains.add(domain);
             if (domain.startsWith("*.")) {
                 String baseDomain = domain.substring(2);

@@ -433,7 +433,7 @@ public class AcmeService {
                 eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
 
                 // Configuring self signed until a real cert is available.
-                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomain());
+                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomains().stream().findFirst().get());
                 eventPublisher.publishEvent(new CertificateEvent(ssc.cert(), new KeyPair(null, ssc.key()), false));
             } catch (CertificateException e) {
                 throw new RuntimeException(e);

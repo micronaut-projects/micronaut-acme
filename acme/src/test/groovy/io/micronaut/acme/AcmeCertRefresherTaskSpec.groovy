@@ -21,7 +21,7 @@ class AcmeCertRefresherTaskSpec extends AcmeBaseSpec {
 
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "acme.domain": EXPECTED_DOMAIN,
+                "acme.domains": EXPECTED_DOMAIN,
         ]
     }
 
@@ -56,6 +56,7 @@ class AcmeCertRefresherTaskSpec extends AcmeBaseSpec {
                     def cert = (X509Certificate) certs[0]
                     cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                     cert.getSubjectDN().getName().contains(EXPECTED_DOMAIN)
+                    cert.getSubjectAlternativeNames().size() == 1
                 }finally{
                     if(conn != null){
                         conn.disconnect()
@@ -72,7 +73,7 @@ class AcmeCertRefresherTaskSpec extends AcmeBaseSpec {
             HttpResponse<String> response = flowable.blockingFirst()
 
         then:
-            response.body() == "Hello"
+            response.body() == "Hello SSL"
     }
 
     @Controller('/')
@@ -80,7 +81,7 @@ class AcmeCertRefresherTaskSpec extends AcmeBaseSpec {
 
         @Get('/ssl')
         String simple() {
-            return "Hello"
+            return "Hello SSL"
         }
 
     }

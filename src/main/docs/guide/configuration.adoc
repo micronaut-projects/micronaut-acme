@@ -17,7 +17,7 @@ acme:
     enabled: true // <4>
     tos-agree: true // <5>
     cert-location: /path/to/store/certificates // <6>
-    domain: domain.com //<7>
+    domains: domain.com //<7>
     refresh:
         delay: 1m // <8>
         frequency: 24h // <9>
@@ -53,7 +53,7 @@ acme:
 <4> Enables ACME integration for micronaut. Default is `false`
 <5> Agrees to the Terms of Service of the ACME provider. Default is `false`
 <6> Location to store the certificate on the server.
-<7> Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)
+<7> Domain name(s) for the certificate. Can with be multiple domain names (ex. test.domain.com,stage.domain.com) or a wildcard domain name (*.domain.com)
 <8> How long to wait until the server starts up the ACME background process. Default is `24 hours`
 <9> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
 <10> Private key used to encrypt the certificate. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. It is advisable to not check this into source control as this is the secret to handle the domain encryption.

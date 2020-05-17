@@ -21,9 +21,11 @@ import io.micronaut.core.util.Toggleable;
 
 import javax.annotation.Nonnull;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.time.Duration;
+import java.util.List;
 
 /**
  * Allows the configuration of the Acme certificate process.
@@ -41,7 +43,7 @@ public class AcmeConfiguration implements Toggleable {
     private boolean enabled = DEFAULT_ACME_ENABLED;
     private boolean tosAgree = DEFAULT_TOS_AGREE;
     private Duration renewWitin = DEFAULT_RENEW_WITHIN;
-    private String domain;
+    private List<String> domains;
     private String accountKey;
     private String domainKey;
     private File certLocation;
@@ -71,23 +73,23 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Gets the domain in which the certificate will be ordered for. This can either be a singular domain (ex. test.com) or a wildcard domain (*.test.com).
+     * Gets the domain(s) in which the certificate will be ordered for. This can be a list of domain names like so (ex. test.com) or a wildcard domain (*.test.com).
      *
-     * @return the domain name configured
+     * @return the domain(s) name configured
      */
     @Nonnull
-    @NotBlank
+    @NotEmpty
     @NotNull
-    public String getDomain() {
-        return domain;
+    public List<String> getDomains() {
+        return domains;
     }
 
     /**
-     * Sets the domain in which to order the certificate for.
-     * @param domain the domain name to be requested
+     * Sets the domain(s) in which to order the certificate for.
+     * @param domains the domain(s) name to be requested
      */
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setDomains(List<String> domains) {
+        this.domains = domains;
     }
 
     /**

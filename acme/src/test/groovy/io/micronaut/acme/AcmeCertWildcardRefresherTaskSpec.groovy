@@ -21,11 +21,11 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
     public static final String EXPECTED_BASE_DOMAIN = "localhost"
     public static final String EXPECTED_DOMAIN = EXPECTED_BASE_DOMAIN
-    public static final GString WILDCARD_DOMAIN = "*.${EXPECTED_BASE_DOMAIN}"
+    public static final String WILDCARD_DOMAIN = "*.${EXPECTED_BASE_DOMAIN}".toString()
 
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "acme.domain": WILDCARD_DOMAIN,
+                "acme.domains": WILDCARD_DOMAIN,
                 "acme.challenge-type" : "dns"
         ]
     }
@@ -61,6 +61,9 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
                 def cert = (X509Certificate) certs[0]
                 cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                 cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
+                cert.getSubjectAlternativeNames().size() == 2
+                cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(WILDCARD_DOMAIN)
+                cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(EXPECTED_BASE_DOMAIN)
             }finally{
                 if(conn != null){
                     conn.disconnect()

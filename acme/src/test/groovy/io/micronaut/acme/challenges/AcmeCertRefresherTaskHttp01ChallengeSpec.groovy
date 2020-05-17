@@ -20,7 +20,7 @@ import java.security.cert.X509Certificate
 class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "acme.domain": EXPECTED_ACME_DOMAIN,
+                "acme.domains": EXPECTED_ACME_DOMAIN,
                 "acme.challenge-type" : "http",
                 "micronaut.server.dualProtocol": true,
                 "micronaut.server.port" : expectedHttpPort
@@ -66,6 +66,7 @@ class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
             def cert = (X509Certificate) certs[0]
             cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
             cert.getSubjectDN().getName().contains(EXPECTED_ACME_DOMAIN)
+            cert.getSubjectAlternativeNames().size() == 1
     }
 
     void "test send https request when the cert is in place"() {
@@ -76,7 +77,7 @@ class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
             HttpResponse<String> response = flowable.blockingFirst()
 
         then:
-            response.body() == "Hello"
+            response.body() == "Hello HTTP"
     }
 
     @Controller('/')
@@ -84,7 +85,7 @@ class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
 
         @Get('/httpchallenge')
         String simple() {
-            return "Hello"
+            return "Hello HTTP"
         }
 
     }

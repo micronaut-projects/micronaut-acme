@@ -27,7 +27,7 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
     def "if certificate is greater than renew time we do nothing"() {
         given:
             def expectedDomain = "example.com"
-            AcmeConfiguration config = new AcmeConfiguration(tosAgree: true, domain: expectedDomain, renewWitin: Duration.ofDays(30))
+            AcmeConfiguration config = new AcmeConfiguration(tosAgree: true, domains: [expectedDomain], renewWitin: Duration.ofDays(30))
             def mockAcmeSerivce = Mock(AcmeService)
 
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
@@ -46,7 +46,7 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
         given:
             def mockAcmeSerivce = Mock(AcmeService)
             String expectedDomain = "example.com"
-            AcmeConfiguration config = new AcmeConfiguration(tosAgree: true, domain: expectedDomain, renewWitin: Duration.ofDays(daysToRenew))
+            AcmeConfiguration config = new AcmeConfiguration(tosAgree: true, domains: [expectedDomain], renewWitin: Duration.ofDays(daysToRenew))
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
 
         when:
