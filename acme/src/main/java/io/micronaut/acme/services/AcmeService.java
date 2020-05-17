@@ -24,9 +24,11 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.shredzone.acme4j.*;
-import org.shredzone.acme4j.challenge.*;
+import org.shredzone.acme4j.challenge.Challenge;
+import org.shredzone.acme4j.challenge.Dns01Challenge;
+import org.shredzone.acme4j.challenge.Http01Challenge;
+import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.shredzone.acme4j.exception.AcmeRetryAfterException;
 import org.shredzone.acme4j.util.CSRBuilder;
@@ -425,19 +427,8 @@ public class AcmeService {
             X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
             eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
         } else if (challenge instanceof Http01Challenge) {
-            try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("HTTP challenge selected, creating self signed key for now.");
-                }
-                Http01Challenge http01Challenge = (Http01Challenge) challenge;
-                eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
-
-                // Configuring self signed until a real cert is available.
-                SelfSignedCertificate ssc = new SelfSignedCertificate(acmeConfiguration.getDomains().stream().findFirst().get());
-                eventPublisher.publishEvent(new CertificateEvent(ssc.cert(), new KeyPair(null, ssc.key()), false));
-            } catch (CertificateException e) {
-                throw new RuntimeException(e);
-            }
+            Http01Challenge http01Challenge = (Http01Challenge) challenge;
+            eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
         } else if (challenge instanceof Dns01Challenge) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("DNS challenge selected, spitting out TXT record.");
