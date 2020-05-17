@@ -12,12 +12,12 @@ the front runner for integration with Acme and is completely free.
 
 See the [stable](https://micronaut-projects.github.io/micronaut-acme/latest/guide) or [snapshot](https://micronaut-projects.github.io/micronaut-acme/snapshot/guide) documentation for more information.
 
-## Acme Utils ##
-Since ACME servers do require some pre setup there is a acme-utils subproject that can be found [here](https://github.com/zendern/micronaut-acme/blob/master/examples/acme-utils). Which can help you create keys, create/deactivate accounts, etc.
+## Acme Cli ##
+Since ACME servers do require some pre setup there is a acme-cli subproject that can be found [here](https://github.com/micronaut-projects/micronaut-acme/tree/master/acme-cli). Which can help you create keys, create/deactivate accounts, etc.
 
 ## Example Application ##
 
-See the [Examples](https://github.com/zendern/micronaut-acme/tree/master/examples/hello-world-acme) for more information.
+See the [Examples](https://github.com/micronaut-projects/micronaut-acme/tree/master/examples/hello-world-acme) for more information.
 
 ## Snapshots and Releases
 
