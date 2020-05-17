@@ -61,7 +61,7 @@ subprojects { Project subproject ->
     }
 
     version project.projectVersion
-    group "io.micronaut"
+    group "io.micronaut.acme"
 
     ext {
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")

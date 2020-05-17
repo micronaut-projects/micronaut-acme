@@ -7,8 +7,8 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
 ### Pre-reqs
 1. You have created an account with Let's Encrypt
 1. You have generated a domain key
-   1. acme-utils project can help with steps 1 and 2
-   1. See [here](../acme-utils/README.md)
+   1. acme-cli project can help with steps 1 and 2
+   1. See [here](../acme-cli/README.md)
 1. You have purchased a domain name and have a way to configure DNS. In the AWS example below we will use Route53.
 
 ### Build and Deploy : 
