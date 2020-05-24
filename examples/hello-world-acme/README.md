@@ -37,7 +37,8 @@ It contains a single endpoint found at `/helloWorld` but the important bits can 
     your private key into source control. Define the properties you want to override in this yaml. Usually this would be domain, account and domain key. But also could include anything else you would like to override.
     1. Create an `env.yml` file on your ec2 server
     ```
-     domain: <your domain here>
+     domains: 
+        - <your domain here>
      domain-key: |
        -----BEGIN RSA PRIVATE KEY-----
        <your account key here>
