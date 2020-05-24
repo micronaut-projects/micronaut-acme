@@ -14,7 +14,7 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
 
     Map<String, Object> getConfiguration(){
         super.getConfiguration() << [
-                "acme.domain": EXPECTED_ACME_DOMAIN,
+                "acme.domains": EXPECTED_ACME_DOMAIN,
                 "acme.challenge-type" : "http",
                 "micronaut.server.dualProtocol": true,
                 "micronaut.server.port" : expectedHttpPort

@@ -18,9 +18,9 @@ package io.micronaut.acme.background;
 
 import io.micronaut.acme.AcmeConfiguration;
 import io.micronaut.acme.services.AcmeService;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
+import io.micronaut.runtime.exceptions.ApplicationStartupException;
 import io.micronaut.scheduling.annotation.Scheduled;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.slf4j.Logger;
@@ -56,21 +56,49 @@ public final class AcmeCertRefresherTask {
     }
 
     /**
-     * Schedule task to refresh certs from ACME server.
+     * Scheduled task to refresh certs from ACME server.
+     *
      * @throws AcmeException if any issues occur during certificate renewal
      */
     @Scheduled(
             fixedDelay = "${acme.refresh.frequency:24h}",
             initialDelay = "${acme.refresh.delay:24h}")
-    void renewCertIfNeeded() throws AcmeException {
+    void backgroundRenewal() throws AcmeException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Running background/scheduled renewal process");
+        }
+        renewCertIfNeeded();
+    }
+
+    /**
+     * Checks to see if certificate needs renewed on app startup.
+     *
+     * @param startupEvent Startup event
+     */
+    @EventListener
+    void onStartup(ApplicationStartupEvent startupEvent) {
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Running startup renewal process");
+            }
+            renewCertIfNeeded();
+        } catch (Exception e) {
+            LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
+            throw new ApplicationStartupException("Failed to start due to SSL configuration issue.", e);
+        }
+    }
+
+    /**
+     * Does the work to actually renew the certificate if it needs to be done.
+     * @throws AcmeException if any issues occur during certificate renewal
+     */
+    protected void renewCertIfNeeded() throws AcmeException {
         if (!acmeConfiguration.isTosAgree()) {
             throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
         }
 
-        String domain = StringUtils.trimToNull(acmeConfiguration.getDomain());
         List<String> domains = new ArrayList<>();
-
-        if (domain != null) {
+        for (String domain : acmeConfiguration.getDomains()) {
             domains.add(domain);
             if (domain.startsWith("*.")) {
                 String baseDomain = domain.substring(2);
@@ -93,16 +121,5 @@ public final class AcmeCertRefresherTask {
         } else {
             acmeService.orderCertificate(domains);
         }
-    }
-
-    /**
-     * Checks to see if certificate needs renewed on app startup.
-     *
-     * @param startupEvent Startup event
-     * @throws AcmeException if any issues occur during certificate renewal
-     */
-    @EventListener
-    void onStartup(ApplicationStartupEvent startupEvent) throws AcmeException {
-        renewCertIfNeeded();
     }
 }

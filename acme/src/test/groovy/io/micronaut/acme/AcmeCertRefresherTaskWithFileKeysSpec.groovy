@@ -28,7 +28,7 @@ class AcmeCertRefresherTaskWithFileKeysSpec extends AcmeBaseSpec {
 
 
         super.getConfiguration() << [
-                "acme.domain": EXPECTED_DOMAIN,
+                "acme.domains": EXPECTED_DOMAIN,
                 "acme.domain-key": "file:${domainKeyFile.toPath()}",
                 "acme.account-key": "file:${accountKeyFile.toPath()}"
         ]
@@ -65,6 +65,7 @@ class AcmeCertRefresherTaskWithFileKeysSpec extends AcmeBaseSpec {
                     def cert = (X509Certificate) certs[0]
                     cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                     cert.getSubjectDN().getName().contains(EXPECTED_DOMAIN)
+                    cert.getSubjectAlternativeNames().size() == 1
                 }finally{
                     if(conn != null){
                         conn.disconnect()
