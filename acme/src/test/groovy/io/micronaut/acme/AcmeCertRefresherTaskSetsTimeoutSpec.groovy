@@ -2,41 +2,27 @@ package io.micronaut.acme
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
-import io.micronaut.http.client.HttpClient
+import io.micronaut.mock.slow.SlowAcmeServer
+import io.micronaut.mock.slow.SlowServerConfig
+import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.micronaut.runtime.server.EmbeddedServer
 import org.junit.ClassRule
 import org.junit.rules.TemporaryFolder
-import org.shredzone.acme4j.Account
-import org.shredzone.acme4j.AccountBuilder
-import org.shredzone.acme4j.Session
-import org.shredzone.acme4j.Status
 import org.shredzone.acme4j.exception.AcmeNetworkException
 import org.shredzone.acme4j.util.KeyPairUtils
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.testcontainers.containers.GenericContainer
 import org.testcontainers.shaded.org.apache.commons.lang.exception.ExceptionUtils
-import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+import spock.lang.Unroll
 
 import java.security.KeyPair
-
-import static io.micronaut.acme.AcmeBaseSpec.*
+import java.time.Duration
 
 @Stepwise
 class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
 
-    private static final Logger log = LoggerFactory.getLogger(AcmeCertRefresherTaskSetsTimeoutSpec.class)
-
     public static final String EXPECTED_DOMAIN = "localhost"
-    @Shared
-    GenericContainer certServerContainer
-
-    @Shared
-    @AutoCleanup
-    EmbeddedServer embeddedServer
 
     @Shared
     @ClassRule
@@ -61,35 +47,21 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
     int expectedSecurePort
 
     @Shared
-    int expectedPebbleServerPort
+    int expectedAcmePort
+
+    @Shared
+    int networkTimeoutInSecs
+
 
     def setupSpec() {
-        expectedHttpPort = SocketUtils.findAvailableTcpPort()
-        expectedSecurePort = SocketUtils.findAvailableTcpPort()
-        expectedPebbleServerPort = SocketUtils.findAvailableTcpPort()
-
-        certServerContainer = startPebbleContainer(expectedHttpPort, expectedSecurePort, expectedPebbleServerPort, [
-                "PEBBLE_VA_ALWAYS_VALID": "1"
-        ])
-
-        KeyPair keyPair = getAccountKeypair()
-        getDomainKeypair()
-
-        acmeServerUrl = "acme://pebble/${certServerContainer.containerIpAddress}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}"
-
         certFolder = temporaryFolder.newFolder()
+        networkTimeoutInSecs = 2
 
-        // Create an account with the acme server
-        Session session = new Session(acmeServerUrl)
-        Account createNewAccount = new AccountBuilder()
-                .agreeToTermsOfService()
-                .addEmail("test@micronaut.io")
-                .useKeyPair(keyPair)
-                .create(session)
-        assert createNewAccount.status == Status.VALID
+        generateDomainKeypair()
+        generateAccountKeypair()
     }
 
-    KeyPair getDomainKeypair() {
+    KeyPair generateDomainKeypair() {
         // Create a new keys to use for the domain
         KeyPair domainKeyPair = KeyPairUtils.createKeyPair(2048)
         StringWriter domainKeyWriter = new StringWriter()
@@ -98,7 +70,7 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         domainKeyPair
     }
 
-    KeyPair getAccountKeypair() {
+    KeyPair generateAccountKeypair() {
         // Create a new keys to register the account with
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
         StringWriter accountKeyWriter = new StringWriter()
@@ -107,45 +79,72 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         keyPair
     }
 
-    def cleanupSpec() {
-        try {
-            log.info("Stopping embedded server")
-            embeddedServer?.stop()
-        } catch (Exception e) {
-            log.error("Failed to stop embedded server", e)
-        }
-        try {
-            log.info("Stopping pebble container")
-            certServerContainer?.stop()
-        } catch (Exception e) {
-            log.error("Failed to stop pebble container", e)
-        }
-    }
 
     Map<String, Object> getConfiguration() {
         [
-                "acme.domain"                 : EXPECTED_DOMAIN,
-                "micronaut.server.ssl.enabled": true,
-                "micronaut.server.ssl.port"   : expectedSecurePort,
-                "micronaut.server.host"       : EXPECTED_DOMAIN,
-                "acme.tosAgree"               : true,
-                "acme.cert-location"          : certFolder.toString(),
-                "acme.domain-key"             : domainKey,
-                "acme.account-key"            : accountKey,
-                'acme.acme-server'            : acmeServerUrl,
-                'acme.enabled'                : true,
+                "acme.domains"                 : EXPECTED_DOMAIN,
+                "micronaut.server.ssl.enabled" : true,
+                "micronaut.server.port"        : expectedHttpPort,
+                "micronaut.server.dualProtocol": true,
+                "micronaut.server.ssl.port"    : expectedSecurePort,
+                "micronaut.server.host"        : EXPECTED_DOMAIN,
+                "acme.tosAgree"                : true,
+                "acme.cert-location"           : certFolder.toString(),
+                "acme.domain-key"              : domainKey,
+                "acme.account-key"             : accountKey,
+                'acme.acme-server'             : acmeServerUrl,
+                'acme.enabled'                 : true,
         ] as Map<String, Object>
     }
 
-    def "validate timeout applied"() {
-        when:
-        ApplicationContext.run(EmbeddedServer,
-                getConfiguration() << ["acme.timeout": "1ms"],
+    @Unroll
+    def "validate timeout applied if signup is slow"(SlowServerConfig config) {
+        given: "we have all the ports we could ever need"
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedAcmePort = SocketUtils.findAvailableTcpPort()
+        acmeServerUrl = "http://localhost:$expectedAcmePort/acme/dir"
+
+        and: "we have a slow acme server"
+        EmbeddedServer mockAcmeServer = ApplicationContext.builder(['micronaut.server.port': expectedAcmePort])
+                .environments("test")
+                .packages(SlowAcmeServer.getPackage().getName(), AcmeCertRefresherTaskSetsTimeoutSpec.getPackage().getName())
+                .run(EmbeddedServer)
+        SlowAcmeServer slowAcmeServer = mockAcmeServer.getApplicationContext().getBean(SlowAcmeServer.class)
+        slowAcmeServer.setAcmeServerUrl(acmeServerUrl)
+        slowAcmeServer.setSlowServerConfig(config)
+
+
+        when: "we configure network timeouts"
+        EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
+                getConfiguration() << ["acme.timeout": "${networkTimeoutInSecs}s"],
                 "test")
 
-        then:
-        AcmeNetworkException ex = thrown()
-        ex.message == "Network error"
-        ExceptionUtils.getRootCause(ex).message == "Read timed out"
+        then: "we get network errors b/c of the timeout"
+        ApplicationStartupException ex = thrown()
+
+        def ane = ExceptionUtils.getThrowables(ex).find { it instanceof AcmeNetworkException }
+        ane?.message == "Network error"
+
+        Throwable rootEx = ExceptionUtils.getRootCause(ex)
+        rootEx instanceof SocketTimeoutException
+        rootEx.message == "Read timed out"
+
+        cleanup:
+        appServer?.stop()
+        mockAcmeServer?.stop()
+
+        where:
+        config                                              | _
+        new ActualSlowServerConfig(slowSignup: true)        | _
+        new ActualSlowServerConfig(slowOrdering: true)      | _
+        new ActualSlowServerConfig(slowAuthorization: true) | _
+    }
+
+    class ActualSlowServerConfig implements SlowServerConfig {
+        boolean slowSignup
+        boolean slowOrdering
+        boolean slowAuthorization
+        Duration duration = Duration.ofSeconds(networkTimeoutInSecs + 2)
     }
 }
