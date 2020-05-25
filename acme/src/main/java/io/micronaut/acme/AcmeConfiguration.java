@@ -48,6 +48,7 @@ public class AcmeConfiguration implements Toggleable {
     private String domainKey;
     private File certLocation;
     private String acmeServer;
+    private Duration timeout;
     private ChallengeType challengeType = DEFAULT_CHALLENGE_TYPE;
     private Integer httpChallengeServerPort = 9999;
     private OrderConfiguration order = new OrderConfiguration();
@@ -267,6 +268,22 @@ public class AcmeConfiguration implements Toggleable {
      */
     public void setHttpChallengeServerPort(Integer httpChallengeServerPort) {
         this.httpChallengeServerPort = httpChallengeServerPort;
+    }
+
+    /**
+     * Gets the timeout that has been set when calling an acme server. Default {@see org.shredzone.acme4j.connector.NetworkSettings}
+     * @return timeout
+     */
+    public Duration getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Sets the timeout for requests made to the acme server.
+     * @param timeout http request timeout
+     */
+    public void setTimeout(Duration timeout) {
+        this.timeout = timeout;
     }
 
     /**

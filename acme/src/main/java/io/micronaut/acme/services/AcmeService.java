@@ -88,6 +88,7 @@ public class AcmeService {
     private final String accountKeyString;
     private final Duration authPause;
     private final Duration orderPause;
+    private final Duration timeout;
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -104,6 +105,7 @@ public class AcmeService {
                        ResourceResolver resourceResolver,
                        @Named("scheduled") TaskScheduler taskScheduler) {
         this.eventPublisher = eventPublisher;
+        this.timeout = acmeConfiguration.getTimeout();
         this.orderPause = acmeConfiguration.getOrder().getPause();
         this.authPause = acmeConfiguration.getAuth().getPause();
         this.accountKeyString = acmeConfiguration.getAccountKey();
@@ -147,6 +149,9 @@ public class AcmeService {
         AtomicInteger orderRetryAttempts = new AtomicInteger(acmeConfiguration.getOrder().getRefreshAttempts());
 
         Session session = new Session(acmeServerUrl);
+        if (timeout != null) {
+            session.networkSettings().setTimeout(timeout);
+        }
 
         KeyPair accountKeyPair;
         try {

@@ -77,31 +77,7 @@ class AcmeBaseSpec extends Specification {
         expectedSecurePort = SocketUtils.findAvailableTcpPort()
         expectedPebbleServerPort = SocketUtils.findAvailableTcpPort()
 
-        Testcontainers.exposeHostPorts(expectedHttpPort, expectedSecurePort)
-
-        def file = File.createTempFile("pebble", "config")
-        file.write """{
-              "pebble": {
-                "listenAddress": "0.0.0.0:${expectedPebbleServerPort}",
-                "certificate": "test/certs/localhost/cert.pem",
-                "privateKey": "test/certs/localhost/key.pem",
-                "httpPort": $expectedHttpPort,
-                "tlsPort": $expectedSecurePort
-              }
-            }"""
-
-        log.info("Expected micronaut ports - http : {}, secure : {} ", expectedHttpPort, expectedSecurePort)
-        log.info("Expected pebble config : {}", file.text)
-
-        certServerContainer = new GenericContainer("letsencrypt/pebble:latest")
-                .withCopyFileToContainer(MountableFile.forHostPath(file.toPath()), "/test/config/pebble-config.json")
-                .withCommand("/usr/bin/pebble", "-strict", "false")
-                .withEnv(getPebbleEnv())
-                .withExposedPorts(expectedPebbleServerPort)
-                .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
-                        .withStrategy(new HostPortWaitStrategy())
-                        .withStartupTimeout(Duration.ofMinutes(2)));
-        certServerContainer.start()
+        certServerContainer = startPebbleContainer(expectedHttpPort, expectedSecurePort, expectedPebbleServerPort, getPebbleEnv())
 
         KeyPair keyPair = getAccountKeypair()
         getDomainKeypair()
@@ -123,6 +99,35 @@ class AcmeBaseSpec extends Specification {
                 "test")
 
         client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
+    }
+
+    static GenericContainer startPebbleContainer(int expectedHttpPort, int expectedSecurePort, int expectedPebbleServerPort, Map<String, String> pebbleEnvConfig) {
+        Testcontainers.exposeHostPorts(expectedHttpPort, expectedSecurePort)
+
+        def file = File.createTempFile("pebble", "config")
+        file.write """{
+              "pebble": {
+                "listenAddress": "0.0.0.0:${expectedPebbleServerPort}",
+                "certificate": "test/certs/localhost/cert.pem",
+                "privateKey": "test/certs/localhost/key.pem",
+                "httpPort": $expectedHttpPort,
+                "tlsPort": $expectedSecurePort
+              }
+            }"""
+
+        log.info("Expected micronaut ports - http : {}, secure : {} ", expectedHttpPort, expectedSecurePort)
+        log.info("Expected pebble config : {}", file.text)
+
+        GenericContainer certServerContainer = new GenericContainer("letsencrypt/pebble:latest")
+                .withCopyFileToContainer(MountableFile.forHostPath(file.toPath()), "/test/config/pebble-config.json")
+                .withCommand("/usr/bin/pebble", "-strict", "false")
+                .withEnv(pebbleEnvConfig)
+                .withExposedPorts(expectedPebbleServerPort)
+                .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
+                        .withStrategy(new HostPortWaitStrategy())
+                        .withStartupTimeout(Duration.ofMinutes(2)));
+        certServerContainer.start()
+        return certServerContainer
     }
 
     KeyPair getDomainKeypair() {

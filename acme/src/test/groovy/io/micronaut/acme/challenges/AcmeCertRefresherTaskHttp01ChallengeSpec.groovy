@@ -30,8 +30,7 @@ class AcmeCertRefresherTaskHttp01ChallengeSpec extends AcmeBaseSpec {
     @Override
     Map<String, String> getPebbleEnv(){
         return [
-                "PEBBLE_VA_ALWAYS_VALID": "0",
-                "PEBBLE_VA_NOSLEEP":"1"
+                "PEBBLE_VA_ALWAYS_VALID": "0"
         ]
     }
 
