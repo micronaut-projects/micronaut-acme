@@ -46,14 +46,72 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>1.0.1.BUILD-SNAPSHOT</p>
+                <p><strong>Version:</strong>1.0.0.BUILD-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
 <h3 id="_acme_config_properties">Acme Config Properties</h3>
-<a id="io.micronaut.configuration.acme.AcmeConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration">&#128279;</a>
+<a id="io.micronaut.acme.AcmeConfiguration$OrderConfiguration" href="#io.micronaut.acme.AcmeConfiguration$OrderConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.html">AcmeConfiguration</a></caption>
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html">AcmeConfiguration$OrderConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between ordering attempts. Default Duration.ofSeconds(3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server. Default 10.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.acme.AcmeConfiguration$AuthConfiguration" href="#io.micronaut.acme.AcmeConfiguration$AuthConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html">AcmeConfiguration$AuthConfiguration</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between authentication attempts. Default Duration.ofSeconds(3).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default 10.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.acme.AcmeConfiguration" href="#io.micronaut.acme.AcmeConfiguration">&#128279;</a>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.html">AcmeConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -83,9 +141,9 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the duration in which the application will trigger the renew process to get a new certificate.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.domain</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the domain in which to order the certificate for.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.domains</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the domain(s) in which to order the certificate for.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.account-key</code></p></td>
@@ -108,72 +166,19 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the acme server to authenticate and order the certificate from.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.timeout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the timeout for requests made to the acme server.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.challenge-type</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.ChallengeType.html">AcmeConfiguration$ChallengeType</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="../api/io/micronaut/acme/AcmeConfiguration.ChallengeType.html">AcmeConfiguration$ChallengeType</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Set the challenge type to be used to validate the account.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.http-challenge-server-port</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Integer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Sets the port to start the http challenge server on.</p></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.acme.AcmeConfiguration$AuthConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration$AuthConfiguration">&#128279;</a>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.AuthConfiguration.html">AcmeConfiguration$AuthConfiguration</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.pause</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between authentication attempts. Default Duration.ofSeconds(3).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.refresh-attempts</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default 10.</p></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.acme.AcmeConfiguration$OrderConfiguration" href="#io.micronaut.configuration.acme.AcmeConfiguration$OrderConfiguration">&#128279;</a>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/acme/AcmeConfiguration.OrderConfiguration.html">AcmeConfiguration$OrderConfiguration</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.pause</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between ordering attempts. Default Duration.ofSeconds(3).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.refresh-attempts</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server. Default 10.</p></td>
 </tr>
 </tbody>
 </table>

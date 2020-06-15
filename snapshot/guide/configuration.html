@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>2 Configuration 1.0.1.BUILD-SNAPSHOT</title>
+    <title>2 Configuration 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -81,7 +81,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>2 Configuration</h1>
 
-                    <p><strong>Version:</strong> 1.0.1.BUILD-SNAPSHOT</p>
+                    <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
 
                 
@@ -103,7 +103,7 @@ function addJsClass() {
 <p>        <div class="listingblock multi-language-sample">
 <div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:1.0.1.BUILD-SNAPSHOT")</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:1.0.0.BUILD-SNAPSHOT")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -111,7 +111,7 @@ function addJsClass() {
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.acme&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-acme&lt;/artifactId&gt;
-    &lt;version&gt;1.0.1.BUILD-SNAPSHOT&lt;/version&gt;
+    &lt;version&gt;1.0.0.BUILD-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -133,7 +133,9 @@ acme:
     enabled: true <i class="conum" data-value="4"></i><b>(4)</b>
     tos-agree: true <i class="conum" data-value="5"></i><b>(5)</b>
     cert-location: /path/to/store/certificates <i class="conum" data-value="6"></i><b>(6)</b>
-    domain: domain.com <i class="conum" data-value="7"></i><b>(7)</b>
+    domains: <i class="conum" data-value="7"></i><b>(7)</b>
+      - stage.domain.com
+      - test.domain.com
     refresh:
         delay: 1m <i class="conum" data-value="8"></i><b>(8)</b>
         frequency: 24h <i class="conum" data-value="9"></i><b>(9)</b>
@@ -161,7 +163,8 @@ acme:
         pause: 1m <i class="conum" data-value="15"></i><b>(15)</b>
         refresh-attempts: 10 <i class="conum" data-value="16"></i><b>(16)</b>
     renew-within: 30 <i class="conum" data-value="17"></i><b>(17)</b>
-    challenge-type: tls <i class="conum" data-value="18"></i><b>(18)</b></code></pre>
+    challenge-type: tls <i class="conum" data-value="18"></i><b>(18)</b>
+    timeout: 10s <i class="conum" data-value="19"></i><b>(19)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -192,11 +195,11 @@ acme:
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Domain name for the certificate. Can with be a singular domain name (ex. domain.com) or a wildcard domain name (*.domain.com)</td>
+<td>Domain name(s) for the certificate. Can be a 1 or many domains or even a wildcard domain.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>How long to wait until the server starts up the ACME background process. Default is <code>1 minute</code></td>
+<td>How long to wait until the server starts up the ACME background process. Default is <code>24 hours</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
@@ -237,6 +240,10 @@ acme:
 <tr>
 <td><i class="conum" data-value="18"></i><b>18</b></td>
 <td>The challenge type you would like to use. Default is <code>tls</code>. Possible options : http, tls, dns</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="19"></i><b>19</b></td>
+<td>Sets the connection/read timeout when making http calls to the ACME server. Default comes from here <a href="https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61" class="bare">https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61</a></td>
 </tr>
 </table>
 </div>

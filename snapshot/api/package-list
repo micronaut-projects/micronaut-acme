@@ -1,8 +1,8 @@
-io.micronaut.acme.cli
-io.micronaut.configuration.acme
-io.micronaut.configuration.acme.background
-io.micronaut.configuration.acme.challenge.dns
-io.micronaut.configuration.acme.challenge.http.endpoint
-io.micronaut.configuration.acme.events
-io.micronaut.configuration.acme.services
-io.micronaut.configuration.acme.ssl
+com.acme.example
+io.micronaut.acme
+io.micronaut.acme.background
+io.micronaut.acme.challenge.dns
+io.micronaut.acme.challenge.http.endpoint
+io.micronaut.acme.events
+io.micronaut.acme.services
+io.micronaut.acme.ssl
