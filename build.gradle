@@ -1,186 +1,27 @@
 buildscript {
     repositories {
-        maven { url "https://repo.grails.org/grails/core" }
+        gradlePluginPortal()
         jcenter()
+        maven { url "https://dl.bintray.com/micronaut/core-releases-local" }
+        maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "org.grails:grails-docs:$grailsVersion"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
-        classpath "gradle.plugin.org.aim42:htmlSanityCheck:$htmlSanityCheckVersion"
-
-        classpath "io.micronaut.docs:micronaut-docs-asciidoc-extensions:$micronautDocsVersion"
-        classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:$micronautDocsVersion", {
-            exclude module: 'shadow'
-            exclude module: 'plugin-shadow'
-        }
+        classpath "io.micronaut.build:micronaut-gradle-plugins:2.0.0.RC10"
     }
-}
-
-plugins {
-    id "io.spring.dependency-management" version "1.0.9.RELEASE"
-    id 'com.github.hierynomus.license' version '0.15.0' apply false
-    id 'com.github.ben-manes.versions' version '0.28.0'
-    id "com.github.johnrengelman.shadow" version "5.2.0" apply false
-    id "net.ltgt.apt-eclipse" version "0.18" apply false
-    id "net.ltgt.apt-idea" version "0.18" apply false
-}
-
-apply plugin: 'org.aim42.htmlSanityCheck'
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven { url "https://oss.jfrog.org/oss-snapshot-local" }
-    maven { url "https://repo.grails.org/grails/core" }
-}
-
-version project.projectVersion
-
-ext {
-    distInstallDir = file("$buildDir/dist-tmp")
-    homeBinDir = file("bin")
-    homeLibDir = file("lib")
-    homeSrcDir = file("src")
 }
 
 subprojects { Project subproject ->
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        maven { url "https://oss.jfrog.org/oss-snapshot-local" }
-        maven { url "https://repo.grails.org/grails/core" }
-        jcenter()
-    }
-
-    //Example should be standalone...can share repos but doesn't need anything else
-    if(subproject.name.contains("example")){
-        return
-    }
-
-    version project.projectVersion
     group "io.micronaut"
 
-    ext {
-        isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
-        isConfiguration = subproject.projectDir.parentFile.name == "configurations"
-    }
+    apply plugin: "io.micronaut.build.common"
+    apply plugin: "io.micronaut.build.dependency-updates"
 
-    apply plugin: "groovy"
-    apply plugin:"java-library"
-    apply plugin: "io.spring.dependency-management"
-
-    dependencyManagement {
-        imports {
-            mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
-        }
-    }
-
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-    compileJava.options.compilerArgs.add '-parameters'
-    compileTestJava.options.compilerArgs.add '-parameters'
-
-    apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-build/v${micronautBuildVersion}/publishing.gradle"
-
-    jar {
-        manifest {
-            attributes('Automatic-Module-Name': "${subproject.group}.${subproject.name}".replaceAll('[^\\w\\.\\$_]', "_"))
-            attributes('Implementation-Version': projectVersion)
-            attributes('Implementation-Title': title)
-        }
-    }
-
-    bintray.publish = true
-
-    tasks.withType(Test) {
-        jvmArgs '-Duser.country=US'
-        jvmArgs '-Duser.language=en'
-        testLogging {
-            exceptionFormat = 'full'
-        }
-
-        afterSuite {
-            System.out.print(".")
-            System.out.flush()
-        }
-
-        reports.html.enabled = !System.getenv("GITHUB_ACTIONS")
-        reports.junitXml.enabled = !System.getenv("GITHUB_ACTIONS")
-    }
-
-    configurations {
-        documentation
-        all {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                String group = details.requested.group
-                if (group == 'org.codehaus.groovy') {
-                    details.useVersion(groovyVersion)
-                }
-                if (group == "org.ow2.asm") {
-                    details.useVersion(asmVersion)
-                }
-            }
-        }
-    }
-
-    groovydoc {
-        classpath += project.configurations.documentation
-    }
-
-    task allDeps(type: DependencyReportTask) {}
-
-    apply plugin: "checkstyle"
-    checkstyle {
-        toolVersion = project.checkstyleToolVersion
-        configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-
-        // Per submodule
-        maxErrors = 1
-        maxWarnings = 10
-
-        showViolations = true
-    }
-
-    checkstyleTest.enabled = false
-}
-
-apply from: "https://raw.githubusercontent.com/micronaut-projects/micronaut-docs/v${micronautDocsVersion}/gradle/docs.gradle"
-
-allprojects {
-    apply plugin: 'idea'
-
-    idea {
-        module {
-            outputDir file('build/classes/java/main')
-            testOutputDir file('build/classes/groovy/test')
-        }
-    }
-    if (it.name.contains('example') || it.name.startsWith('benchmark')) {
+    if (subproject.parent.name == "examples" || subproject.name.contains("example")) {
         return
     }
-    apply from: rootProject.file('gradle/license.gradle')
+
+    apply plugin: "io.micronaut.build.publishing"
 }
 
-htmlSanityCheck {
-    sourceDir = new File("${rootProject.buildDir}/docs/")
-    sourceDocuments = ["index.html"]
-
-}
-
-docs.finalizedBy(htmlSanityCheck)
-
-dependencyUpdates.resolutionStrategy {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'b', 'ea'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]$qualifier[.\d-+]*/
-            }
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
-    }
-}
+apply plugin: "io.micronaut.build.docs"
+apply plugin: "io.micronaut.build.dependency-updates"
