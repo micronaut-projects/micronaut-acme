@@ -1,8 +1,11 @@
-plugins {
-    id "groovy"
-    id "com.github.johnrengelman.shadow"
-    id "application"
-}
+apply plugin: "groovy"
+apply plugin: "application"
+
+mainClassName = "io.micronaut.acme.cli.AcmeCliCommand"
+
+apply plugin: "com.github.johnrengelman.shadow"
+
+
 
 dependencies {
     annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -33,8 +36,6 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.5.0"
 }
 
-mainClassName = "io.micronaut.acme.cli.AcmeCliCommand"
-
 jar {
     manifest {
         attributes 'Main-Class': mainClassName
@@ -44,20 +45,18 @@ jar {
 test {
     useJUnitPlatform()
 }
+
 tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
     options.compilerArgs.add('-parameters')
 }
 
 shadowJar {
-    mergeServiceFiles()
+    mergeServiceFiles()    
+    archiveBaseName = "micronaut-$project.name"
 }
 
 run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
-
-shadowJar {
-    archiveBaseName = "micronaut-$project.name"
-}
 
 shadowDistZip {
     archiveBaseName = "micronaut-$project.name"
@@ -74,7 +73,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId( "micronaut-$project.name" )
             from components.java
-            artifact shadowDistZip
+            artifact shadowDistZip.outputs.files.first()
         }
     }
 }
