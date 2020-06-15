@@ -1,5 +1,0 @@
-profile: cli
-defaultPackage: acme.cli
----
-testFramework: spock
-sourceLanguage: java

@@ -1,7 +1,6 @@
 rootProject.name = "micronaut-acme"
 
 include "acme"
-include "acme-cli"
 
 String[] examples = [
         "hello-world-acme"
