@@ -1,6 +1,6 @@
 # Micronaut Acme
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.micronaut/micronaut-acme.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut%22%20AND%20a:%22micronaut-acme%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.micronaut.acme/micronaut-acme.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut.acme%22%20AND%20a:%22micronaut-acme%22)
 [![Build Status](https://github.com/micronaut-projects/micronaut-acme/workflows/Java%20CI/badge.svg)](https://github.com/micronaut-projects/micronaut-acme/actions)
 
 This project includes integration between [Micronaut](http://micronaut.io) and [ACME ](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) via [Acme4j](https://shredzone.org/maven/acme4j/index.html).
