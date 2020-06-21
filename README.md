@@ -12,8 +12,8 @@ the front runner for integration with Acme and is completely free.
 
 See the [stable](https://micronaut-projects.github.io/micronaut-acme/latest/guide) or [snapshot](https://micronaut-projects.github.io/micronaut-acme/snapshot/guide) documentation for more information.
 
-## Acme Cli ##
-Since ACME servers do require some pre setup there is a acme-cli subproject that can be found [here](https://github.com/micronaut-projects/micronaut-acme/tree/master/acme-cli). Which can help you create keys, create/deactivate accounts, etc.
+## ACME Tooling ##
+Since ACME servers do require some pre setup support has been baked into the micronaut-cli found [here](https://github.com/micronaut-projects/micronaut-starter). Which can help you create keys, create/deactivate accounts, etc.
 
 ## Example Application ##
 
