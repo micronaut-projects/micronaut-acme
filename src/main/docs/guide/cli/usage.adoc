@@ -1,3 +1,28 @@
+To use these functions you must first enable the `acme` feature in your app.
+
+== For a new app
+Either at creation time you will need to select the `acme` feature
+
+Using the Micronaut CLI select the `acem` feature on creation.
+
+[source,bash]
+----
+mn create-app --features acme hello-world
+----
+
+Or using Micronaut Launch https://micronaut.io/launch/ simply select `acme` feature before downloading your pre-built app.
+
+== For an existing app
+Use the micronaut cli to do a `feature-diff` on an exiting app to show the changes needed
+to enable the feature.
+
+ex. CLI Feature Diff
+[source,bash]
+----
+cd <project directory>
+mn feature-diff --features acme
+----
+
 == Creating keypairs
 
 A utility to help with creating keypairs. This is akin to doing something like so with openssl
@@ -13,22 +38,25 @@ Usage:
 
 [source,bash]
 ----
-Usage: acme-cli create-key [-h] [-k=<keyDir>] [-n=<keyName>] [-s=<keySize>]
-Creates an keypair for use with account creation
-  -h, --help                 Show usage of this command
+Usage: mn create-key [-fhvVx] [-k=<keyDir>] -n=<keyName> [-s=<keySize>]
+Creates an keypair for use with ACME integration
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
   -k, --key-dir=<keyDir>     Custom location on disk to put the key to be used
                                with this account.
-                               Default: /tmp
+                               Default: src/main/resources
   -n, --key-name=<keyName>   Name of the key to be created
-                               Default: acme.pem
   -s, --key-size=<keySize>   Size of the key to be generated
                                Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
 ----
 
 == Creating an Account
 
 Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
-the account keypair that you have generated using the `acme-cli create-key` or via `openssl` or other means in as a parameter.
+the account keypair that you have generated using the `mn create-key` or via `openssl` or other means in as a parameter.
 
 https://certbot.eff.org/[Certbot] or many of the other tools out there can also accomplish this step if you dont want to use this tool.
 
@@ -36,15 +64,21 @@ Usage:
 
 [source,bash]
 ----
-Usage: create-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
-                      -e=<email> [-k=<keyDir>] [-n=<keyName>]
+Usage: mn create-acme-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging)
+                              [-fhvVx] -e=<email> [-k=<keyDir>] -n=<keyName> [-s=<keySize>]
 Creates a new account on the given ACME server
   -e, --email=<email>        Email address to create account with.
-  -h, --help                 Show usage of this command
-  -k, --key-dir=<keyDir>     Directory to create/find the key to be used for this account.
-                               Default: /tmp
-  -n, --key-name=<keyName>   Name of the key to be created/used
-                               Default: acme.pem
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
+  -k, --key-dir=<keyDir>     Custom location on disk to put the key to be used with this
+                               account.
+                               Default: src/main/resources
+  -n, --key-name=<keyName>   Name of the key to be created
+  -s, --key-size=<keySize>   Size of the key to be generated
+                               Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
 ACME server URL
       --lets-encrypt-prod    Use the Let's Encrypt prod URL.
       --lets-encrypt-staging Use the Let's Encrypt staging URL
@@ -59,14 +93,18 @@ Usage:
 
 [source,bash]
 ----
-Usage: deactivate-account (-u=<serverUrl> | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
-                          [-k=<keyDir>] [-n=<keyName>]
+Usage: mn deactivate-acme-account (-u=<serverUrl> | --lets-encrypt-prod |
+                                  --lets-encrypt-staging) [-fhvVx] [-k=<keyDir>] [-n=<keyName>]
 Deactivates an existing ACME account
-  -h, --help                 Show usage of this command
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
   -k, --key-dir=<keyDir>     Directory to find the key to be used for this account.
-                               Default: /tmp
+                               Default: src/main/resources
   -n, --key-name=<keyName>   Name of the key to be used
-                               Default: acme.pem
+                               Default: null
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
 ACME server URL
       --lets-encrypt-prod    Use the Let's Encrypt prod URL.
       --lets-encrypt-staging Use the Let's Encrypt staging URL
