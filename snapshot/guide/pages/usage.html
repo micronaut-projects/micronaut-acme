@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>4.2 Usage 1.0.0.BUILD-SNAPSHOT</title>
+    <title>4.1 Usage 1.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>4.2 Usage</h1>
+                    <h1>4.1 Usage</h1>
 
                     <p><strong>Version:</strong> 1.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -85,7 +85,7 @@ function addJsClass() {
                 
 
                 
-<h2 id="usage"><a class="anchor" href="#usage"></a>4.2 Usage</h2>
+<h2 id="usage"><a class="anchor" href="#usage"></a>4.1 Usage</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/cli/usage.adoc"'>
@@ -94,6 +94,46 @@ function addJsClass() {
 </div>
 
 
+<div class="paragraph">
+<p>To use these functions you must first enable the <code>acme</code> feature in your app.</p>
+</div>
+<div class="sect1">
+<h2 id="_for_a_new_app">For a new app</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Either at creation time you will need to select the <code>acme</code> feature</p>
+</div>
+<div class="paragraph">
+<p>Using the Micronaut CLI select the <code>acem</code> feature on creation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mn create-app --features acme hello-world</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or using Micronaut Launch <a href="https://micronaut.io/launch/" class="bare">https://micronaut.io/launch/</a> simply select <code>acme</code> feature before downloading your pre-built app.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_for_an_existing_app">For an existing app</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Use the micronaut cli to do a <code>feature-diff</code> on an exiting app to show the changes needed
+to enable the feature.</p>
+</div>
+<div class="paragraph">
+<p>ex. CLI Feature Diff</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd &lt;project directory&gt;
+mn feature-diff --features acme</code></pre>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_creating_keypairs">Creating keypairs</h2>
 <div class="sectionbody">
@@ -113,16 +153,19 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: acme-cli create-key [-h] [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;] [-s=&lt;keySize&gt;]
-Creates an keypair for use with account creation
-  -h, --help                 Show usage of this command
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn create-key [-fhvVx] [-k=&lt;keyDir&gt;] -n=&lt;keyName&gt; [-s=&lt;keySize&gt;]
+Creates an keypair for use with ACME integration
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
   -k, --key-dir=&lt;keyDir&gt;     Custom location on disk to put the key to be used
                                with this account.
-                               Default: /tmp
+                               Default: src/main/resources
   -n, --key-name=&lt;keyName&gt;   Name of the key to be created
-                               Default: acme.pem
   -s, --key-size=&lt;keySize&gt;   Size of the key to be generated
-                               Default: 4096</code></pre>
+                               Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.</code></pre>
 </div>
 </div>
 </div>
@@ -132,7 +175,7 @@ Creates an keypair for use with account creation
 <div class="sectionbody">
 <div class="paragraph">
 <p>Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
-the account keypair that you have generated using the <code>acme-cli create-key</code> or via <code>openssl</code> or other means in as a parameter.</p>
+the account keypair that you have generated using the <code>mn create-key</code> or via <code>openssl</code> or other means in as a parameter.</p>
 </div>
 <div class="paragraph">
 <p><a href="https://certbot.eff.org/">Certbot</a> or many of the other tools out there can also accomplish this step if you dont want to use this tool.</p>
@@ -142,15 +185,21 @@ the account keypair that you have generated using the <code>acme-cli create-key<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: create-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
-                      -e=&lt;email&gt; [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn create-acme-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging)
+                              [-fhvVx] -e=&lt;email&gt; [-k=&lt;keyDir&gt;] -n=&lt;keyName&gt; [-s=&lt;keySize&gt;]
 Creates a new account on the given ACME server
   -e, --email=&lt;email&gt;        Email address to create account with.
-  -h, --help                 Show usage of this command
-  -k, --key-dir=&lt;keyDir&gt;     Directory to create/find the key to be used for this account.
-                               Default: /tmp
-  -n, --key-name=&lt;keyName&gt;   Name of the key to be created/used
-                               Default: acme.pem
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
+  -k, --key-dir=&lt;keyDir&gt;     Custom location on disk to put the key to be used with this
+                               account.
+                               Default: src/main/resources
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be created
+  -s, --key-size=&lt;keySize&gt;   Size of the key to be generated
+                               Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
 ACME server URL
       --lets-encrypt-prod    Use the Let's Encrypt prod URL.
       --lets-encrypt-staging Use the Let's Encrypt staging URL
@@ -170,14 +219,18 @@ ACME server URL
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: deactivate-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging) [-h]
-                          [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn deactivate-acme-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod |
+                                  --lets-encrypt-staging) [-fhvVx] [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
 Deactivates an existing ACME account
-  -h, --help                 Show usage of this command
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
   -k, --key-dir=&lt;keyDir&gt;     Directory to find the key to be used for this account.
-                               Default: /tmp
+                               Default: src/main/resources
   -n, --key-name=&lt;keyName&gt;   Name of the key to be used
-                               Default: acme.pem
+                               Default: null
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
 ACME server URL
       --lets-encrypt-prod    Use the Let's Encrypt prod URL.
       --lets-encrypt-staging Use the Let's Encrypt staging URL
