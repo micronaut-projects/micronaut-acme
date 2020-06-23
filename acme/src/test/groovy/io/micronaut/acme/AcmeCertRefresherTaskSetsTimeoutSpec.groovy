@@ -2,6 +2,7 @@ package io.micronaut.acme
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
+import io.micronaut.http.server.exceptions.ServerStartupException
 import io.micronaut.mock.slow.SlowAcmeServer
 import io.micronaut.mock.slow.SlowServerConfig
 import io.micronaut.runtime.exceptions.ApplicationStartupException
@@ -98,7 +99,7 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
     }
 
     @Unroll
-    def "validate timeout applied if signup is slow"(SlowServerConfig config) {
+    def "validate timeout applied if signup is slow"(SlowServerConfig config, Class exType) {
         given: "we have all the ports we could ever need"
         expectedHttpPort = SocketUtils.findAvailableTcpPort()
         expectedSecurePort = SocketUtils.findAvailableTcpPort()
@@ -121,7 +122,9 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
                 "test")
 
         then: "we get network errors b/c of the timeout"
-        ApplicationStartupException ex = thrown()
+        def ex = thrown(Throwable)
+
+        ex.class == exType
 
         def ane = ExceptionUtils.getThrowables(ex).find { it instanceof AcmeNetworkException }
         ane?.message == "Network error"
@@ -135,10 +138,10 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         mockAcmeServer?.stop()
 
         where:
-        config                                              | _
-        new ActualSlowServerConfig(slowSignup: true)        | _
-        new ActualSlowServerConfig(slowOrdering: true)      | _
-        new ActualSlowServerConfig(slowAuthorization: true) | _
+        config                                              | exType
+        new ActualSlowServerConfig(slowSignup: true)        | ServerStartupException
+        new ActualSlowServerConfig(slowOrdering: true)      | ServerStartupException
+        new ActualSlowServerConfig(slowAuthorization: true) | ApplicationStartupException
     }
 
     class ActualSlowServerConfig implements SlowServerConfig {
