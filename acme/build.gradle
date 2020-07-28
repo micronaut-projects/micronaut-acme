@@ -18,7 +18,7 @@ dependencies {
 
     implementation group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.31.Final'
 
-    testImplementation "org.testcontainers:spock:1.14.3"
+    testImplementation "org.testcontainers:spock:1.15.0-rc1"
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
     testImplementation("org.spockframework:spock-core:${spockVersion}") {
