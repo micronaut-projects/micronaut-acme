@@ -16,7 +16,7 @@ dependencies {
     documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
 
-    implementation group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.31.Final'
+    implementation group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.33.Final'
 
     testImplementation "org.testcontainers:spock:1.14.3"
     testImplementation("io.micronaut:micronaut-http-client")
