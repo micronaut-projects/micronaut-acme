@@ -46,14 +46,14 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>1.1.0.BUILD-SNAPSHOT</p>
+                <p><strong>Version:</strong>1.0.1.BUILD-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
 <h3 id="_acme_config_properties">Acme Config Properties</h3>
-<a id="io.micronaut.acme.AcmeConfiguration$OrderConfiguration" href="#io.micronaut.acme.AcmeConfiguration$OrderConfiguration">&#128279;</a>
+<a id="io.micronaut.acme.AcmeConfiguration$AuthConfiguration" href="#io.micronaut.acme.AcmeConfiguration$AuthConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html">AcmeConfiguration$OrderConfiguration</a></caption>
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html">AcmeConfiguration$AuthConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -68,14 +68,14 @@
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.pause</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between ordering attempts. Default Duration.ofSeconds(3).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between authentication attempts. Default Duration.ofSeconds(3).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.refresh-attempts</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server. Default 10.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default 10.</p></td>
 </tr>
 </tbody>
 </table>
@@ -154,9 +154,9 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
-<a id="io.micronaut.acme.AcmeConfiguration$AuthConfiguration" href="#io.micronaut.acme.AcmeConfiguration$AuthConfiguration">&#128279;</a>
+<a id="io.micronaut.acme.AcmeConfiguration$OrderConfiguration" href="#io.micronaut.acme.AcmeConfiguration$OrderConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html">AcmeConfiguration$AuthConfiguration</a></caption>
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html">AcmeConfiguration$OrderConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -171,14 +171,14 @@
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.pause</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.pause</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between authentication attempts. Default Duration.ofSeconds(3).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets duration in which we will pause between ordering attempts. Default Duration.ofSeconds(3).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.auth.refresh-attempts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>acme.order.refresh-attempts</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">int</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default 10.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server. Default 10.</p></td>
 </tr>
 </tbody>
 </table>
