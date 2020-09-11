@@ -12,7 +12,6 @@ dependencies {
     implementation "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
     implementation "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
 
-
     documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
 
@@ -21,8 +20,9 @@ dependencies {
     testImplementation "org.testcontainers:spock:1.14.3"
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
+    testImplementation("org.codehaus.groovy:groovy-json:$groovyVersion")
     testImplementation("org.spockframework:spock-core:${spockVersion}") {
-        exclude(group: "org.codehaus.groovy", module: "groovy-all")
+        exclude module:'groovy-all'
     }
     testImplementation "cglib:cglib-nodep:${cglibVersion}"
     testImplementation "io.micronaut:micronaut-inject-groovy"
