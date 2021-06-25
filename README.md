@@ -32,3 +32,17 @@ A release is performed with the following steps:
 * [Create a new release](https://github.com/micronaut-projects/micronaut-acme/releases/new). The Git Tag should start with `v`. For example `v1.0.0`.
 * [Monitor the Workflow](https://github.com/micronaut-projects/micronaut-acme/actions?query=workflow%3ARelease) to check it passed successfully.
 * Celebrate!
+
+## Building the micronaut-acme project
+
+#### Requirements
+
+* JDK 8 or later
+* To do a full build you will need a Docker Engine or Docker Desktop running as the tests require [TestContainers](https://www.testcontainers.org)
+
+#### Build Instructions
+1. Checkout from Github (e.g. `git clone git@github.com:micronaut/micronaut-acme.git`)
+2. `cd micronaut-acme`
+3. `./gradlew build`
+
+
