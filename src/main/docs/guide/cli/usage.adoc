@@ -3,7 +3,7 @@ To use these functions you must first enable the `acme` feature in your app.
 == For a new app
 Either at creation time you will need to select the `acme` feature
 
-Using the Micronaut CLI select the `acem` feature on creation.
+Using the Micronaut CLI select the `acme` feature on creation.
 
 [source,bash]
 ----
