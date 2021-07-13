@@ -23,6 +23,8 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.shredzone.acme4j.*;
 import org.shredzone.acme4j.challenge.Challenge;
 import org.shredzone.acme4j.challenge.Dns01Challenge;
@@ -36,8 +38,6 @@ import org.shredzone.acme4j.util.KeyPairUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
