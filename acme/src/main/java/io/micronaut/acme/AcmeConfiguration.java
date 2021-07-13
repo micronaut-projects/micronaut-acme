@@ -16,9 +16,9 @@
 package io.micronaut.acme;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.Toggleable;
 
-import javax.annotation.Nonnull;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -77,7 +77,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return the domain(s) name configured
      */
-    @Nonnull
+    @NonNull
     @NotEmpty
     @NotNull
     public List<String> getDomains() {
@@ -113,7 +113,7 @@ public class AcmeConfiguration implements Toggleable {
      * Get the duration in which you would like to renew the certificate within. Default {@value #DEFAULT_RENEW_WITHIN}.
      * @return the renew within duration
      */
-    @Nonnull
+    @NonNull
     public Duration getRenewWitin() {
         return renewWitin;
     }
@@ -123,7 +123,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param renewWitin duration before rene process started
      */
-    public void setRenewWitin(@Nonnull Duration renewWitin) {
+    public void setRenewWitin(@NonNull Duration renewWitin) {
         this.renewWitin = renewWitin;
     }
 
@@ -163,7 +163,7 @@ public class AcmeConfiguration implements Toggleable {
      * Account key used to authenticate with the ACME server.
      * @return the account key string
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getAccountKey() {
@@ -174,7 +174,7 @@ public class AcmeConfiguration implements Toggleable {
      * Sets the account key used for authentication.
      * @param accountKey account key string
      */
-    public void setAccountKey(@Nonnull String accountKey) {
+    public void setAccountKey(@NonNull String accountKey) {
         this.accountKey = accountKey;
     }
 
@@ -182,7 +182,7 @@ public class AcmeConfiguration implements Toggleable {
      * Key in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
      * @return domain key string value
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getDomainKey() {
@@ -193,7 +193,7 @@ public class AcmeConfiguration implements Toggleable {
      * Sets the key string in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
      * @param domainKey key string
      */
-    public void setDomainKey(@Nonnull String domainKey) {
+    public void setDomainKey(@NonNull String domainKey) {
         this.domainKey = domainKey;
     }
 
@@ -202,7 +202,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return location to certificate
      */
-    @Nonnull
+    @NonNull
     public File getCertLocation() {
         return certLocation;
     }
@@ -212,7 +212,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param certLocation location to certificate
      */
-    public void setCertLocation(@Nonnull File certLocation) {
+    public void setCertLocation(@NonNull File certLocation) {
         this.certLocation = certLocation;
     }
 
@@ -221,7 +221,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return url of the acme server
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getAcmeServer() {
@@ -233,7 +233,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param acmeServer url of acme server
      */
-    public void setAcmeServer(@Nonnull String acmeServer) {
+    public void setAcmeServer(@NonNull String acmeServer) {
         this.acmeServer = acmeServer;
     }
 
