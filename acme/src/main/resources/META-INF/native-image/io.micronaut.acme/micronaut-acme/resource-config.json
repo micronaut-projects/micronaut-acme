@@ -1,0 +1,5 @@
+{
+  "resources": [
+    { "pattern": "\\Qorg/shredzone/acme4j/version.properties\\E" }
+  ]
+}
