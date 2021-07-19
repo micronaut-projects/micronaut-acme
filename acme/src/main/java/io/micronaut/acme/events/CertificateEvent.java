@@ -22,7 +22,6 @@ import java.security.cert.X509Certificate;
  * Event used to alert when a new ACME certificate is ready for use.
  */
 public class CertificateEvent {
-    private final X509Certificate certificate;
     private final KeyPair domainKeyPair;
     private final X509Certificate[] fullCertificateChain;
     private boolean validationCert;
@@ -34,7 +33,6 @@ public class CertificateEvent {
      * @param validationCert if this certificate is to be used for tls-apln-01 account validation
      */
     public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair, boolean validationCert) {
-        this.certificate = certificate;
         this.domainKeyPair = domainKeyPair;
         this.validationCert = validationCert;
         this.fullCertificateChain = new X509Certificate[]{certificate};
@@ -43,7 +41,6 @@ public class CertificateEvent {
     public CertificateEvent(KeyPair domainKeyPair, X509Certificate... fullCertificateChain) {
         this.validationCert = false;
         this.domainKeyPair = domainKeyPair;
-        this.certificate = fullCertificateChain[0];
         this.fullCertificateChain = fullCertificateChain;
     }
 
@@ -51,7 +48,7 @@ public class CertificateEvent {
      * @return Certificate created by ACME server
      */
     public X509Certificate getCert() {
-        return certificate;
+        return fullCertificateChain[0];
     }
 
     /**
