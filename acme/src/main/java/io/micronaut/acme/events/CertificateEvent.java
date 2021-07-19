@@ -27,19 +27,28 @@ public class CertificateEvent {
     private boolean validationCert;
 
     /**
+     * @deprecated See constructor that takes full certificate chain instead.
+     *
      * Creates a new CertificateEvent.
      * @param certificate X509 certificate file
      * @param domainKeyPair key pair used to encrypt the certificate
      * @param validationCert if this certificate is to be used for tls-apln-01 account validation
      */
+    @Deprecated
     public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair, boolean validationCert) {
         this.domainKeyPair = domainKeyPair;
         this.validationCert = validationCert;
         this.fullCertificateChain = new X509Certificate[]{certificate};
     }
 
-    public CertificateEvent(KeyPair domainKeyPair, X509Certificate... fullCertificateChain) {
-        this.validationCert = false;
+    /**
+     * Creates a new CertificateEvent containing the full certificate chain
+     * @param domainKeyPair key pair used to encrypt the certificate
+     * @param validationCert if this certificate is to be used for tls-apln-01 account validation
+     * @param fullCertificateChain X509 certificate file
+     */
+    public CertificateEvent(KeyPair domainKeyPair, boolean validationCert, X509Certificate... fullCertificateChain) {
+        this.validationCert = validationCert;
         this.domainKeyPair = domainKeyPair;
         this.fullCertificateChain = fullCertificateChain;
     }

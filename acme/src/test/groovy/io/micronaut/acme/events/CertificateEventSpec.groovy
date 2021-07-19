@@ -108,12 +108,14 @@ ${DOMAIN_CERT}
         X509Certificate domainCert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         Collection<X509Certificate> certs = cf.generateCertificates(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
+        def expectedValidationCert = new Random().nextBoolean()
 
         when :
-        CertificateEvent event = new CertificateEvent(keyPair, certs as X509Certificate[])
+        CertificateEvent event = new CertificateEvent(keyPair, expectedValidationCert, certs as X509Certificate[])
 
         then:
         event.getCert() == domainCert
+        event.isValidationCert() == expectedValidationCert
         event.getFullCertificateChain().length == 2
         event.getFullCertificateChain() == certs.toArray()
     }

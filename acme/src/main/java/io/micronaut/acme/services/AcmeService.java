@@ -297,7 +297,7 @@ public class AcmeService {
                     try (BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)) {
                         certificate.writeCertificate(writer);
                     }
-                    eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, getFullCertificateChain()));
+                    eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, false, getFullCertificateChain()));
                     if (LOG.isInfoEnabled()) {
                         LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
                     }
@@ -481,7 +481,7 @@ public class AcmeService {
             }
             KeyPair domainKeyPair = getDomainKeyPair();
             X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
-            eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
+            eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, true, tlsAlpn01Certificate));
         } else if (challenge instanceof Http01Challenge) {
             Http01Challenge http01Challenge = (Http01Challenge) challenge;
             eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
@@ -501,7 +501,7 @@ public class AcmeService {
      * Setup the certificate that has been saved to disk and configures it for use.
      */
     public void setupCurrentCertificate() {
-        eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), getFullCertificateChain()));
+        eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), false, getFullCertificateChain()));
     }
 
     /**
