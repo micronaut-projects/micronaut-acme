@@ -61,11 +61,15 @@ class AcmeCertRefresherTaskWithFileKeysSpec extends AcmeBaseSpec {
                 try {
                     conn.connect()
                     Certificate[] certs = conn.getServerCertificates()
-                    certs.length == 1
+                    certs.length == 2
                     def cert = (X509Certificate) certs[0]
                     cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                     cert.getSubjectDN().getName().contains(EXPECTED_DOMAIN)
                     cert.getSubjectAlternativeNames().size() == 1
+
+                    def cert2 = (X509Certificate) certs[1]
+                    cert2.getIssuerDN().getName().contains("Pebble Root CA")
+                    cert2.getSubjectDN().getName().contains("Pebble Intermediate CA")
                 }finally{
                     if(conn != null){
                         conn.disconnect()

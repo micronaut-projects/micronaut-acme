@@ -47,6 +47,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -129,6 +131,23 @@ public class AcmeService {
                 return (X509Certificate) cf.generateCertificate(Files.newInputStream(certificate.toPath()));
             } else {
                 return null;
+            }
+        } catch (CertificateException | IOException e) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Could not create certificate from file", e);
+            }
+            return null;
+        }
+    }
+
+    protected X509Certificate[] getFullCertificateChain() {
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            File certificate = new File(certLocation, DOMAIN_CRT);
+            if (certificate.exists()) {
+                return cf.generateCertificates(Files.newInputStream(certificate.toPath())).toArray(new X509Certificate[0]);
+            } else {
+                return new X509Certificate[]{};
             }
         } catch (CertificateException | IOException e) {
             if (LOG.isWarnEnabled()) {
@@ -278,7 +297,7 @@ public class AcmeService {
                     try (BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)) {
                         certificate.writeCertificate(writer);
                     }
-                    eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair, false));
+                    eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, getFullCertificateChain()));
                     if (LOG.isInfoEnabled()) {
                         LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
                     }
@@ -482,7 +501,7 @@ public class AcmeService {
      * Setup the certificate that has been saved to disk and configures it for use.
      */
     public void setupCurrentCertificate() {
-        eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), getDomainKeyPair(), false));
+        eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), getFullCertificateChain()));
     }
 
     /**

@@ -24,6 +24,7 @@ import java.security.cert.X509Certificate;
 public class CertificateEvent {
     private final X509Certificate certificate;
     private final KeyPair domainKeyPair;
+    private final X509Certificate[] fullCertificateChain;
     private boolean validationCert;
 
     /**
@@ -36,6 +37,14 @@ public class CertificateEvent {
         this.certificate = certificate;
         this.domainKeyPair = domainKeyPair;
         this.validationCert = validationCert;
+        this.fullCertificateChain = new X509Certificate[]{certificate};
+    }
+
+    public CertificateEvent(KeyPair domainKeyPair, X509Certificate... fullCertificateChain) {
+        this.validationCert = false;
+        this.domainKeyPair = domainKeyPair;
+        this.certificate = fullCertificateChain[0];
+        this.fullCertificateChain = fullCertificateChain;
     }
 
     /**
@@ -57,5 +66,9 @@ public class CertificateEvent {
      */
     public boolean isValidationCert() {
         return validationCert;
+    }
+
+    public X509Certificate[] getFullCertificateChain() {
+        return fullCertificateChain;
     }
 }
