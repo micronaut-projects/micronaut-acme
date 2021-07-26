@@ -18,7 +18,7 @@ dependencies {
 
     implementation "io.netty:netty-tcnative-boringssl-static:$tcnativeBoringsslStatic"
 
-    testImplementation "org.testcontainers:spock:1.15.3"
+    testImplementation "org.testcontainers:spock:1.16.0"
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
     testImplementation("org.codehaus.groovy:groovy-json:$groovyVersion")
