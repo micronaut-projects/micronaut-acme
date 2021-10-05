@@ -1,3 +1,7 @@
+configurations {
+    documentation
+}
+
 dependencies {
     annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
     testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -31,4 +35,8 @@ dependencies {
     testImplementation "org.codehaus.groovy:groovy-test:${groovyVersion}"
     testImplementation "org.objenesis:objenesis:${objenesisVersion}"
     testRuntimeOnly "ch.qos.logback:logback-classic:${logbackClassicVersion}"
+}
+
+groovydoc {
+    classpath += project.configurations.documentation
 }
