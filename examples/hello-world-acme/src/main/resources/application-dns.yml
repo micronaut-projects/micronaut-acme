@@ -1,7 +1,7 @@
 acme:
   challenge-type: 'dns'
   auth:
-    # Due to the current manual nature in which the dns validation has to be done currently
+    # Due to the current manual nature in which the dns validation is performed by default
     # we change the amount of time we wait before trying to authorize again to make sure there
     # is time for us logging into the dns interface, setting a TXT record and waiting for it
     # to propagate.

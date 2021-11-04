@@ -16,7 +16,7 @@
 package io.micronaut.acme.services;
 
 import io.micronaut.acme.AcmeConfiguration;
-import io.micronaut.acme.challenge.dns.TxtRenderer;
+import io.micronaut.acme.challenge.dns.DnsChallengeSolver;
 import io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
@@ -88,6 +88,7 @@ public class AcmeService {
     private final Duration authPause;
     private final Duration orderPause;
     private final Duration timeout;
+    private final DnsChallengeSolver dnsChallengeSolver;
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -98,11 +99,13 @@ public class AcmeService {
      * @param resourceResolver  Resource resolver for finding keys from classpath or disk
      * @param acmeConfiguration Acme Configuration
      * @param taskScheduler     Task scheduler for enabling background polling of the certificate refreshes
+     * @param dnsChallengeSolver  DNS Challenge Resolver for setting up a DNS challenge
      */
     public AcmeService(ApplicationEventPublisher eventPublisher,
                        AcmeConfiguration acmeConfiguration,
                        ResourceResolver resourceResolver,
-                       @Named("scheduled") TaskScheduler taskScheduler) {
+                       @Named("scheduled") TaskScheduler taskScheduler,
+                       DnsChallengeSolver dnsChallengeSolver) {
         this.eventPublisher = eventPublisher;
         this.timeout = acmeConfiguration.getTimeout();
         this.orderPause = acmeConfiguration.getOrder().getPause();
@@ -114,6 +117,7 @@ public class AcmeService {
         this.acmeConfiguration = acmeConfiguration;
         this.resourceResolver = resourceResolver;
         this.taskScheduler = taskScheduler;
+        this.dnsChallengeSolver = dnsChallengeSolver;
     }
 
     /**
@@ -383,7 +387,7 @@ public class AcmeService {
                     if (status == Status.VALID) {
                         cancel();
                     } else if (status == Status.INVALID) {
-                        throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier().toString() + " ... Giving up.");
+                        throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier() + " ... Giving up.");
                     } else {
                         try {
                             challenge.update();
@@ -405,7 +409,7 @@ public class AcmeService {
         try {
             scheduledFuture.get();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Challenge of type " + challenge.getType() + " has been completed for domain : " + auth.getIdentifier().toString() + ".");
+                LOG.debug("Challenge of type " + challenge.getType() + " has been completed for domain : " + auth.getIdentifier() + ".");
             }
         } catch (InterruptedException e) {
             if (LOG.isErrorEnabled()) {
@@ -419,6 +423,8 @@ public class AcmeService {
             }
         } catch (CancellationException e) {
             //cancel is used in happy path so, ignoring this
+        } finally {
+            doChallengeSpecificCleanup(auth, challenge);
         }
     }
 
@@ -435,13 +441,25 @@ public class AcmeService {
             eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
         } else if (challenge instanceof Dns01Challenge) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("DNS challenge selected, spitting out TXT record.");
+                LOG.debug("DNS challenge selected, attempting record creation.");
             }
             Dns01Challenge dns01Challenge = (Dns01Challenge) challenge;
             String digest = dns01Challenge.getDigest();
             String domain = auth.getIdentifier().getDomain();
 
-            new TxtRenderer().render(digest, domain);
+            dnsChallengeSolver.createRecord(domain, digest);
+        }
+    }
+
+    private void doChallengeSpecificCleanup(Authorization auth, Challenge challenge) {
+        if (challenge instanceof Dns01Challenge) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DNS challenge completed, attempting record destruction.");
+            }
+
+            String domain = auth.getIdentifier().getDomain();
+
+            dnsChallengeSolver.destroyRecord(domain);
         }
     }
 
