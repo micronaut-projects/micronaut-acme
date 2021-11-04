@@ -1,5 +1,7 @@
-Utilizing `dns` challenge type allows validation to be done via entry of a DNS TXT record. Currently
-the application will log out a message that looks as follows.
+Utilizing `dns` challenge type allows validation to be done via entry of a DNS TXT record.
+
+=== Manual Verification
+By default, the application will log out a message that looks as follows.
 
 .DNS output
 [source]
@@ -17,7 +19,7 @@ Once this is output you will need to log into your DNS provider and create a TXT
 * key: `_acme-challenge.example.com`
 * value: `79ZNJaxlcLYIFootHL6Rrbh2VUCfFGgPeurVyjoRrS8`
 
-Since this is a manual process you will also want to bump out your `acme.auth.pause` duration so that there is enough time between retries
+Since this is a manual process you will also want to bump up your `acme.auth.pause` duration so that there is enough time between retries
 and time take for the manual entry/DNS propagation.
 
 .src/main/resources/application.yml
@@ -26,9 +28,31 @@ and time take for the manual entry/DNS propagation.
 acme:
   challenge-type: 'dns'
   auth:
-    # Due to the current manual nature in which the dns validation has to be done currently
+    # Due to the current manual nature in which the dns validation is performed by default
     # we change the amount of time we wait before trying to authorize again to make sure there
     # is time for us logging into the dns interface, setting a TXT record and waiting for it
     # to propagate.
     pause: 2m
+----
+
+=== Automatic Verification
+
+An implementation of api:acme.challenge.dns.DnsChallengeSolver[] can be provided to automate the creation and cleanup of the necessary DNS records.
+
+.CustomDnsChallengeSolver.java
+[source, java]
+----
+@Singleton
+@Replaces(DnsChallengeSolver.class)
+class CustomDnsChallengeSolver implements DnsChallengeSolver {
+    @Override
+    public void createRecord(String domain, String digest) {
+        // Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+    }
+
+    @Override
+    public void destroyRecord(String domain) {
+        // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+    }
+}
 ----

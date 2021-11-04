@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2021 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,37 @@
  */
 package io.micronaut.acme.challenge.dns;
 
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TXT renderer needed for DNS Acme challenge server validation to be possible.
+ * Default DNS challenge solver which simply prints instructions to STDOUT to manually create a record.
  */
-public final class TxtRenderer {
-
-    public static final String HEADER =
+@Singleton
+class RenderedTextDnsChallengeSolver implements DnsChallengeSolver {
+    private static final String HEADER =
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 
-    private static final Logger LOG = LoggerFactory.getLogger(TxtRenderer.class);
+    private static final String TXT_RECORD_NAME = "_acme-challenge";
+    private static final Logger LOG = LoggerFactory.getLogger(RenderedTextDnsChallengeSolver.class);
 
-    /**
-     * Outputs the values needed for DNS challenge authorization. These values will need to be manually entered into your
-     * DNS provider so that they can be retrieved by the challenge server.
-     * @param digest the value that the challenge server is expecting in the TXT record
-     * @param domain domain name to create the record for
-     */
-    public void render(String digest, String domain) {
+    @Override
+    public void createRecord(String domain, String digest) {
         LOG.info(HEADER);
         LOG.info(HEADER);
         LOG.info("\t\t\t\t\t\t\tCREATE DNS `TXT` ENTRY AS FOLLOWS");
-        LOG.info("\t\t\t\t_acme-challenge.{} with value {}", domain, digest);
+        LOG.info("\t\t\t\t{}.{} with value {}", TXT_RECORD_NAME, domain, digest);
         LOG.info(HEADER);
         LOG.info(HEADER);
+    }
+
+    @Override
+    public void destroyRecord(String domain) {
+        // To maintain backwards compatibility with <=v3.0.1, do not print text
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("The 'TXT' record for " + TXT_RECORD_NAME + "." + domain + " can be removed");
+        }
     }
 }
