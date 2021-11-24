@@ -9,7 +9,10 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import io.reactivex.Flowable
+import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
 
@@ -37,6 +40,10 @@ class AcmeCertRefresherTaskDns01ChallengeSpec extends AcmeBaseSpec {
         ]
     }
 
+    TestDnsChallengeSolver getTestDnsChallengeSolver() {
+        embeddedServer.applicationContext.findBean(TestDnsChallengeSolver).get()
+    }
+
     def "get new certificate using existing account"() {
         expect:
             new PollingConditions(timeout: 30).eventually {
@@ -48,14 +55,14 @@ class AcmeCertRefresherTaskDns01ChallengeSpec extends AcmeBaseSpec {
 
     def "expect record to be created and match domain"() {
         expect:
-        TestDnsChallengeSolver.createdRecords.size() == 1
-        TestDnsChallengeSolver.createdRecords.containsKey(EXPECTED_ACME_DOMAIN)
-        TestDnsChallengeSolver.createdRecords[EXPECTED_ACME_DOMAIN].length() > 1
+        getTestDnsChallengeSolver().getCreatedRecords().size() == 1
+        getTestDnsChallengeSolver().getCreatedRecords().containsKey(EXPECTED_ACME_DOMAIN)
+        getTestDnsChallengeSolver().getCreatedRecords()[EXPECTED_ACME_DOMAIN].length() > 1
     }
 
     def "expect record to be destroyed and match domain"() {
         expect:
-        TestDnsChallengeSolver.purgedRecords == [EXPECTED_ACME_DOMAIN]
+        getTestDnsChallengeSolver().getPurgedRecords() == [EXPECTED_ACME_DOMAIN]
     }
 
     void "expect the url to be https"() {
@@ -107,16 +114,28 @@ class AcmeCertRefresherTaskDns01ChallengeSpec extends AcmeBaseSpec {
     @Singleton
     @Replaces(DnsChallengeSolver.class)
     static class TestDnsChallengeSolver implements DnsChallengeSolver {
-        static Map<String, String> createdRecords = [:]
-        static List<String> purgedRecords = []
+        Map<String, String> createdRecords = [:]
+        List<String> purgedRecords = []
+        static Logger LOG = LoggerFactory.getLogger(TestDnsChallengeSolver.class)
+
+        Map<String, String> getCreatedRecords() {
+            createdRecords
+        }
+
+        List<String> getPurgedRecords() {
+            purgedRecords
+        }
 
         @Override
         void createRecord(String domain, String digest) {
+            LOG.debug("Creating TXT record for {} with value of {}, before data = {}", domain, digest, createdRecords)
             createdRecords.put(domain, digest)
+            LOG.debug("TXT record created, data = {}", createdRecords)
         }
 
         @Override
         void destroyRecord(String domain) {
+            LOG.debug("Destroying TXT record for {}, before data = {}", domain, purgedRecords)
             purgedRecords.add(domain)
         }
     }
