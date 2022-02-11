@@ -1,12 +1,21 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("io.micronaut.build.shared.settings") version "5.1.2"
+}
+
 rootProject.name = "micronaut-acme"
 
 include "acme"
 
-String[] examples = [
+[
         "hello-world-acme"
-]
-
-examples.each { name ->
+].each { name ->
     include name
     def project = findProject(":${name}")
     project.name = "acme-example-${name}"
