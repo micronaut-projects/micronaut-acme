@@ -14,7 +14,7 @@ dependencies {
     implementation("io.micronaut:micronaut-http-server")
     implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-inject")
-    implementation 'jakarta.inject:jakarta.inject-api:2.0.0'
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
 
     implementation "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
     implementation "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
