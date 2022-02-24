@@ -1,28 +1,30 @@
+plugins {
+    id "io.micronaut.build.internal.module"
+}
+
 configurations {
     documentation
 }
 
 dependencies {
-    annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-    testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-
     annotationProcessor("io.micronaut:micronaut-inject-java")
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+
     implementation("io.micronaut:micronaut-http")
     implementation("io.micronaut:micronaut-http-server")
     implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-inject")
-    implementation 'jakarta.inject:jakarta.inject-api:2.0.0'
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
 
     implementation "org.shredzone.acme4j:acme4j-client:${acmeVersion}"
     implementation "org.shredzone.acme4j:acme4j-utils:${acmeVersion}"
 
+    implementation "io.netty:netty-tcnative-boringssl-static:$tcnativeBoringsslStatic"
+
     documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
 
-    implementation "io.netty:netty-tcnative-boringssl-static:$tcnativeBoringsslStatic"
-
-    testImplementation "org.testcontainers:spock:1.16.2"
+    testImplementation "org.testcontainers:spock:1.16.3"
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
     testImplementation("org.codehaus.groovy:groovy-json:$groovyVersion")

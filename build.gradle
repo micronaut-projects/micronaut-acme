@@ -1,24 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath "io.micronaut.build.internal:micronaut-gradle-plugins:4.2.2"
-    }
-}
-
-subprojects { Project subproject ->
-    group "io.micronaut.acme"
-
-    apply plugin: "io.micronaut.build.internal.common"
-    apply plugin: "io.micronaut.build.internal.dependency-updates"
-    apply plugin: "io.micronaut.build.internal.publishing"
-}
-
-apply plugin: "io.micronaut.build.internal.docs"
-apply plugin: "io.micronaut.build.internal.dependency-updates"
-
-task buildScriptDependencies(type: DependencyReportTask) {
-    configurations = project.buildscript.configurations
+plugins {
+    id "io.micronaut.build.internal.docs"
+    id "io.micronaut.build.internal.dependency-updates"
 }
