@@ -1,4 +1,3 @@
-com.acme.example
 io.micronaut.acme
 io.micronaut.acme.background
 io.micronaut.acme.challenge.dns
