@@ -15,10 +15,19 @@
  */
 package io.micronaut.acme.challenge.dns;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TXT renderer needed for DNS Acme challenge server validation to be possible.
  */
 public final class TxtRenderer {
+
+    public static final String HEADER =
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+
+    private static final Logger LOG = LoggerFactory.getLogger(TxtRenderer.class);
+
     /**
      * Outputs the values needed for DNS challenge authorization. These values will need to be manually entered into your
      * DNS provider so that they can be retrieved by the challenge server.
@@ -26,11 +35,11 @@ public final class TxtRenderer {
      * @param domain domain name to create the record for
      */
     public void render(String digest, String domain) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("\t\t\t\t\t\t\tCREATE DNS `TXT` ENTRY AS FOLLOWS");
-        System.out.println("\t\t\t\t_acme-challenge." + domain + " with value " + digest);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        LOG.info(HEADER);
+        LOG.info(HEADER);
+        LOG.info("\t\t\t\t\t\t\tCREATE DNS `TXT` ENTRY AS FOLLOWS");
+        LOG.info("\t\t\t\t_acme-challenge.{} with value {}", domain, digest);
+        LOG.info(HEADER);
+        LOG.info(HEADER);
     }
 }
