@@ -72,6 +72,8 @@
 </a>
 <h2 class="title">A</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html#AbstractConfiguration--">AbstractConfiguration()</a></span> - Constructor for class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AbstractConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/acme/background/AcmeCertRefresherTask.html" title="class in io.micronaut.acme.background"><span class="typeNameLink">AcmeCertRefresherTask</span></a> - Class in <a href="io/micronaut/acme/background/package-summary.html">io.micronaut.acme.background</a></dt>
 <dd>
 <div class="block">Background task to automatically refresh the certificates from an ACME server on a configurable interval.</div>
@@ -86,6 +88,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.html#AcmeConfiguration--">AcmeConfiguration()</a></span> - Constructor for class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme"><span class="typeNameLink">AcmeConfiguration.AbstractConfiguration</span></a> - Class in <a href="io/micronaut/acme/package-summary.html">io.micronaut.acme</a></dt>
+<dd>
+<div class="block">Base class for configuration classes.</div>
+</dd>
 <dt><a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html" title="class in io.micronaut.acme"><span class="typeNameLink">AcmeConfiguration.AuthConfiguration</span></a> - Class in <a href="io/micronaut/acme/package-summary.html">io.micronaut.acme</a></dt>
 <dd>
 <div class="block">Allows the configuration of the Acme certificate authentication process.</div>
@@ -217,19 +223,11 @@
 <dd>
 <div class="block">Get order configuration.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html#getPause--">getPause()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AuthConfiguration</a></dt>
-<dd>
-<div class="block">Gets duration in which we will pause between authentication attempts.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html#getPause--">getPause()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.OrderConfiguration</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html#getPause--">getPause()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AbstractConfiguration</a></dt>
 <dd>
 <div class="block">Gets duration in which we will pause between ordering attempts.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html#getRefreshAttempts--">getRefreshAttempts()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AuthConfiguration</a></dt>
-<dd>
-<div class="block">Gets number of refresh attempts that will be tried while authenticating with the ACME server.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html#getRefreshAttempts--">getRefreshAttempts()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.OrderConfiguration</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html#getRefreshAttempts--">getRefreshAttempts()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AbstractConfiguration</a></dt>
 <dd>
 <div class="block">Gets number of refresh attempts that will be tried while ordering the certificate from the ACME server.</div>
 </dd>
@@ -251,6 +249,8 @@
 </a>
 <h2 class="title">H</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/challenge/dns/TxtRenderer.html#HEADER">HEADER</a></span> - Static variable in class io.micronaut.acme.challenge.dns.<a href="io/micronaut/acme/challenge/dns/TxtRenderer.html" title="class in io.micronaut.acme.challenge.dns">TxtRenderer</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/acme/challenge/http/endpoint/HttpChallengeDetails.html" title="class in io.micronaut.acme.challenge.http.endpoint"><span class="typeNameLink">HttpChallengeDetails</span></a> - Class in <a href="io/micronaut/acme/challenge/http/endpoint/package-summary.html">io.micronaut.acme.challenge.http.endpoint</a></dt>
 <dd>
 <div class="block">Contains the details needed to satisfy a passing http-01 challenge from the acme challenge server.</div>
@@ -389,19 +389,11 @@
 <dd>
 <div class="block">Set the order configuration.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html#setPause-java.time.Duration-">setPause(Duration)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AuthConfiguration</a></dt>
-<dd>
-<div class="block">Sets duration in which we will pause between authentication attempts.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html#setPause-java.time.Duration-">setPause(Duration)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.OrderConfiguration</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html#setPause-java.time.Duration-">setPause(Duration)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AbstractConfiguration</a></dt>
 <dd>
 <div class="block">Sets duration in which we will pause between ordering attempts.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html#setRefreshAttempts-int-">setRefreshAttempts(int)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AuthConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AuthConfiguration</a></dt>
-<dd>
-<div class="block">Sets number of refresh attempts that will be tried while authenticating with the ACME server.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html#setRefreshAttempts-int-">setRefreshAttempts(int)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.OrderConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.OrderConfiguration</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html#setRefreshAttempts-int-">setRefreshAttempts(int)</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.AbstractConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration.AbstractConfiguration</a></dt>
 <dd>
 <div class="block">Sets number of refresh attempts that will be tried while ordering the certificate from the ACME server.</div>
 </dd>
