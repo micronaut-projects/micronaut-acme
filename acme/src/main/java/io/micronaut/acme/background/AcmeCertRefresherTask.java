@@ -81,7 +81,7 @@ public final class AcmeCertRefresherTask {
                 LOG.debug("Running startup renewal process");
             }
             renewCertIfNeeded();
-        } catch (Exception e) {
+        } catch (Exception e) { //NOSONAR
             LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
             throw new ApplicationStartupException("Failed to start due to SSL configuration issue.", e);
         }

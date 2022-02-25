@@ -311,10 +311,9 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Allows the configuration of the Acme certificate ordering process.
+     * Base class for configuration classes.
      */
-    @ConfigurationProperties("order")
-    public static class OrderConfiguration {
+    public static class AbstractConfiguration {
         private Duration pause = DEFAULT_PAUSE_DURATION;
         private int refreshAttempts = DEFAULT_REFRESH_ATTEMPTS;
 
@@ -356,47 +355,16 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
+     * Allows the configuration of the Acme certificate ordering process.
+     */
+    @ConfigurationProperties("order")
+    public static class OrderConfiguration extends AbstractConfiguration {
+    }
+
+    /**
      * Allows the configuration of the Acme certificate authentication process.
      */
     @ConfigurationProperties("auth")
-    public static class AuthConfiguration {
-        private Duration pause = DEFAULT_PAUSE_DURATION;
-        private int refreshAttempts = DEFAULT_REFRESH_ATTEMPTS;
-
-        /**
-         * Gets duration in which we will pause between authentication attempts.
-         *
-         * @return duration
-         */
-        public Duration getPause() {
-            return pause;
-        }
-
-        /**
-         * Sets duration in which we will pause between authentication attempts. Default {@value #DEFAULT_PAUSE_DURATION}.
-         *
-         * @param pause duration
-         */
-        public void setPause(Duration pause) {
-            this.pause = pause;
-        }
-
-        /**
-         * Gets number of refresh attempts that will be tried while authenticating with the ACME server.
-         *
-         * @return number of refresh attempts
-         */
-        public int getRefreshAttempts() {
-            return refreshAttempts;
-        }
-
-        /**
-         * Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default {@value #DEFAULT_REFRESH_ATTEMPTS}.
-         *
-         * @param refreshAttempts number of refresh attempts
-         */
-        public void setRefreshAttempts(int refreshAttempts) {
-            this.refreshAttempts = refreshAttempts;
-        }
+    public static class AuthConfiguration extends AbstractConfiguration {
     }
 }
