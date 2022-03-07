@@ -157,7 +157,7 @@ public class AcmeService {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("Could not create certificate from file", e);
             }
-            return null;
+            return new X509Certificate[]{};
         }
     }
 
