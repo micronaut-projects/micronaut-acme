@@ -42,7 +42,7 @@ public class CertificateEvent {
     }
 
     /**
-     * Creates a new CertificateEvent containing the full certificate chain
+     * Creates a new CertificateEvent containing the full certificate chain.
      * @param domainKeyPair key pair used to encrypt the certificate
      * @param validationCert if this certificate is to be used for tls-apln-01 account validation
      * @param fullCertificateChain X509 certificate file
@@ -74,6 +74,11 @@ public class CertificateEvent {
         return validationCert;
     }
 
+    /**
+     * Return the full certificate chain.
+     *
+     * @return array of certificates in the chain.
+     */
     public X509Certificate[] getFullCertificateChain() {
         return fullCertificateChain;
     }

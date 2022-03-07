@@ -47,8 +47,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -140,6 +138,11 @@ public class AcmeService {
         }
     }
 
+    /**
+     * Returns the full certificate chain.
+     *
+     * @return array of each of the certificates in the chain
+     */
     protected X509Certificate[] getFullCertificateChain() {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
