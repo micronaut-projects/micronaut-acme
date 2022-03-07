@@ -27,7 +27,7 @@ public class CertificateEvent {
     private boolean validationCert;
 
     /**
-     * @deprecated See constructor that takes full certificate chain instead.
+     * @deprecated {@link #CertificateEvent(KeyPair, boolean, X509Certificate...)} instead.
      *
      * Creates a new CertificateEvent.
      * @param certificate X509 certificate file
