@@ -80,7 +80,7 @@ ${DOMAIN_CERT}
         CertificateFactory cf = CertificateFactory.getInstance(X509_CERT)
         X509Certificate cert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
-        def validationCert = new Random().nextBoolean()
+        boolean validationCert = new Random().nextBoolean()
 
         when :
         CertificateEvent event = new CertificateEvent(cert, keyPair, validationCert)
@@ -110,7 +110,7 @@ ${DOMAIN_CERT}
         X509Certificate domainCert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         Collection<X509Certificate> certs = cf.generateCertificates(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
-        def expectedValidationCert = new Random().nextBoolean()
+        boolean expectedValidationCert = new Random().nextBoolean()
 
         when :
         CertificateEvent event = new CertificateEvent(keyPair, expectedValidationCert, certs as X509Certificate[])
