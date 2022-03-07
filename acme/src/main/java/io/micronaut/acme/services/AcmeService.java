@@ -67,6 +67,7 @@ public class AcmeService {
     private static final Logger LOG = LoggerFactory.getLogger(AcmeService.class);
     private static final String DOMAIN_CRT = "domain.crt";
     private static final String DOMAIN_CSR = "domain.csr";
+    private static final String X509_CERT = "X.509";
 
     /**
      * Let's Encrypt has different production vs test servers.
@@ -123,7 +124,7 @@ public class AcmeService {
      */
     public X509Certificate getCurrentCertificate() {
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
             File certificate = new File(certLocation, DOMAIN_CRT);
             if (certificate.exists()) {
                 return (X509Certificate) cf.generateCertificate(Files.newInputStream(certificate.toPath()));
@@ -145,7 +146,7 @@ public class AcmeService {
      */
     protected X509Certificate[] getFullCertificateChain() {
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
             File certificate = new File(certLocation, DOMAIN_CRT);
             if (certificate.exists()) {
                 return cf.generateCertificates(Files.newInputStream(certificate.toPath())).toArray(new X509Certificate[0]);

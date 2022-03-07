@@ -9,6 +9,8 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
 class CertificateEventSpec extends Specification {
+    static final String X509_CERT = "X.509"
+
     def DOMAIN_CERT = """
 -----BEGIN CERTIFICATE-----
 MIIDUDCCAjigAwIBAgIIHuspA0mthF8wDQYJKoZIhvcNAQELBQAwIDEeMBwGA1UE
@@ -62,7 +64,7 @@ ${DOMAIN_CERT}
 
     def "can get domain keypair"(){
         given:
-        CertificateFactory cf = CertificateFactory.getInstance("X.509")
+        CertificateFactory cf = CertificateFactory.getInstance(X509_CERT)
         X509Certificate cert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
 
@@ -75,7 +77,7 @@ ${DOMAIN_CERT}
 
     def "can determine if the event is a validation certificate or not"(){
         given:
-        CertificateFactory cf = CertificateFactory.getInstance("X.509")
+        CertificateFactory cf = CertificateFactory.getInstance(X509_CERT)
         X509Certificate cert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
         def validationCert = new Random().nextBoolean()
@@ -89,7 +91,7 @@ ${DOMAIN_CERT}
 
     def "when pass single cert the full chain only contains that cert"(){
         given:
-            CertificateFactory cf = CertificateFactory.getInstance("X.509")
+            CertificateFactory cf = CertificateFactory.getInstance(X509_CERT)
             X509Certificate domainCert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
             KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
 
@@ -104,7 +106,7 @@ ${DOMAIN_CERT}
 
     def "when full certificate chain passed we can still get the domain specific cert"(){
         given:
-        CertificateFactory cf = CertificateFactory.getInstance("X.509")
+        CertificateFactory cf = CertificateFactory.getInstance(X509_CERT)
         X509Certificate domainCert = cf.generateCertificate(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         Collection<X509Certificate> certs = cf.generateCertificates(new ByteArrayInputStream(FULL_CHAIN_CERT.bytes))
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
