@@ -20,6 +20,7 @@ import io.micronaut.acme.challenge.dns.TxtRenderer;
 import io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
@@ -144,6 +145,7 @@ public class AcmeService {
      *
      * @return array of each of the certificates in the chain
      */
+    @NonNull
     protected X509Certificate[] getFullCertificateChain() {
         try {
             CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
