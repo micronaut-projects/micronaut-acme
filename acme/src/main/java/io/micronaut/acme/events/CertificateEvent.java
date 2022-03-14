@@ -48,6 +48,9 @@ public class CertificateEvent {
      * @param fullCertificateChain X509 certificate file
      */
     public CertificateEvent(KeyPair domainKeyPair, boolean validationCert, X509Certificate... fullCertificateChain) {
+        if (fullCertificateChain == null || fullCertificateChain.length == 0) {
+            throw new IllegalArgumentException("Certificate chain must not be empty");
+        }
         this.validationCert = validationCert;
         this.domainKeyPair = domainKeyPair;
         this.fullCertificateChain = fullCertificateChain;
