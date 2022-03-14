@@ -69,7 +69,7 @@ ${DOMAIN_CERT}
         KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
 
         when :
-        CertificateEvent event = new CertificateEvent(cert, keyPair, new Random().nextBoolean())
+        CertificateEvent event = new CertificateEvent(keyPair, new Random().nextBoolean(), cert)
 
         then:
         event.getDomainKeyPair() == keyPair
@@ -83,7 +83,7 @@ ${DOMAIN_CERT}
         boolean validationCert = new Random().nextBoolean()
 
         when :
-        CertificateEvent event = new CertificateEvent(cert, keyPair, validationCert)
+        CertificateEvent event = new CertificateEvent(keyPair, validationCert, cert)
 
         then:
         event.isValidationCert() == validationCert
@@ -96,7 +96,7 @@ ${DOMAIN_CERT}
             KeyPair keyPair = KeyPairUtils.createKeyPair(2048)
 
         when :
-            CertificateEvent event = new CertificateEvent(domainCert, keyPair, new Random().nextBoolean())
+            CertificateEvent event = new CertificateEvent(keyPair, new Random().nextBoolean(), domainCert)
 
         then:
             event.getCert() == domainCert
