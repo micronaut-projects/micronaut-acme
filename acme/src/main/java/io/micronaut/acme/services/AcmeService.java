@@ -20,7 +20,7 @@ import io.micronaut.acme.challenge.dns.TxtRenderer;
 import io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
@@ -145,7 +145,7 @@ public class AcmeService {
      *
      * @return array of each of the certificates in the chain
      */
-    @NonNull
+    @Nullable
     protected X509Certificate[] getFullCertificateChain() {
         try {
             CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
@@ -155,13 +155,13 @@ public class AcmeService {
                         .map(X509Certificate.class::cast)
                         .toArray(X509Certificate[]::new);
             } else {
-                return new X509Certificate[]{};
+                return null;
             }
         } catch (CertificateException | IOException e) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("Could not create certificate from file", e);
             }
-            return new X509Certificate[]{};
+            return null;
         }
     }
 
@@ -305,9 +305,17 @@ public class AcmeService {
                     try (BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)) {
                         certificate.writeCertificate(writer);
                     }
-                    eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, false, getFullCertificateChain()));
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
+                    X509Certificate[] chain = getFullCertificateChain();
+                    if (chain != null) {
+                        eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, false, chain));
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
+                        }
+                    } else {
+                        if (LOG.isErrorEnabled()) {
+                            LOG.error("ACME certificate chain could not be loaded from file.");
+                        }
+                        result = true;
                     }
                 } catch (IOException e) {
                     if (LOG.isErrorEnabled()) {
@@ -509,7 +517,14 @@ public class AcmeService {
      * Setup the certificate that has been saved to disk and configures it for use.
      */
     public void setupCurrentCertificate() {
-        eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), false, getFullCertificateChain()));
+        X509Certificate[] fullCertificateChain = getFullCertificateChain();
+        if (fullCertificateChain == null) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate chain could not be loaded from file.");
+            }
+        } else {
+            eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), false, fullCertificateChain));
+        }
     }
 
     /**
