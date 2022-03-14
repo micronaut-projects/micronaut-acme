@@ -151,7 +151,9 @@ public class AcmeService {
             CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
             File certificate = new File(certLocation, DOMAIN_CRT);
             if (certificate.exists()) {
-                return cf.generateCertificates(Files.newInputStream(certificate.toPath())).toArray(new X509Certificate[0]);
+                return cf.generateCertificates(Files.newInputStream(certificate.toPath())).stream()
+                        .map(X509Certificate.class::cast)
+                        .toArray(X509Certificate[]::new);
             } else {
                 return new X509Certificate[]{};
             }
