@@ -15,6 +15,7 @@
  */
 package io.micronaut.acme.events;
 
+import io.micronaut.core.annotation.NonNull;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
@@ -82,6 +83,7 @@ public class CertificateEvent {
      *
      * @return array of certificates in the chain.
      */
+    @NonNull
     public X509Certificate[] getFullCertificateChain() {
         return fullCertificateChain;
     }
