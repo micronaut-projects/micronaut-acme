@@ -6,7 +6,6 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.reactivex.Flowable
 
 import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomAlphanumeric
 
@@ -52,9 +51,6 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
     }
 
     private HttpResponse<String> callWellKnownEndpoint(String randomToken) {
-        Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                HttpRequest.GET("/.well-known/acme-challenge/$randomToken"), String
-        ))
-        flowable.blockingFirst()
+        client.toBlocking().exchange(HttpRequest.GET("/.well-known/acme-challenge/$randomToken"), String)
     }
 }
