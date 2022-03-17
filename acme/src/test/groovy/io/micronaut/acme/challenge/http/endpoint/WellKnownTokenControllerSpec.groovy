@@ -31,7 +31,7 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
         then:
         def ex = thrown(HttpClientResponseException)
         ex.response.status() == HttpStatus.NOT_FOUND
-        new JsonSlurper().parseText(ex.response.body()).message == "Not found"
+        new JsonSlurper().parseText(ex.response.body()).message == "Not Found"
     }
 
     void "pass valid token"(){

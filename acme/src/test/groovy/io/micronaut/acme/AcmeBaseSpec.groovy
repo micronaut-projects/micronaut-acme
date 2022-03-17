@@ -151,6 +151,7 @@ abstract class AcmeBaseSpec extends Specification {
             "micronaut.server.ssl.enabled": true,
             "micronaut.server.ssl.port"   : expectedSecurePort,
             "micronaut.server.host"       : EXPECTED_DOMAIN,
+            "micronaut.http.client.ssl.insecure-trust-all-certificates": true,
             "acme.tosAgree"               : true,
             "acme.cert-location"          : certFolder.toString(),
             "acme.domain-key"             : domainKey,
