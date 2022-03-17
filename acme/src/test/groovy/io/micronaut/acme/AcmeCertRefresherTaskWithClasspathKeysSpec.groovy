@@ -1,12 +1,10 @@
 package io.micronaut.acme
 
-
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import io.reactivex.Flowable
 import org.shredzone.acme4j.util.KeyPairUtils
 import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
@@ -86,13 +84,10 @@ class AcmeCertRefresherTaskWithClasspathKeysSpec extends AcmeBaseSpec {
 
     void "test send https request when the cert is in place"() {
         when:
-            Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                    HttpRequest.GET("/ssl-using-classpath-keys"), String
-            ))
-            HttpResponse<String> response = flowable.blockingFirst()
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET("/ssl-using-classpath-keys"), String)
 
         then:
-            response.body() == "Hello Classpath"
+        response.body() == "Hello Classpath"
     }
 
     @Controller('/')

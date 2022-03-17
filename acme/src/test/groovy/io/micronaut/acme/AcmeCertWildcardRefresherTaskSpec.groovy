@@ -1,12 +1,10 @@
 package io.micronaut.acme
 
-
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import io.reactivex.Flowable
 import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
 
@@ -78,13 +76,10 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
     void "test send https request when the cert is in place"() {
         when:
-            Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                    HttpRequest.GET("/wildcardssl"), String
-            ))
-            HttpResponse<String> response = flowable.blockingFirst()
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET("/wildcardssl"), String)
 
         then:
-            response.body() == "Hello Wildcard"
+        response.body() == "Hello Wildcard"
     }
 
     @Controller('/')
