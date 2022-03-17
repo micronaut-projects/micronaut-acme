@@ -57,13 +57,17 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
             try {
                 conn.connect()
                 Certificate[] certs = conn.getServerCertificates()
-                certs.length == 1
-                def cert = (X509Certificate) certs[0]
+                certs.length == 2
+                X509Certificate cert = certs[0]
                 cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                 cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
                 cert.getSubjectAlternativeNames().size() == 2
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(WILDCARD_DOMAIN)
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(EXPECTED_BASE_DOMAIN)
+
+                X509Certificate cert2 = certs[1]
+                cert2.issuerDN.name.contains("Pebble Root CA")
+                cert2.subjectDN.name.contains("Pebble Intermediate CA")
             }finally{
                 if(conn != null){
                     conn.disconnect()

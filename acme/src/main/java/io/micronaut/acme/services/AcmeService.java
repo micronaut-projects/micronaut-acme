@@ -20,6 +20,7 @@ import io.micronaut.acme.challenge.dns.TxtRenderer;
 import io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
@@ -67,6 +68,7 @@ public class AcmeService {
     private static final Logger LOG = LoggerFactory.getLogger(AcmeService.class);
     private static final String DOMAIN_CRT = "domain.crt";
     private static final String DOMAIN_CSR = "domain.csr";
+    private static final String X509_CERT = "X.509";
 
     /**
      * Let's Encrypt has different production vs test servers.
@@ -123,7 +125,7 @@ public class AcmeService {
      */
     public X509Certificate getCurrentCertificate() {
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
             File certificate = new File(certLocation, DOMAIN_CRT);
             if (certificate.exists()) {
                 return (X509Certificate) cf.generateCertificate(Files.newInputStream(certificate.toPath()));
@@ -136,6 +138,29 @@ public class AcmeService {
             }
             return null;
         }
+    }
+
+    /**
+     * Returns the full certificate chain.
+     *
+     * @return array of each of the certificates in the chain
+     */
+    @NonNull
+    protected Optional<X509Certificate[]> getFullCertificateChain() {
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance(X509_CERT);
+            File certificate = new File(certLocation, DOMAIN_CRT);
+            if (certificate.exists()) {
+                return Optional.of(cf.generateCertificates(Files.newInputStream(certificate.toPath())).stream()
+                        .map(X509Certificate.class::cast)
+                        .toArray(X509Certificate[]::new));
+            }
+        } catch (CertificateException | IOException e) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Could not create certificate from file", e);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -278,9 +303,17 @@ public class AcmeService {
                     try (BufferedWriter writer = Files.newBufferedWriter(domainCsr.toPath(), WRITE, CREATE, TRUNCATE_EXISTING)) {
                         certificate.writeCertificate(writer);
                     }
-                    eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), domainKeyPair, false));
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
+                    Optional<X509Certificate[]> chainOptional = getFullCertificateChain();
+                    if (chainOptional.isPresent()) {
+                        eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, false, chainOptional.get()));
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("ACME certificate order success! Certificate URL: {}", certificate.getLocation());
+                        }
+                    } else {
+                        if (LOG.isErrorEnabled()) {
+                            LOG.error("ACME certificate chain could not be loaded from file.");
+                        }
+                        result = true;
                     }
                 } catch (IOException e) {
                     if (LOG.isErrorEnabled()) {
@@ -462,7 +495,7 @@ public class AcmeService {
             }
             KeyPair domainKeyPair = getDomainKeyPair();
             X509Certificate tlsAlpn01Certificate = CertificateUtils.createTlsAlpn01Certificate(domainKeyPair, auth.getIdentifier(), ((TlsAlpn01Challenge) challenge).getAcmeValidation());
-            eventPublisher.publishEvent(new CertificateEvent(tlsAlpn01Certificate, domainKeyPair, true));
+            eventPublisher.publishEvent(new CertificateEvent(domainKeyPair, true, tlsAlpn01Certificate));
         } else if (challenge instanceof Http01Challenge) {
             Http01Challenge http01Challenge = (Http01Challenge) challenge;
             eventPublisher.publishEvent(new HttpChallengeDetails(http01Challenge.getToken(), http01Challenge.getAuthorization()));
@@ -482,7 +515,14 @@ public class AcmeService {
      * Setup the certificate that has been saved to disk and configures it for use.
      */
     public void setupCurrentCertificate() {
-        eventPublisher.publishEvent(new CertificateEvent(getCurrentCertificate(), getDomainKeyPair(), false));
+        Optional<X509Certificate[]> fullCertificateChainOptional = getFullCertificateChain();
+        if (fullCertificateChainOptional.isPresent()) {
+            eventPublisher.publishEvent(new CertificateEvent(getDomainKeyPair(), false, fullCertificateChainOptional.get()));
+        } else {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("ACME certificate chain could not be loaded from file.");
+            }
+        }
     }
 
     /**

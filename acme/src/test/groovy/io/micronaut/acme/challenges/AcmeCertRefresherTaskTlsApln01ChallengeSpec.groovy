@@ -59,11 +59,15 @@ class AcmeCertRefresherTaskTlsApln01ChallengeSpec extends AcmeBaseSpec {
             Certificate[] certs = conn.getServerCertificates()
 
         then: "we make sure they are from the pebble test server and the domain is as expected"
-            certs.length == 1
-            def cert = (X509Certificate) certs[0]
+            certs.length == 2
+            X509Certificate cert = certs[0]
             cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
             cert.getSubjectDN().getName().contains(EXPECTED_ACME_DOMAIN)
             cert.getSubjectAlternativeNames().size() == 1
+
+            X509Certificate cert2 = certs[1]
+            cert2.issuerDN.name.contains("Pebble Root CA")
+            cert2.subjectDN.name.contains("Pebble Intermediate CA")
     }
 
     void "test send https request when the cert is in place"() {
