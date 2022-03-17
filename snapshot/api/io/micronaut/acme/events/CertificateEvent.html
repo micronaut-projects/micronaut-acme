@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -128,10 +128,21 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-">CertificateEvent</a></span>(java.security.KeyPair&nbsp;domainKeyPair,
+                boolean&nbsp;validationCert,
+                java.security.cert.X509Certificate...&nbsp;fullCertificateChain)</code>
+<div class="block">Creates a new CertificateEvent containing the full certificate chain.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.cert.X509Certificate-java.security.KeyPair-boolean-">CertificateEvent</a></span>(java.security.cert.X509Certificate&nbsp;certificate,
                 java.security.KeyPair&nbsp;domainKeyPair,
                 boolean&nbsp;validationCert)</code>
-<div class="block">Creates a new CertificateEvent.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-"><code>CertificateEvent(KeyPair, boolean, X509Certificate...)</code></a> instead.
+
+ Creates a new CertificateEvent.</span></div>
+</div>
 </td>
 </tr>
 </table>
@@ -158,6 +169,12 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#getDomainKeyPair--">getDomainKeyPair</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>java.security.cert.X509Certificate[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#getFullCertificateChain--">getFullCertificateChain</a></span>()</code>
+<div class="block">Return the full certificate chain.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#isValidationCert--">isValidationCert</a></span>()</code>&nbsp;</td>
 </tr>
@@ -186,18 +203,39 @@ extends java.lang.Object</pre>
 <a name="CertificateEvent-java.security.cert.X509Certificate-java.security.KeyPair-boolean-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>CertificateEvent</h4>
-<pre>public&nbsp;CertificateEvent(java.security.cert.X509Certificate&nbsp;certificate,
-                        java.security.KeyPair&nbsp;domainKeyPair,
-                        boolean&nbsp;validationCert)</pre>
-<div class="block">Creates a new CertificateEvent.</div>
+<pre>@Deprecated
+public&nbsp;CertificateEvent(java.security.cert.X509Certificate&nbsp;certificate,
+                                    java.security.KeyPair&nbsp;domainKeyPair,
+                                    boolean&nbsp;validationCert)</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment"><a href="../../../../io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-"><code>CertificateEvent(KeyPair, boolean, X509Certificate...)</code></a> instead.
+
+ Creates a new CertificateEvent.</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>certificate</code> - X509 certificate file</dd>
 <dd><code>domainKeyPair</code> - key pair used to encrypt the certificate</dd>
 <dd><code>validationCert</code> - if this certificate is to be used for tls-apln-01 account validation</dd>
+</dl>
+</li>
+</ul>
+<a name="CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>CertificateEvent</h4>
+<pre>public&nbsp;CertificateEvent(java.security.KeyPair&nbsp;domainKeyPair,
+                        boolean&nbsp;validationCert,
+                        java.security.cert.X509Certificate...&nbsp;fullCertificateChain)</pre>
+<div class="block">Creates a new CertificateEvent containing the full certificate chain.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>domainKeyPair</code> - key pair used to encrypt the certificate</dd>
+<dd><code>validationCert</code> - if this certificate is to be used for tls-apln-01 account validation</dd>
+<dd><code>fullCertificateChain</code> - X509 certificate file</dd>
 </dl>
 </li>
 </ul>
@@ -238,13 +276,28 @@ extends java.lang.Object</pre>
 <a name="isValidationCert--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>isValidationCert</h4>
 <pre>public&nbsp;boolean&nbsp;isValidationCert()</pre>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>if this is a validation certificate to be used for tls-apln-01 account validation</dd>
+</dl>
+</li>
+</ul>
+<a name="getFullCertificateChain--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getFullCertificateChain</h4>
+<pre>@NonNull
+public&nbsp;java.security.cert.X509Certificate[]&nbsp;getFullCertificateChain()</pre>
+<div class="block">Return the full certificate chain.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>array of certificates in the chain.</dd>
 </dl>
 </li>
 </ul>

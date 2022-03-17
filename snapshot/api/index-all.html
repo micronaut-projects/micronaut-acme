@@ -151,7 +151,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.cert.X509Certificate-java.security.KeyPair-boolean-">CertificateEvent(X509Certificate, KeyPair, boolean)</a></span> - Constructor for class io.micronaut.acme.events.<a href="io/micronaut/acme/events/CertificateEvent.html" title="class in io.micronaut.acme.events">CertificateEvent</a></dt>
 <dd>
-<div class="block">Creates a new CertificateEvent.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment"><a href="io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-"><code>CertificateEvent(KeyPair, boolean, X509Certificate...)</code></a> instead.
+
+ Creates a new CertificateEvent.</span></div>
+</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/events/CertificateEvent.html#CertificateEvent-java.security.KeyPair-boolean-java.security.cert.X509Certificate...-">CertificateEvent(KeyPair, boolean, X509Certificate...)</a></span> - Constructor for class io.micronaut.acme.events.<a href="io/micronaut/acme/events/CertificateEvent.html" title="class in io.micronaut.acme.events">CertificateEvent</a></dt>
+<dd>
+<div class="block">Creates a new CertificateEvent containing the full certificate chain.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/acme/challenge/http/endpoint/WellKnownTokenController.html#challengeDetails-io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails-">challengeDetails(HttpChallengeDetails)</a></span> - Method in class io.micronaut.acme.challenge.http.endpoint.<a href="io/micronaut/acme/challenge/http/endpoint/WellKnownTokenController.html" title="class in io.micronaut.acme.challenge.http.endpoint">WellKnownTokenController</a></dt>
 <dd>
@@ -214,6 +222,14 @@
 <dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.html#getDomains--">getDomains()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration</a></dt>
 <dd>
 <div class="block">Gets the domain(s) in which the certificate will be ordered for.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/events/CertificateEvent.html#getFullCertificateChain--">getFullCertificateChain()</a></span> - Method in class io.micronaut.acme.events.<a href="io/micronaut/acme/events/CertificateEvent.html" title="class in io.micronaut.acme.events">CertificateEvent</a></dt>
+<dd>
+<div class="block">Return the full certificate chain.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/acme/services/AcmeService.html#getFullCertificateChain--">getFullCertificateChain()</a></span> - Method in class io.micronaut.acme.services.<a href="io/micronaut/acme/services/AcmeService.html" title="class in io.micronaut.acme.services">AcmeService</a></dt>
+<dd>
+<div class="block">Returns the full certificate chain.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/acme/AcmeConfiguration.html#getHttpChallengeServerPort--">getHttpChallengeServerPort()</a></span> - Method in class io.micronaut.acme.<a href="io/micronaut/acme/AcmeConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration</a></dt>
 <dd>

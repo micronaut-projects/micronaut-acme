@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -158,12 +158,18 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>protected java.util.Optional&lt;java.security.cert.X509Certificate[]&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/services/AcmeService.html#getFullCertificateChain--">getFullCertificateChain</a></span>()</code>
+<div class="block">Returns the full certificate chain.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/services/AcmeService.html#orderCertificate-java.util.List-">orderCertificate</a></span>(java.util.List&lt;java.lang.String&gt;&nbsp;domains)</code>
 <div class="block">Orders a new certificate using ACME protocol.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../io/micronaut/acme/services/AcmeService.html#setupCurrentCertificate--">setupCurrentCertificate</a></span>()</code>
 <div class="block">Setup the certificate that has been saved to disk and configures it for use.</div>
@@ -231,6 +237,21 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>current domain certificate</dd>
+</dl>
+</li>
+</ul>
+<a name="getFullCertificateChain--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getFullCertificateChain</h4>
+<pre>@NonNull
+protected&nbsp;java.util.Optional&lt;java.security.cert.X509Certificate[]&gt;&nbsp;getFullCertificateChain()</pre>
+<div class="block">Returns the full certificate chain.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>array of each of the certificates in the chain</dd>
 </dl>
 </li>
 </ul>
