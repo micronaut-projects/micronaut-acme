@@ -77,7 +77,7 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
                 delegatedSslContext.setNewSslContext(sslContext);
             } else {
                 SslContext sslContext = SslContextBuilder
-                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getFullCertificateChain())
                         .build();
                 delegatedSslContext.setNewSslContext(sslContext);
             }
