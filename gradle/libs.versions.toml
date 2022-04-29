@@ -1,0 +1,17 @@
+[versions]
+managed-acme4j = "2.12"
+
+[libraries]
+micronaut-runtime = { module = 'io.micronaut:micronaut-runtime' }
+micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
+micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
+
+graal = { module = "org.graalvm.nativeimage:svm" }
+
+acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
+acme4j-utils = { module = 'org.shredzone.acme4j:acme4j-utils', version.ref = 'managed-acme4j' }
+
+testcontainers-spock = { module = 'org.testcontainers:spock' }
+
+groovy-json = { module = 'org.codehaus.groovy:groovy-json' }
+groovy-dateutil = { module = 'org.codehaus.groovy:groovy-dateutil' }
