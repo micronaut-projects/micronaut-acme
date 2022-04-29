@@ -6,8 +6,8 @@ dependencies {
     implementation libs.micronaut.runtime
     implementation libs.micronaut.http.server.netty
 
-    api libs.acme4j.client
-    api libs.acme4j.utils
+    api libs.managed.acme4j.client
+    api libs.managed.acme4j.utils
 
     compileOnly libs.graal
 
