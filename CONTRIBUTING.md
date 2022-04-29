@@ -1,22 +1,22 @@
 # Contributing Code or Documentation to Micronaut
 
-Sign the [Contributor License Agreement (CLA)](https://cla-assistant.io/micronaut-projects/micronaut-flyway). This is required before any of your code or pull-requests are accepted.
+Sign the [Contributor License Agreement (CLA)](https://cla-assistant.io/micronaut-projects/micronaut-acme). This is required before any of your code or pull-requests are accepted.
 
 ## Finding Issues to Work on
 
-If you are interested in contributing to Micronaut and are looking for issues to work on, take a look at the issues tagged with [help wanted](https://github.com/micronaut-projects/micronaut-flyway/issues?q=is%3Aopen+is%3Aissue+label%3A%22status%3A+help+wanted%22).
+If you are interested in contributing to Micronaut and are looking for issues to work on, take a look at the issues tagged with [help wanted](https://github.com/micronaut-projects/micronaut-acme/issues?q=is%3Aopen+is%3Aissue+label%3A%22status%3A+help+wanted%22).
 
 ## JDK Setup
 
-Micronaut Flyway currently requires JDK 8.
+Micronaut ACME currently requires JDK 8.
 
 ## IDE Setup
 
-Micronaut Flyway can be imported into IntelliJ IDEA by opening the `build.gradle` file.
+Micronaut ACME can be imported into IntelliJ IDEA by opening the `build.gradle` file.
 
 ## Docker Setup
 
-Micronaut Flyway tests currently require Docker to be installed.
+Micronaut ACME tests currently require Docker to be installed.
 
 ## Running Tests
 
@@ -34,7 +34,7 @@ To also build the Javadocs, run `./gradlew docs`.
 
 If you use IntelliJ IDEA, you can import the project using the Intellij Gradle Tooling ("File / Import Project" and selecting the "settings.gradle" file).
 
-To get a local development version of Micronaut Flyway working, first run the `publishToMavenLocal` task.
+To get a local development version of Micronaut ACME working, first run the `publishToMavenLocal` task.
 
 ```
 ./gradlew pTML
@@ -61,7 +61,7 @@ Once you are satisfied with your changes:
 
 We want to keep the code clean, following good practices about organization, Javadoc, and style as much as possible.
 
-Micronaut Flyway uses [Checkstyle](https://checkstyle.sourceforge.io/) to make sure that the code follows those standards. The configuration is defined in `config/checkstyle/checkstyle.xml`. To execute Checkstyle, run:
+Micronaut ACME uses [Checkstyle](https://checkstyle.sourceforge.io/) to make sure that the code follows those standards. The configuration is defined in `config/checkstyle/checkstyle.xml`. To execute Checkstyle, run:
 
 ```
 ./gradlew <module-name>:checkstyleMain
