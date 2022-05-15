@@ -24,7 +24,7 @@ dependencies {
     documentation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     documentation "org.codehaus.groovy:groovy-dateutil:${groovyVersion}"
 
-    testImplementation "org.testcontainers:spock:1.16.3"
+    testImplementation "org.testcontainers:spock:1.17.1"
     testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.codehaus.groovy:groovy-dateutil:$groovyVersion")
     testImplementation("org.codehaus.groovy:groovy-json:$groovyVersion")
