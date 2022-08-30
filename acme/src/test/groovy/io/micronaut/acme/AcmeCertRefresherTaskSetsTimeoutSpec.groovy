@@ -8,7 +8,7 @@ import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.micronaut.runtime.server.EmbeddedServer
 import org.shredzone.acme4j.exception.AcmeNetworkException
 import org.shredzone.acme4j.util.KeyPairUtils
-import org.testcontainers.shaded.org.apache.commons.lang.exception.ExceptionUtils
+import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
