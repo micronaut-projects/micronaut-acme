@@ -28,21 +28,6 @@ public class CertificateEvent {
     private boolean validationCert;
 
     /**
-     * @deprecated {@link #CertificateEvent(KeyPair, boolean, X509Certificate...)} instead.
-     *
-     * Creates a new CertificateEvent.
-     * @param certificate X509 certificate file
-     * @param domainKeyPair key pair used to encrypt the certificate
-     * @param validationCert if this certificate is to be used for tls-apln-01 account validation
-     */
-    @Deprecated
-    public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair, boolean validationCert) {
-        this.domainKeyPair = domainKeyPair;
-        this.validationCert = validationCert;
-        this.fullCertificateChain = new X509Certificate[]{certificate};
-    }
-
-    /**
      * Creates a new CertificateEvent containing the full certificate chain.
      * @param domainKeyPair key pair used to encrypt the certificate
      * @param validationCert if this certificate is to be used for tls-apln-01 account validation
