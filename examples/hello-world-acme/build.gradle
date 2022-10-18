@@ -1,6 +1,6 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.micronaut.application") version "3.5.1"
+    id("io.micronaut.application") version "3.6.2"
 }
 
 version = "0.1"
@@ -8,6 +8,14 @@ group = "io.micronaut.example"
 
 repositories {
     mavenCentral()
+    maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("org.codehaus.groovy:groovy"))
+                .using(module("org.apache.groovy:groovy:4.0.5"))
+    }
 }
 
 micronaut {
@@ -31,9 +39,4 @@ dependencies {
 
 application {
     mainClass.set("com.acme.example.Application")
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion("8")
-    targetCompatibility = JavaVersion.toVersion("8")
 }
