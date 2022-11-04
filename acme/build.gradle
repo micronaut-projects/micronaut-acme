@@ -10,6 +10,7 @@ dependencies {
     implementation libs.managed.acme4j.utils
     implementation libs.netty.tcnative.boringssl.static
 
+    testImplementation(libs.micronaut.jackson.databind)
     testImplementation libs.testcontainers.spock
     testImplementation libs.groovy.json
     testImplementation libs.groovy.dateutil

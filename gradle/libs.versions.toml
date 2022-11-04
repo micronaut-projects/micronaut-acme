@@ -9,10 +9,11 @@ micronaut-http = { module = 'io.micronaut:micronaut-http' }
 micronaut-http-server = { module = 'io.micronaut:micronaut-http-server' }
 micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
 micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
+micronaut-jackson-databind = { module = 'io.micronaut:micronaut-jackson-databind' }
 
 graal = { module = "org.graalvm.nativeimage:svm" }
 netty-tcnative-boringssl-static = { module = 'io.netty:netty-tcnative-boringssl-static' }
 testcontainers-spock = { module = 'org.testcontainers:spock' }
 
-groovy-json = { module = 'org.codehaus.groovy:groovy-json' }
-groovy-dateutil = { module = 'org.codehaus.groovy:groovy-dateutil' }
+groovy-json = { module = 'org.apache.groovy:groovy-json' }
+groovy-dateutil = { module = 'org.apache.groovy:groovy-dateutil' }
