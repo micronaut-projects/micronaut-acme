@@ -1,5 +1,5 @@
 [versions]
-managed-acme4j = "2.14"
+managed-acme4j = "2.15"
 
 [libraries]
 managed-acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
