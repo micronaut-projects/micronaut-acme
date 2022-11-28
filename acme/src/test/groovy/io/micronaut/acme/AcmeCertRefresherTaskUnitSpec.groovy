@@ -7,14 +7,12 @@ import io.micronaut.runtime.event.ApplicationStartupEvent
 import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.netty.handler.ssl.util.SelfSignedCertificate
 import org.shredzone.acme4j.exception.AcmeException
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Stepwise
 import spock.lang.Unroll
 
 import java.time.Duration
 
-@Ignore
 @Stepwise
 class AcmeCertRefresherTaskUnitSpec extends Specification {
 
