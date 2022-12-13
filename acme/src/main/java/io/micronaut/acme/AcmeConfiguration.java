@@ -32,8 +32,10 @@ import java.util.List;
 @ConfigurationProperties("acme")
 public class AcmeConfiguration implements Toggleable {
 
-    private static final Duration DEFAULT_RENEW_WITHIN = Duration.ofDays(30);
-    private static final Duration DEFAULT_PAUSE_DURATION = Duration.ofSeconds(3);
+    private static final int DEFAULT_RENEW_DAYS = 30;
+    private static final Duration DEFAULT_RENEW_WITHIN = Duration.ofDays(DEFAULT_RENEW_DAYS);
+    private static final int DEFAULT_PAUSE_SECONDS = 3;
+    private static final Duration DEFAULT_PAUSE_DURATION = Duration.ofSeconds(DEFAULT_PAUSE_SECONDS);
     private static final int DEFAULT_REFRESH_ATTEMPTS = 10;
     private static final boolean DEFAULT_ACME_ENABLED = true;
     private static final boolean DEFAULT_TOS_AGREE = false;
@@ -110,7 +112,7 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Get the duration in which you would like to renew the certificate within. Default {@value #DEFAULT_RENEW_WITHIN}.
+     * Get the duration in which you would like to renew the certificate within. Default {@value #DEFAULT_RENEW_DAYS} days.
      * @return the renew within duration
      */
     @NonNull
@@ -238,7 +240,7 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Get the challenge type to be used to validate the account. Default {@value #DEFAULT_CHALLENGE_TYPE}.
+     * Get the challenge type to be used to validate the account. Default {@code DEFAULT_CHALLENGE_TYPE}.
      * @return the challenge type
      */
     public ChallengeType getChallengeType() {
@@ -327,7 +329,7 @@ public class AcmeConfiguration implements Toggleable {
         }
 
         /**
-         * Sets duration in which we will pause between ordering attempts. Default {@value #DEFAULT_PAUSE_DURATION}.
+         * Sets duration in which we will pause between ordering attempts. Default {@value DEFAULT_PAUSE_SECONDS} seconds.
          *
          * @param pause duration
          */

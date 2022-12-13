@@ -1,18 +1,18 @@
 [versions]
 managed-acme4j = "2.15"
 
+micronaut-serde = "2.0.0-SNAPSHOT"
+testcontainers = "1.17.2"
+
 [libraries]
 managed-acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
 managed-acme4j-utils = { module = 'org.shredzone.acme4j:acme4j-utils', version.ref = 'managed-acme4j' }
 
-micronaut-http = { module = 'io.micronaut:micronaut-http' }
-micronaut-http-server = { module = 'io.micronaut:micronaut-http-server' }
-micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
-micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
+micronaut-serde = { module = 'io.micronaut.serde:micronaut-serde-bom', version.ref = 'micronaut-serde' }
 
 graal = { module = "org.graalvm.nativeimage:svm" }
 netty-tcnative-boringssl-static = { module = 'io.netty:netty-tcnative-boringssl-static' }
-testcontainers-spock = { module = 'org.testcontainers:spock' }
+testcontainers-spock = { module = 'org.testcontainers:spock', version.ref = 'testcontainers' }
 
-groovy-json = { module = 'org.codehaus.groovy:groovy-json' }
-groovy-dateutil = { module = 'org.codehaus.groovy:groovy-dateutil' }
+groovy-json = { module = 'org.apache.groovy:groovy-json' }
+groovy-dateutil = { module = 'org.apache.groovy:groovy-dateutil' }

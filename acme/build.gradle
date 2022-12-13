@@ -3,15 +3,16 @@ plugins {
 }
 
 dependencies {
-    implementation libs.micronaut.http
-    implementation libs.micronaut.http.server
-    implementation libs.micronaut.http.server.netty
+    implementation mn.micronaut.http
+    implementation mn.micronaut.http.server
+    implementation mn.micronaut.http.server.netty
     implementation libs.managed.acme4j.client
     implementation libs.managed.acme4j.utils
     implementation libs.netty.tcnative.boringssl.static
 
+    testImplementation(mnSerde.micronaut.serde.jackson)
     testImplementation libs.testcontainers.spock
     testImplementation libs.groovy.json
     testImplementation libs.groovy.dateutil
-    testImplementation libs.micronaut.http.client
+    testImplementation mn.micronaut.http.client
 }
