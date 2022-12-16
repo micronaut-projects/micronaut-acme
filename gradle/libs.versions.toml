@@ -2,7 +2,7 @@
 managed-acme4j = "2.15"
 
 micronaut-serde = "2.0.0-SNAPSHOT"
-testcontainers = "1.17.2"
+testcontainers = "1.17.6"
 
 [libraries]
 managed-acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
