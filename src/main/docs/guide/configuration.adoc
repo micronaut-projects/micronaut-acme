@@ -4,26 +4,33 @@ dependency:micronaut-acme[version="{version}", groupId="io.micronaut.acme"]
 
 The `micronaut-acme` module transitively includes the `org.shredzone.acme4j:acme4j-client` and `org.shredzone.acme4j:acme4j-utils` dependency.
 
-.src/main/resources/application.yml
-[source,yaml]
+[configuration]
 ----
 micronaut:
     server:
-        port : 80 //<1>
-        dual-protocol: true //<2>
+        port : 80
+        dual-protocol: true
         ssl:
-            enabled: true // <3>
+            enabled: true
+----
+
+- Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let's Encrypt for example only sends request to port 80.
+- Enables dual port mode that allows for both http and https to be bound. Default is `false`
+- Enables ssl for micronaut. Default is `false`
+
+[configuration]
+----
 acme:
-    enabled: true // <4>
-    tos-agree: true // <5>
-    cert-location: /path/to/store/certificates // <6>
-    domains: //<7>
+    enabled: true
+    tos-agree: true
+    cert-location: /path/to/store/certificates
+    domains:
       - stage.domain.com
       - test.domain.com
     refresh:
-        delay: 1m // <8>
-        frequency: 24h // <9>
-    domain-key: | // <10>
+        delay: 1m
+        frequency: 24h
+    domain-key: |
         -----BEGIN RSA PRIVATE KEY-----
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
@@ -31,7 +38,7 @@ acme:
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
         -----END RSA PRIVATE KEY-----
-    account-key: | // <11>
+    account-key: |
         -----BEGIN RSA PRIVATE KEY-----
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
@@ -39,33 +46,28 @@ acme:
         MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
         al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
         -----END RSA PRIVATE KEY-----
-    acme-server: acme://server.com // <12>
+    acme-server: acme://server.com
     order:
-        pause: 3s // <13>
-        refresh-attempts: 10 // <14>
+        pause: 3s
+        refresh-attempts: 10
     auth:
-        pause: 1m // <15>
-        refresh-attempts: 10 // <16>
-    renew-within: 30 // <17>
-    challenge-type: tls // <18>
+        pause: 1m
+        refresh-attempts: 10
+    renew-within: 30
+    challenge-type: tls
     timeout: 10s //<19>
 ----
-<1> Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let's Encrypt for example only sends request to port 80.
-<2> Enables dual port mode that allows for both http and https to be bound. Default is `false`
-<3> Enables ssl for micronaut. Default is `false`
-<4> Enables ACME integration for micronaut. Default is `false`
-<5> Agrees to the Terms of Service of the ACME provider. Default is `false`
-<6> Location to store the certificate on the server.
-<7> Domain name(s) for the certificate. Can be a 1 or many domains or even a wildcard domain.
-<8> How long to wait until the server starts up the ACME background process. Default is `24 hours`
-<9> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
-<10> Private key used to encrypt the certificate. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. It is advisable to not check this into source control as this is the secret to handle the domain encryption.
-<11> Private key used to when setting up your account with the ACME provider. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`.  It is advisable to not check this into source control as this is your account identifier.
-<12> Url of the ACME server (ex. acme://letsencrypt.org/staging)
-<13> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
-<14> Number of times to poll an order status of the ACME server. Default is `10`
-<15> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
-<16> Number of times to poll an authorization status of the ACME server. Default is `10`
-<17> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
-<18> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
-<19> Sets the connection/read timeout when making http calls to the ACME server. Default comes from here https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61
+- `enabled` enables ACME integration for micronaut. Default is `false`
+- `tos-agree` agrees to the Terms of Service of the ACME provider. Default is `false`
+- `cert-location` specifies the location to store the certificate on the server.
+- `domains` indicates domain names for the certificate. Can be a 1 or many domains or even a wildcard domain.
+- `refresh.delay` says long to wait until the server starts up the ACME background process. Default is `24 hours`
+- `refresh.frequency` How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
+- `domain-key` is the private key used to encrypt the certificate. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. It is advisable to not check this into source control as this is the secret to handle the domain encryption.
+- `account-key` is the private key used to when setting up your account with the ACME provider. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`.  It is advisable to not check this into source control as this is your account identifier.
+- `acme-server` points to the url of the ACME server (ex. acme://letsencrypt.org/staging)
+- `order` specifies the time to wait in between polling order status of the ACME server (default 3 seconds) and the number of times to poll an order status of the ACME server (default 10).
+- `auth` indicates the time to wait in between polling authorization status of the ACME server (default 3 seconds) and the number of times to poll an authorization status of the ACME server (default 10).`
+- `renew-within` is the number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
+- `challenge-type` default is `tls`. Possible options : http, tls, dns
+- Set `timeout` to the connection/read timeout when making http calls to the ACME server. Default comes from here https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61
