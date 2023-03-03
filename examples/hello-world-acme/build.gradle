@@ -29,7 +29,7 @@ dependencies {
     implementation("io.micronaut.acme:micronaut-acme")
     implementation("javax.annotation:javax.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("org.yaml:snakeyaml")
 }
 
 application {
