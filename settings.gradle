@@ -2,11 +2,12 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 
 plugins {
-    id 'io.micronaut.build.shared.settings' version '6.3.1'
+    id 'io.micronaut.build.shared.settings' version '6.3.3'
 }
 
 rootProject.name = "acme-parent"
@@ -19,8 +20,8 @@ include "acme"
 ].each { name ->
     include name
     def project = findProject(":${name}")
-    project.name = "acme-example-${name}"
-    project.projectDir = new File(settingsDir, "micronaut-examples/${name}")
+    project.name = "micronaut-acme-example-${name}"
+    project.projectDir = new File(settingsDir, "examples/${name}")
 }
 
 micronautBuild {
