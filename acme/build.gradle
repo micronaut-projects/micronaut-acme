@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor(mnValidation.micronaut.validation.processor)
+    implementation(mnValidation.micronaut.validation)
     implementation mn.micronaut.http
     implementation mn.micronaut.http.server
     implementation mn.micronaut.http.server.netty
