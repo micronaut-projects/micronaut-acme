@@ -9,8 +9,8 @@ testcontainers = "1.17.2"
 
 managed-acme4j = "2.15"
 
-micronaut-serde = "2.0.0-SNAPSHOT"
 micronaut-validation = "4.0.0-SNAPSHOT"
+micronaut-serde = "2.0.0-M1"
 
 [libraries]
 managed-acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
