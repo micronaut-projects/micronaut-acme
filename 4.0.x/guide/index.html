@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Micronaut Acme</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <link rel="stylesheet" href="../css/highlight/agate.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script src="../js/guide.js"></script>
+    <script src="../js/multi-language-sample.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="stylesheet" href="../css/multi-language-sample.css"/>
+    <script src="../js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+        function addJsClass(el) {
+            var classes = document.body.className.split(" ");
+            classes.push("js");
+            document.body.className = classes.join(" ");
+        }
+    </script>
+
+</head>
+
+<body class="body" id="docs" onload="addJsClass();" onhashchange="highlightMenu()">
+
+<div id="table-of-content-nav-link" class="desktop">
+    <a id="theme-switcher" title="Switch to dark theme" href="javascript:switchTheme(true)"><i class="fa fa-moon-o"></i></a>
+    <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
+</div>
+
+<div id="main">
+    <div id="navigation" class="no-print">
+        <div class="navTitle">
+            <span id="logo"><a href="http://micronaut.io" title="Go to Micronaut Website"><img src="../img/micronaut-logo-white.svg" alt="Micronaut"/></a></span>
+        </div>
+        <div class="navLinks">
+            <ul>
+                    <li><div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#configuration"><strong>3</strong><span>Configuration</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#challenges"><strong>4</strong><span>Challenge Types</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#cli"><strong>5</strong><span>CLI</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>6</strong><span>Repository</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                <li id="table-of-content-nav-link-mobile" class="mobile">
+                    <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Configuration Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Conf</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    
+    <div id="table-of-content">
+        <div class="toc-content">
+
+        <h2>Table of Contents</h2>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-introduction"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-releaseHistory"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-configuration"><a href="#configuration"><strong>3</strong><span>Configuration</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-challenges"><a href="#challenges"><strong>4</strong><span>Challenge Types</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-http"><a href="#http"><strong>4.1</strong><span>HTTP-01</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-tls"><a href="#tls"><strong>4.2</strong><span>TLS-APLN-01</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-dns"><a href="#dns"><strong>4.3</strong><span>DNS-01</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-cli"><a href="#cli"><strong>5</strong><span>CLI</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-usage"><a href="#usage"><strong>5.1</strong><span>Usage</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>6</strong><span>Repository</span></a></div>
+        
+        </div>
+    </div>
+    
+    <div class="docs-content">
+    <div class="project">
+        <h1>Micronaut Acme</h1>
+        <p></p>
+        <p>Extensions to integrate Micronaut and Acme</p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-acme/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-acme/latest/guide/index.html'>LATEST</option><option selected='selected' value='https://micronaut-projects.github.io/micronaut-acme/4.0.0-M1/guide/index.html'>4.0.0-M1</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.2.0/guide/index.html'>3.2.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.1.0/guide/index.html'>3.1.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.1/guide/index.html'>3.0.1</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.0/guide/index.html'>3.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.0-RC1/guide/index.html'>3.0.0-RC1</option><option value='https://micronaut-projects.github.io/micronaut-acme/2.1.0/guide/index.html'>2.1.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/2.0.0/guide/index.html'>2.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.2.0/guide/index.html'>1.2.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0/guide/index.html'>1.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC3/guide/index.html'>1.0.0.RC3</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC2/guide/index.html'>1.0.0.RC2</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC1/guide/index.html'>1.0.0.RC1</option></select> </p>
+    </div>
+    
+<h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/introduction.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut supports <a href="https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment">ACME</a> via the <code>micronaut-acme</code> module.</p>
+</div>
+
+<h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/releaseHistory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For this project, you can find a list of releases (with release notes) here:
+￼
+<a href="https://github.com/micronaut-projects/micronaut-acme/releases">https://github.com/micronaut-projects/micronaut-acme/releases</a></p>
+</div>
+
+<h1 id="configuration"><a class="anchor" href="#configuration"></a>3 Configuration</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/configuration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Micronaut 1.3.0 or above is required and you must have the <code>micronaut-acme</code> dependency on your classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:4.0.0-M1")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.acme&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-acme&lt;/artifactId&gt;
+    &lt;version&gt;4.0.0-M1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-acme</code> module transitively includes the <code>org.shredzone.acme4j:acme4j-client</code> and <code>org.shredzone.acme4j:acme4j-utils</code> dependency.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+    server:
+        port : 80 <i class="conum" data-value="1"></i><b>(1)</b>
+        dual-protocol: true <i class="conum" data-value="2"></i><b>(2)</b>
+        ssl:
+            enabled: true <i class="conum" data-value="3"></i><b>(3)</b>
+acme:
+    enabled: true <i class="conum" data-value="4"></i><b>(4)</b>
+    tos-agree: true <i class="conum" data-value="5"></i><b>(5)</b>
+    cert-location: /path/to/store/certificates <i class="conum" data-value="6"></i><b>(6)</b>
+    domains: <i class="conum" data-value="7"></i><b>(7)</b>
+      - stage.domain.com
+      - test.domain.com
+    refresh:
+        delay: 1m <i class="conum" data-value="8"></i><b>(8)</b>
+        frequency: 24h <i class="conum" data-value="9"></i><b>(9)</b>
+    domain-key: | <i class="conum" data-value="10"></i><b>(10)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    account-key: | <i class="conum" data-value="11"></i><b>(11)</b>
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        ....
+        MIIEowIBAAKCAQEAi32GgrNvt5sYonmvFRs1lYMdUTsoFHz33knzsTvBRb+S1JCc
+        al86zAx3dRdFiLyWw4/lXmS6oS5B/NT1w9R7nW3vd0oi4ump/QjWjOd8SxCBqMcR
+        -----END RSA PRIVATE KEY-----
+    acme-server: acme://server.com <i class="conum" data-value="12"></i><b>(12)</b>
+    order:
+        pause: 3s <i class="conum" data-value="13"></i><b>(13)</b>
+        refresh-attempts: 10 <i class="conum" data-value="14"></i><b>(14)</b>
+    auth:
+        pause: 1m <i class="conum" data-value="15"></i><b>(15)</b>
+        refresh-attempts: 10 <i class="conum" data-value="16"></i><b>(16)</b>
+    renew-within: 30 <i class="conum" data-value="17"></i><b>(17)</b>
+    challenge-type: tls <i class="conum" data-value="18"></i><b>(18)</b>
+    timeout: 10s <i class="conum" data-value="19"></i><b>(19)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let&#8217;s Encrypt for example only sends request to port 80.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Enables dual port mode that allows for both http and https to be bound. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Enables ssl for micronaut. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Enables ACME integration for micronaut. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Agrees to the Terms of Service of the ACME provider. Default is <code>false</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Location to store the certificate on the server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Domain name(s) for the certificate. Can be a 1 or many domains or even a wildcard domain.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>How long to wait until the server starts up the ACME background process. Default is <code>24 hours</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>How often the server will check for a new ACME cert and refresh it if needed. Default is <code>24 hours</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>Private key used to encrypt the certificate. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>. It is advisable to not check this into source control as this is the secret to handle the domain encryption.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>Private key used to when setting up your account with the ACME provider. Other options you can use here are <code>classpath:/path/to/key.pem</code> or <code>file:/path/to/key.pem</code>.  It is advisable to not check this into source control as this is your account identifier.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="12"></i><b>12</b></td>
+<td>Url of the ACME server (ex. acme://letsencrypt.org/staging)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="13"></i><b>13</b></td>
+<td>Time to wait in between polling order status of the ACME server. Default is <code>3 seconds</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="14"></i><b>14</b></td>
+<td>Number of times to poll an order status of the ACME server. Default is <code>10</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="15"></i><b>15</b></td>
+<td>Time to wait in between polling authorization status of the ACME server. Default is <code>3 seconds</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="16"></i><b>16</b></td>
+<td>Number of times to poll an authorization status of the ACME server. Default is <code>10</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="17"></i><b>17</b></td>
+<td>Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is <code>30 days</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="18"></i><b>18</b></td>
+<td>The challenge type you would like to use. Default is <code>tls</code>. Possible options : http, tls, dns</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="19"></i><b>19</b></td>
+<td>Sets the connection/read timeout when making http calls to the ACME server. Default comes from here <a href="https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61" class="bare">https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61</a></td>
+</tr>
+</table>
+</div>
+
+<h1 id="challenges"><a class="anchor" href="#challenges"></a>4 Challenge Types</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/challenges.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>ACME supports 3 different challenge types which will be used to validate that you in fact own the domain before a certificate is issued.</p>
+</div>
+
+<h2 id="http"><a class="anchor" href="#http"></a>4.1 HTTP-01</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/challenges/http.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Utilizing <code>http</code> challenge type you will need to do one of the following two things :</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>enable dual protocol support</p>
+</li>
+<li>
+<p>setup redirect from http &#8594; https in any load balancer/proxy server you have in front of your application.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The reason for this is that Let&#8217;s Encrypt for example will only call out to
+the http challenge type over http and nothing else but will follow redirects.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
+  challenge-type: 'http'
+
+micronaut:
+  server:
+    dual-protocol: true</code></pre>
+</div>
+</div>
+
+<h2 id="tls"><a class="anchor" href="#tls"></a>4.2 TLS-APLN-01</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/challenges/tls.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Utilizing <code>tls</code> challenge type is the simpliest to configure and thus the default because you will only be required
+to open up the default secure port for the server to allow the challenge server to validate it.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
+  challenge-type: 'tls'</code></pre>
+</div>
+</div>
+
+<h2 id="dns"><a class="anchor" href="#dns"></a>4.3 DNS-01</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/challenges/dns.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Utilizing <code>dns</code> challenge type allows validation to be done via entry of a DNS TXT record. Currently
+the application will log out a message that looks as follows.</p>
+</div>
+<div class="listingblock">
+<div class="title">DNS output</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+							CREATE DNS `TXT` ENTRY AS FOLLOWS
+				_acme-challenge.example.com with value 79ZNJaxlcLYIFootHL6Rrbh2VUCfFGgPeurVyjoRrS8
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once this is output you will need to log into your DNS provider and create a TXT entry with the following key and value.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>key: <code>_acme-challenge.example.com</code></p>
+</li>
+<li>
+<p>value: <code>79ZNJaxlcLYIFootHL6Rrbh2VUCfFGgPeurVyjoRrS8</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since this is a manual process you will also want to bump out your <code>acme.auth.pause</code> duration so that there is enough time between retries
+and time take for the manual entry/DNS propagation.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
+  challenge-type: 'dns'
+  auth:
+    # Due to the current manual nature in which the dns validation has to be done currently
+    # we change the amount of time we wait before trying to authorize again to make sure there
+    # is time for us logging into the dns interface, setting a TXT record and waiting for it
+    # to propagate.
+    pause: 2m</code></pre>
+</div>
+</div>
+
+<h1 id="cli"><a class="anchor" href="#cli"></a>5 CLI</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/cli.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To be able to secure your application using ACME there will be a few setup steps necessary before you can start using
+the new certificates. Support for ACME and this setup has been baked into micronaut-starter (<a href="https://github.com/micronaut-projects/micronaut-starter" class="bare">https://github.com/micronaut-projects/micronaut-starter</a>).</p>
+</div>
+
+<h2 id="usage"><a class="anchor" href="#usage"></a>5.1 Usage</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/cli/usage.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To use these functions you must first enable the <code>acme</code> feature in your app.</p>
+</div>
+<div class="sect1">
+<h2 id="_for_a_new_app">For a new app</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Either at creation time you will need to select the <code>acme</code> feature</p>
+</div>
+<div class="paragraph">
+<p>Using the Micronaut CLI select the <code>acme</code> feature on creation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mn create-app --features acme hello-world</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or using Micronaut Launch <a href="https://micronaut.io/launch/" class="bare">https://micronaut.io/launch/</a> simply select <code>acme</code> feature before downloading your pre-built app.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_for_an_existing_app">For an existing app</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Use the micronaut cli to do a <code>feature-diff</code> on an exiting app to show the changes needed
+to enable the feature.</p>
+</div>
+<div class="paragraph">
+<p>ex. CLI Feature Diff</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd &lt;project directory&gt;
+mn feature-diff --features acme</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_keypairs">Creating keypairs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A utility to help with creating keypairs. This is akin to doing something like so with openssl</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ openssl genrsa -out /tmp/mydomain.com-key.pem 4096</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These keypairs will be used for both ACME accounts as well as each domain will also need its own keypair defined.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn create-key [-fhvVx] [-k=&lt;keyDir&gt;] -n=&lt;keyName&gt; [-s=&lt;keySize&gt;]
+Creates an keypair for use with ACME integration
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
+  -k, --key-dir=&lt;keyDir&gt;     Custom location on disk to put the key to be used
+                               with this account.
+                               Default: src/main/resources
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be created
+  -s, --key-size=&lt;keySize&gt;   Size of the key to be generated
+                               Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_an_account">Creating an Account</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
+the account keypair that you have generated using the <code>mn create-key</code> or via <code>openssl</code> or other means in as a parameter.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://certbot.eff.org/">Certbot</a> or many of the other tools out there can also accomplish this step if you dont want to use this tool.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn create-acme-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod | --lets-encrypt-staging)
+                              [-fhvVx] -e=&lt;email&gt; [-k=&lt;keyDir&gt;] -n=&lt;keyName&gt; [-s=&lt;keySize&gt;]
+Creates a new account on the given ACME server
+  -e, --email=&lt;email&gt;        Email address to create account with.
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
+  -k, --key-dir=&lt;keyDir&gt;     Custom location on disk to put the key to be used with this
+                               account.
+                               Default: src/main/resources
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be created
+  -s, --key-size=&lt;keySize&gt;   Size of the key to be generated
+                               Default: 4096
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=&lt;serverUrl&gt;      URL of ACME server to use</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deactivating_an_account">Deactivating an Account</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Deactivates a given account based on the account key that was used to create the account.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Usage: mn deactivate-acme-account (-u=&lt;serverUrl&gt; | --lets-encrypt-prod |
+                                  --lets-encrypt-staging) [-fhvVx] [-k=&lt;keyDir&gt;] [-n=&lt;keyName&gt;]
+Deactivates an existing ACME account
+  -f, --force                Whether to overwrite existing files
+  -h, --help                 Show this help message and exit.
+  -k, --key-dir=&lt;keyDir&gt;     Directory to find the key to be used for this account.
+                               Default: src/main/resources
+  -n, --key-name=&lt;keyName&gt;   Name of the key to be used
+                               Default: null
+  -v, --verbose              Create verbose output.
+  -V, --version              Print version information and exit.
+  -x, --stacktrace           Show full stack trace when exceptions occur.
+ACME server URL
+      --lets-encrypt-prod    Use the Let's Encrypt prod URL.
+      --lets-encrypt-staging Use the Let's Encrypt staging URL
+  -u, --url=&lt;serverUrl&gt;      URL of ACME server to use</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>6 Repository</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-acme/edit/master/src/main/docs/guide/repository.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can find the source code of this project in this repository:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-acme">https://github.com/micronaut-projects/micronaut-acme</a></p>
+</div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
