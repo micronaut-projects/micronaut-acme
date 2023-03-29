@@ -12,6 +12,7 @@ repositories {
 }
 
 micronaut {
+    version '4.0.0-SNAPSHOT'
     runtime("netty")
     testRuntime("junit5")
     processing {
@@ -26,7 +27,6 @@ dependencies {
     implementation(project(":micronaut-acme"))
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-runtime")
-    implementation("io.micronaut.acme:micronaut-acme")
     implementation("javax.annotation:javax.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.yaml:snakeyaml")
