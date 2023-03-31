@@ -9,7 +9,7 @@ testcontainers = "1.17.2"
 
 managed-acme4j = "2.15"
 
-micronaut-serde = "2.0.0-M1"
+micronaut-serde = "2.0.0-SNAPSHOT"
 micronaut-validation = "4.0.0-M2"
 
 [libraries]
