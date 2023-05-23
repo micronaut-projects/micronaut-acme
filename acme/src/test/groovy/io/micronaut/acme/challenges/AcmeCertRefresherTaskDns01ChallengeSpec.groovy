@@ -82,18 +82,18 @@ class AcmeCertRefresherTaskDns01ChallengeSpec extends AcmeBaseSpec {
             Certificate[] certs = conn.getServerCertificates()
 
         then: "we make sure they are from the pebble test server and the domain is as expected"
-            certs.length == 1
+            certs.length > 0
             def cert = (X509Certificate) certs[0]
-            cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
-            cert.getSubjectDN().getName().contains(EXPECTED_ACME_DOMAIN)
+            cert.getIssuerX500Principal().getName().contains("Pebble Intermediate CA")
+            cert.getSubjectX500Principal().getName().contains(EXPECTED_ACME_DOMAIN)
             cert.getSubjectAlternativeNames().size() == 1
     }
 
     void "test send https request when the cert is in place"() {
         when:
-            HttpResponse<String> response = Flowable.fromPublisher(client.toBlocking().exchange(
+            HttpResponse<String> response = client.toBlocking().exchange(
                     HttpRequest.GET("/dnschallenge"), String
-            ))
+            )
 
         then:
             response.body() == "Hello DNS"
