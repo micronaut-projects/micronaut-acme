@@ -6,9 +6,9 @@ micronaut-test = '4.0.0-M4'
 groovy = '4.0.11'
 spock = '2.3-groovy-4.0'
 testcontainers = "1.18.0"
+netty-http3 = "0.0.16.Final"
 
 managed-acme4j = "2.16"
-
 micronaut-serde = "2.0.0-M8"
 micronaut-validation = "4.0.0-M7"
 
@@ -21,6 +21,7 @@ micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-
 
 graal = { module = "org.graalvm.nativeimage:svm" }
 netty-tcnative-boringssl-static = { module = 'io.netty:netty-tcnative-boringssl-static' }
+netty-incubator-codec-http3 = { module = "io.netty.incubator:netty-incubator-codec-http3", version.ref = "netty-http3" }
 testcontainers-spock = { module = 'org.testcontainers:spock', version.ref = 'testcontainers' }
 
 groovy-json = { module = 'org.apache.groovy:groovy-json' }
