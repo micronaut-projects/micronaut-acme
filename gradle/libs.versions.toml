@@ -15,6 +15,9 @@ micronaut-validation = "4.0.0-M7"
 micronaut-gradle-plugin = "4.0.0-M3"
 
 [libraries]
+# Core
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+
 managed-acme4j-client = { module = 'org.shredzone.acme4j:acme4j-client', version.ref = 'managed-acme4j' }
 managed-acme4j-utils = { module = 'org.shredzone.acme4j:acme4j-utils', version.ref = 'managed-acme4j' }
 
