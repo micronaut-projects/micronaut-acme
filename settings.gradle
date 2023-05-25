@@ -24,7 +24,6 @@ include "acme"
 }
 
 micronautBuild {
-    addSnapshotRepository()
     useStandardizedProjectNames=true
     importMicronautCatalog()
     importMicronautCatalog("micronaut-serde")
