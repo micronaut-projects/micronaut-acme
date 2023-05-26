@@ -7,7 +7,7 @@ micronaut-test = "4.0.0-M4"
 groovy = "4.0.12"
 spock = '2.3-groovy-4.0'
 testcontainers = "1.18.1"
-netty-http3 = "0.0.16.Final"
+netty-http3 = "0.0.18.Final"
 
 managed-acme4j = "2.16"
 micronaut-serde = "2.0.0-M8"
