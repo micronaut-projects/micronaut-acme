@@ -1,4 +1,4 @@
-Utilizing `tls` challenge type is the simpliest to configure and thus the default because you will only be required
+Utilizing `tls` challenge type is the simplest to configure and thus the default because you will only be required
 to open up the default secure port for the server to allow the challenge server to validate it.
 
 .src/main/resources/application.yml
