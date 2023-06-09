@@ -365,7 +365,7 @@ micronaut:
 
 
 <div class="paragraph">
-<p>Utilizing <code>tls</code> challenge type is the simpliest to configure and thus the default because you will only be required
+<p>Utilizing <code>tls</code> challenge type is the simplest to configure and thus the default because you will only be required
 to open up the default secure port for the server to allow the challenge server to validate it.</p>
 </div>
 <div class="listingblock">
@@ -386,8 +386,12 @@ to open up the default secure port for the server to allow the challenge server 
 
 
 <div class="paragraph">
-<p>Utilizing <code>dns</code> challenge type allows validation to be done via entry of a DNS TXT record. Currently
-the application will log out a message that looks as follows.</p>
+<p>Utilizing <code>dns</code> challenge type allows validation to be done via entry of a DNS TXT record.</p>
+</div>
+<div class="sect2">
+<h3 id="_manual_verification">Manual Verification</h3>
+<div class="paragraph">
+<p>By default, the application will log out a message that looks as follows.</p>
 </div>
 <div class="listingblock">
 <div class="title">DNS output</div>
@@ -414,7 +418,7 @@ the application will log out a message that looks as follows.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Since this is a manual process you will also want to bump out your <code>acme.auth.pause</code> duration so that there is enough time between retries
+<p>Since this is a manual process you will also want to bump up your <code>acme.auth.pause</code> duration so that there is enough time between retries
 and time take for the manual entry/DNS propagation.</p>
 </div>
 <div class="listingblock">
@@ -423,11 +427,36 @@ and time take for the manual entry/DNS propagation.</p>
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
   challenge-type: 'dns'
   auth:
-    # Due to the current manual nature in which the dns validation has to be done currently
+    # Due to the current manual nature in which the dns validation is performed by default
     # we change the amount of time we wait before trying to authorize again to make sure there
     # is time for us logging into the dns interface, setting a TXT record and waiting for it
     # to propagate.
     pause: 2m</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_automatic_verification">Automatic Verification</h3>
+<div class="paragraph">
+<p>An implementation of <a href="../api/io/micronaut/acme/challenge/dns/DnsChallengeSolver.html">DnsChallengeSolver</a> can be provided to automate the creation and cleanup of the necessary DNS records.</p>
+</div>
+<div class="listingblock">
+<div class="title">CustomDnsChallengeSolver.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+@Replaces(DnsChallengeSolver.class)
+class CustomDnsChallengeSolver implements DnsChallengeSolver {
+    @Override
+    public void createRecord(String domain, String digest) {
+        // Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+    }
+
+    @Override
+    public void destroyRecord(String domain) {
+        // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 

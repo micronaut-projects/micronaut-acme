@@ -90,10 +90,11 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.event.ApplicationEventPublisher,io.micronaut.acme.AcmeConfiguration,io.micronaut.core.io.ResourceResolver,io.micronaut.scheduling.TaskScheduler)" class="member-name-link">AcmeService</a><wbr>(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.context.event.ApplicationEventPublisher,io.micronaut.acme.AcmeConfiguration,io.micronaut.core.io.ResourceResolver,io.micronaut.scheduling.TaskScheduler,io.micronaut.acme.challenge.dns.DnsChallengeSolver)" class="member-name-link">AcmeService</a><wbr>(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
  <a href="../AcmeConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration</a>&nbsp;acmeConfiguration,
  io.micronaut.core.io.ResourceResolver&nbsp;resourceResolver,
- io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler)</code></div>
+ io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler,
+ <a href="../challenge/dns/DnsChallengeSolver.html" title="interface in io.micronaut.acme.challenge.dns">DnsChallengeSolver</a>&nbsp;dnsChallengeSolver)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a new Acme cert service.</div>
 </div>
@@ -149,13 +150,14 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.micronaut.context.event.ApplicationEventPublisher,io.micronaut.acme.AcmeConfiguration,io.micronaut.core.io.ResourceResolver,io.micronaut.scheduling.TaskScheduler)">
+<section class="detail" id="&lt;init&gt;(io.micronaut.context.event.ApplicationEventPublisher,io.micronaut.acme.AcmeConfiguration,io.micronaut.core.io.ResourceResolver,io.micronaut.scheduling.TaskScheduler,io.micronaut.acme.challenge.dns.DnsChallengeSolver)">
 <h3>AcmeService</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AcmeService</span><wbr><span class="parameters">(io.micronaut.context.event.ApplicationEventPublisher&nbsp;eventPublisher,
  <a href="../AcmeConfiguration.html" title="class in io.micronaut.acme">AcmeConfiguration</a>&nbsp;acmeConfiguration,
  io.micronaut.core.io.ResourceResolver&nbsp;resourceResolver,
  @Named("scheduled")
- io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler)</span></div>
+ io.micronaut.scheduling.TaskScheduler&nbsp;taskScheduler,
+ <a href="../challenge/dns/DnsChallengeSolver.html" title="interface in io.micronaut.acme.challenge.dns">DnsChallengeSolver</a>&nbsp;dnsChallengeSolver)</span></div>
 <div class="block">Constructs a new Acme cert service.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -163,6 +165,7 @@ loadScripts(document, 'script');</script>
 <dd><code>resourceResolver</code> - Resource resolver for finding keys from classpath or disk</dd>
 <dd><code>acmeConfiguration</code> - Acme Configuration</dd>
 <dd><code>taskScheduler</code> - Task scheduler for enabling background polling of the certificate refreshes</dd>
+<dd><code>dnsChallengeSolver</code> - DNS Challenge Resolver for setting up a DNS challenge</dd>
 </dl>
 </section>
 </li>
