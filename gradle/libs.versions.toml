@@ -1,8 +1,8 @@
 [versions]
 micronaut-docs = '2.0.0'
-micronaut = "4.0.0-RC4"
+micronaut = "4.0.0-RC5"
 micronaut-platform = "4.0.0-M2"
-micronaut-test = "4.0.0-M6"
+micronaut-test = "4.0.0-M9"
 
 groovy = "4.0.12"
 spock = '2.3-groovy-4.0'
@@ -10,8 +10,8 @@ testcontainers = "1.18.3"
 netty-http3 = "0.0.19.Final"
 
 managed-acme4j = "2.16"
-micronaut-serde = "2.0.0-M12"
-micronaut-validation = "4.0.0-M11"
+micronaut-serde = "2.0.0-M13"
+micronaut-validation = "4.0.0-M12"
 micronaut-gradle-plugin = "4.0.0-M8"
 
 [libraries]
