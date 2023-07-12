@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Micronaut Acme</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
     <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
@@ -112,7 +113,7 @@
         <h1>Micronaut Acme</h1>
         <p></p>
         <p>Extensions to integrate Micronaut and Acme</p>
-        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-acme/snapshot/guide/index.html'>SNAPSHOT</option><option selected='selected' value='https://micronaut-projects.github.io/micronaut-acme/3.2.0/guide/index.html'>3.2.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.1.0/guide/index.html'>3.1.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.1/guide/index.html'>3.0.1</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.0/guide/index.html'>3.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/3.0.0-RC1/guide/index.html'>3.0.0-RC1</option><option value='https://micronaut-projects.github.io/micronaut-acme/2.1.0/guide/index.html'>2.1.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/2.0.0/guide/index.html'>2.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.2.0/guide/index.html'>1.2.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0/guide/index.html'>1.0.0</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC3/guide/index.html'>1.0.0.RC3</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC2/guide/index.html'>1.0.0.RC2</option><option value='https://micronaut-projects.github.io/micronaut-acme/1.0.0.RC1/guide/index.html'>1.0.0.RC1</option></select> </p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-acme/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-acme/latest/guide/index.html'>LATEST</option></select> </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -159,7 +160,7 @@
 <p>        <div class="listingblock multi-language-sample">
 <div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:3.2.0")</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.acme:micronaut-acme:4.0.0")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -167,7 +168,7 @@
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.acme&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-acme&lt;/artifactId&gt;
-    &lt;version&gt;3.2.0&lt;/version&gt;
+    &lt;version&gt;4.0.0&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div></p>
@@ -364,7 +365,7 @@ micronaut:
 
 
 <div class="paragraph">
-<p>Utilizing <code>tls</code> challenge type is the simpliest to configure and thus the default because you will only be required
+<p>Utilizing <code>tls</code> challenge type is the simplest to configure and thus the default because you will only be required
 to open up the default secure port for the server to allow the challenge server to validate it.</p>
 </div>
 <div class="listingblock">
@@ -385,8 +386,12 @@ to open up the default secure port for the server to allow the challenge server 
 
 
 <div class="paragraph">
-<p>Utilizing <code>dns</code> challenge type allows validation to be done via entry of a DNS TXT record. Currently
-the application will log out a message that looks as follows.</p>
+<p>Utilizing <code>dns</code> challenge type allows validation to be done via entry of a DNS TXT record.</p>
+</div>
+<div class="sect2">
+<h3 id="_manual_verification">Manual Verification</h3>
+<div class="paragraph">
+<p>By default, the application will log out a message that looks as follows.</p>
 </div>
 <div class="listingblock">
 <div class="title">DNS output</div>
@@ -413,7 +418,7 @@ the application will log out a message that looks as follows.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Since this is a manual process you will also want to bump out your <code>acme.auth.pause</code> duration so that there is enough time between retries
+<p>Since this is a manual process you will also want to bump up your <code>acme.auth.pause</code> duration so that there is enough time between retries
 and time take for the manual entry/DNS propagation.</p>
 </div>
 <div class="listingblock">
@@ -422,11 +427,36 @@ and time take for the manual entry/DNS propagation.</p>
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
   challenge-type: 'dns'
   auth:
-    # Due to the current manual nature in which the dns validation has to be done currently
+    # Due to the current manual nature in which the dns validation is performed by default
     # we change the amount of time we wait before trying to authorize again to make sure there
     # is time for us logging into the dns interface, setting a TXT record and waiting for it
     # to propagate.
     pause: 2m</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_automatic_verification">Automatic Verification</h3>
+<div class="paragraph">
+<p>An implementation of <a href="../api/io/micronaut/acme/challenge/dns/DnsChallengeSolver.html">DnsChallengeSolver</a> can be provided to automate the creation and cleanup of the necessary DNS records.</p>
+</div>
+<div class="listingblock">
+<div class="title">CustomDnsChallengeSolver.java</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+@Replaces(DnsChallengeSolver.class)
+class CustomDnsChallengeSolver implements DnsChallengeSolver {
+    @Override
+    public void createRecord(String domain, String digest) {
+        // Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+    }
+
+    @Override
+    public void destroyRecord(String domain) {
+        // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 
