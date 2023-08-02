@@ -1,6 +1,6 @@
 Micronaut 1.3.0 or above is required and you must have the `micronaut-acme` dependency on your classpath:
 
-dependency:micronaut-acme[version="{version}", groupId="io.micronaut.acme"]
+dependency:micronaut-acme[groupId="io.micronaut.acme"]
 
 The `micronaut-acme` module transitively includes the `org.shredzone.acme4j:acme4j-client` and `org.shredzone.acme4j:acme4j-utils` dependency.
 
