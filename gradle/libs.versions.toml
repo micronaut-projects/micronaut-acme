@@ -12,7 +12,7 @@ netty-http3 = "0.0.19.Final"
 managed-acme4j = "2.16"
 micronaut-serde = "2.1.1"
 micronaut-validation = "4.0.0"
-micronaut-gradle-plugin = "4.0.0"
+micronaut-gradle-plugin = "4.0.2"
 
 [libraries]
 # Core
