@@ -3,9 +3,6 @@ package io.micronaut.acme
 import io.micronaut.acme.background.AcmeCertRefresherTask
 import io.micronaut.acme.services.AcmeService
 import io.micronaut.http.server.exceptions.ServerStartupException
-import io.micronaut.runtime.EmbeddedApplication
-import io.micronaut.runtime.event.ApplicationStartupEvent
-import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.netty.handler.ssl.util.SelfSignedCertificate
 import org.shredzone.acme4j.exception.AcmeException
 import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
@@ -75,7 +72,7 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
 
         then:
             1 * mockAcmeSerivce.getCurrentCertificate() >> new SelfSignedCertificate(expectedDomain, new Date(), new Date() + 31).cert()
-            1 * mockAcmeSerivce.orderCertificate([expectedDomain])
+            1 * mockAcmeSerivce.createOrder([expectedDomain])
 
         where:
             daysToRenew | description
@@ -100,7 +97,7 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
 
         and:
             1 * mockAcmeSerivce.getCurrentCertificate() >> null
-            1 * mockAcmeSerivce.orderCertificate(expectedDomains) >> { List<String> domains ->
+            1 * mockAcmeSerivce.createOrder(expectedDomains) >> { List<String> domains ->
                 throw new AcmeException("Failed to do some ACME related task")
             }
     }

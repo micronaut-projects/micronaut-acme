@@ -70,14 +70,7 @@ public final class AcmeCertRefresherTask {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Running background/scheduled renewal process");
         }
-        if (!acmeConfiguration.isTosAgree()) {
-            throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
-        }
-        List<String> domains = getDomains();
-        if (needsToOrderNewCertificate()) {
-            Order order = acmeService.orderCertificate(domains);
-            acmeService.authorizeCertificate(domains, order);
-        }
+        renewCertIfNeeded();
     }
 
     @EventListener
@@ -90,7 +83,7 @@ public final class AcmeCertRefresherTask {
                 throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
             }
             if (needsToOrderNewCertificate()) {
-                order = acmeService.orderCertificate(getDomains());
+                order = acmeService.createOrder(getDomains());
             } else {
                 acmeService.setupCurrentCertificate();
             }
@@ -147,5 +140,19 @@ public final class AcmeCertRefresherTask {
             }
         }
         return domains;
+    }
+
+    /**
+     * Does the work to actually renew the certificate if it needs to be done.
+     * @throws AcmeException if any issues occur during certificate renewal
+     */
+    protected void renewCertIfNeeded() throws AcmeException {
+        if (!acmeConfiguration.isTosAgree()) {
+            throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
+        }
+        List<String> domains = getDomains();
+        if (needsToOrderNewCertificate()) {
+            acmeService.orderCertificate(domains);
+        }
     }
 }

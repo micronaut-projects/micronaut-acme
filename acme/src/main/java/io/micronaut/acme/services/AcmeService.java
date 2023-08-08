@@ -172,10 +172,22 @@ public class AcmeService {
      *
      * @param domains List of domains to order a certificate for
      * @throws AcmeException if any issues occur during ordering of certificate
+     */
+    public void orderCertificate(List<String> domains) throws AcmeException {
+        final Order order = createOrder(domains);
+        authorizeCertificate(domains, order);
+    }
+
+    /**
+     * Orders a new certificate using ACME protocol.
+     *
+     * @param domains List of domains to order a certificate for
+     * @throws AcmeException if any issues occur during ordering of certificate
      *
      * @return order for the given list of domains
+     * @since 4.1
      */
-    public Order orderCertificate(List<String> domains) throws AcmeException {
+    public Order createOrder(List<String> domains) throws AcmeException {
         Session session = new Session(acmeServerUrl);
         if (timeout != null) {
             session.networkSettings().setTimeout(timeout);
@@ -198,6 +210,7 @@ public class AcmeService {
      * @param domains List of domains to order a certificate for
      * @param order acme order for the given set of domains
      * @throws AcmeException if any issues occur during authorization of a certificate order
+     * @since 4.1
      */
     public void authorizeCertificate(List<String> domains, Order order) throws AcmeException {
         if (order == null) {
