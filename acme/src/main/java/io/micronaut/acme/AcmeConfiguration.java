@@ -16,12 +16,12 @@
 package io.micronaut.acme;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.Toggleable;
 
-import javax.annotation.Nonnull;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.time.Duration;
 import java.util.List;
@@ -32,8 +32,10 @@ import java.util.List;
 @ConfigurationProperties("acme")
 public class AcmeConfiguration implements Toggleable {
 
-    private static final Duration DEFAULT_RENEW_WITHIN = Duration.ofDays(30);
-    private static final Duration DEFAULT_PAUSE_DURATION = Duration.ofSeconds(3);
+    private static final int DEFAULT_RENEW_DAYS = 30;
+    private static final Duration DEFAULT_RENEW_WITHIN = Duration.ofDays(DEFAULT_RENEW_DAYS);
+    private static final int DEFAULT_PAUSE_SECONDS = 3;
+    private static final Duration DEFAULT_PAUSE_DURATION = Duration.ofSeconds(DEFAULT_PAUSE_SECONDS);
     private static final int DEFAULT_REFRESH_ATTEMPTS = 10;
     private static final boolean DEFAULT_ACME_ENABLED = true;
     private static final boolean DEFAULT_TOS_AGREE = false;
@@ -77,7 +79,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return the domain(s) name configured
      */
-    @Nonnull
+    @NonNull
     @NotEmpty
     @NotNull
     public List<String> getDomains() {
@@ -110,10 +112,10 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Get the duration in which you would like to renew the certificate within. Default {@value #DEFAULT_RENEW_WITHIN}.
+     * Get the duration in which you would like to renew the certificate within. Default {@value #DEFAULT_RENEW_DAYS} days.
      * @return the renew within duration
      */
-    @Nonnull
+    @NonNull
     public Duration getRenewWitin() {
         return renewWitin;
     }
@@ -123,7 +125,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param renewWitin duration before rene process started
      */
-    public void setRenewWitin(@Nonnull Duration renewWitin) {
+    public void setRenewWitin(@NonNull Duration renewWitin) {
         this.renewWitin = renewWitin;
     }
 
@@ -163,7 +165,7 @@ public class AcmeConfiguration implements Toggleable {
      * Account key used to authenticate with the ACME server.
      * @return the account key string
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getAccountKey() {
@@ -174,7 +176,7 @@ public class AcmeConfiguration implements Toggleable {
      * Sets the account key used for authentication.
      * @param accountKey account key string
      */
-    public void setAccountKey(@Nonnull String accountKey) {
+    public void setAccountKey(@NonNull String accountKey) {
         this.accountKey = accountKey;
     }
 
@@ -182,7 +184,7 @@ public class AcmeConfiguration implements Toggleable {
      * Key in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
      * @return domain key string value
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getDomainKey() {
@@ -193,7 +195,7 @@ public class AcmeConfiguration implements Toggleable {
      * Sets the key string in which to be used to generate the CSR which will be used to order the certificate from the ACME server.
      * @param domainKey key string
      */
-    public void setDomainKey(@Nonnull String domainKey) {
+    public void setDomainKey(@NonNull String domainKey) {
         this.domainKey = domainKey;
     }
 
@@ -202,7 +204,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return location to certificate
      */
-    @Nonnull
+    @NonNull
     public File getCertLocation() {
         return certLocation;
     }
@@ -212,7 +214,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param certLocation location to certificate
      */
-    public void setCertLocation(@Nonnull File certLocation) {
+    public void setCertLocation(@NonNull File certLocation) {
         this.certLocation = certLocation;
     }
 
@@ -221,7 +223,7 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @return url of the acme server
      */
-    @Nonnull
+    @NonNull
     @NotBlank
     @NotNull
     public String getAcmeServer() {
@@ -233,12 +235,12 @@ public class AcmeConfiguration implements Toggleable {
      *
      * @param acmeServer url of acme server
      */
-    public void setAcmeServer(@Nonnull String acmeServer) {
+    public void setAcmeServer(@NonNull String acmeServer) {
         this.acmeServer = acmeServer;
     }
 
     /**
-     * Get the challenge type to be used to validate the account. Default {@value #DEFAULT_CHALLENGE_TYPE}.
+     * Get the challenge type to be used to validate the account. Default {@code DEFAULT_CHALLENGE_TYPE}.
      * @return the challenge type
      */
     public ChallengeType getChallengeType() {
@@ -311,10 +313,9 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Allows the configuration of the Acme certificate ordering process.
+     * Base class for configuration classes.
      */
-    @ConfigurationProperties("order")
-    public static class OrderConfiguration {
+    public static class AbstractConfiguration {
         private Duration pause = DEFAULT_PAUSE_DURATION;
         private int refreshAttempts = DEFAULT_REFRESH_ATTEMPTS;
 
@@ -328,7 +329,7 @@ public class AcmeConfiguration implements Toggleable {
         }
 
         /**
-         * Sets duration in which we will pause between ordering attempts. Default {@value #DEFAULT_PAUSE_DURATION}.
+         * Sets duration in which we will pause between ordering attempts. Default {@value DEFAULT_PAUSE_SECONDS} seconds.
          *
          * @param pause duration
          */
@@ -356,47 +357,16 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
+     * Allows the configuration of the Acme certificate ordering process.
+     */
+    @ConfigurationProperties("order")
+    public static class OrderConfiguration extends AbstractConfiguration {
+    }
+
+    /**
      * Allows the configuration of the Acme certificate authentication process.
      */
     @ConfigurationProperties("auth")
-    public static class AuthConfiguration {
-        private Duration pause = DEFAULT_PAUSE_DURATION;
-        private int refreshAttempts = DEFAULT_REFRESH_ATTEMPTS;
-
-        /**
-         * Gets duration in which we will pause between authentication attempts.
-         *
-         * @return duration
-         */
-        public Duration getPause() {
-            return pause;
-        }
-
-        /**
-         * Sets duration in which we will pause between authentication attempts. Default {@value #DEFAULT_PAUSE_DURATION}.
-         *
-         * @param pause duration
-         */
-        public void setPause(Duration pause) {
-            this.pause = pause;
-        }
-
-        /**
-         * Gets number of refresh attempts that will be tried while authenticating with the ACME server.
-         *
-         * @return number of refresh attempts
-         */
-        public int getRefreshAttempts() {
-            return refreshAttempts;
-        }
-
-        /**
-         * Sets number of refresh attempts that will be tried while authenticating with the ACME server. Default {@value #DEFAULT_REFRESH_ATTEMPTS}.
-         *
-         * @param refreshAttempts number of refresh attempts
-         */
-        public void setRefreshAttempts(int refreshAttempts) {
-            this.refreshAttempts = refreshAttempts;
-        }
+    public static class AuthConfiguration extends AbstractConfiguration {
     }
 }

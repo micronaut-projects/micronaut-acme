@@ -22,11 +22,11 @@ import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
 import io.micronaut.http.ssl.ServerSslConfiguration;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.netty.handler.ssl.*;
+import jakarta.inject.Singleton;
 import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import javax.net.ssl.SSLException;
 import java.util.Optional;
 
@@ -77,7 +77,7 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
                 delegatedSslContext.setNewSslContext(sslContext);
             } else {
                 SslContext sslContext = SslContextBuilder
-                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getFullCertificateChain())
                         .build();
                 delegatedSslContext.setNewSslContext(sslContext);
             }

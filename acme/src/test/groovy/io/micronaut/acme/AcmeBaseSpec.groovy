@@ -4,8 +4,6 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
 import org.shredzone.acme4j.Account
 import org.shredzone.acme4j.AccountBuilder
 import org.shredzone.acme4j.Session
@@ -20,15 +18,13 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy
 import org.testcontainers.utility.MountableFile
 import spock.lang.AutoCleanup
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.security.KeyPair
 import java.time.Duration
 
-@Ignore
-class AcmeBaseSpec extends Specification {
+abstract class AcmeBaseSpec extends Specification {
     private static final Logger log = LoggerFactory.getLogger(AcmeBaseSpec.class)
 
     // Must be this since the docker container can only call the host if its set to this value. See here https://www.testcontainers.org/features/networking#exposing-host-ports-to-the-container
@@ -46,12 +42,8 @@ class AcmeBaseSpec extends Specification {
     @AutoCleanup
     HttpClient client
 
-
     @Shared
-    @ClassRule
-    TemporaryFolder temporaryFolder
-
-    @Shared
+    @AutoCleanup("deleteDir")
     File certFolder
 
     @Shared
@@ -93,10 +85,9 @@ class AcmeBaseSpec extends Specification {
                 .create(session)
         assert createNewAccount.status == Status.VALID
 
-        certFolder = temporaryFolder.newFolder()
         embeddedServer = ApplicationContext.run(EmbeddedServer,
-                getConfiguration(),
-                "test")
+                                                getConfiguration(),
+                                                "test")
 
         client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
     }
@@ -148,41 +139,27 @@ class AcmeBaseSpec extends Specification {
         keyPair
     }
 
-    def cleanupSpec(){
-        try{
-            log.info("Stopping embedded client & server")
-            client?.stop()
-            embeddedServer?.stop()
-        }catch(Exception e){
-            log.error("Failed to stop embedded server", e)
-        }
-        try{
-            log.info("Stopping pebble container")
-            certServerContainer?.stop()
-        }catch(Exception e){
-            log.error("Failed to stop pebble container", e)
-        }
-    }
-
-    Map<String, String> getPebbleEnv(){
+    Map<String, String> getPebbleEnv() {
         return [
-                "PEBBLE_VA_ALWAYS_VALID": "1"
+            "PEBBLE_VA_ALWAYS_VALID": "1"
         ]
     }
 
     Map<String, Object> getConfiguration() {
+        certFolder = File.createTempDir()
         [
-                "micronaut.server.ssl.enabled": true,
-                "micronaut.server.ssl.port": expectedSecurePort,
-                "micronaut.server.host": EXPECTED_DOMAIN,
-                "acme.tosAgree"        : true,
-                "acme.cert-location"   : certFolder.toString(),
-                "acme.domain-key"  : domainKey,
-                "acme.account-key" : accountKey,
-                'acme.acme-server'     : acmeServerUrl,
-                'acme.enabled'         : true,
-                'acme.order.pause'     : "1s",
-                'acme.auth.pause'      : "1s"
-        ]
+            "micronaut.server.ssl.enabled": true,
+            "micronaut.server.ssl.port"   : expectedSecurePort,
+            "micronaut.server.host"       : EXPECTED_DOMAIN,
+            "micronaut.http.client.ssl.insecure-trust-all-certificates": true,
+            "acme.tosAgree"               : true,
+            "acme.cert-location"          : certFolder.toString(),
+            "acme.domain-key"             : domainKey,
+            "acme.account-key"            : accountKey,
+            'acme.acme-server'            : acmeServerUrl,
+            'acme.enabled'                : true,
+            'acme.order.pause'            : "1s",
+            'acme.auth.pause'             : "1s"
+        ] as Map<String, Object>
     }
 }

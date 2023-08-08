@@ -8,8 +8,7 @@ import io.micronaut.runtime.event.ApplicationStartupEvent
 import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.netty.handler.ssl.util.SelfSignedCertificate
 import org.shredzone.acme4j.exception.AcmeException
-import org.spockframework.util.ExceptionUtil
-import org.testcontainers.shaded.org.apache.commons.lang.exception.ExceptionUtils
+import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
 import spock.lang.Specification
 import spock.lang.Stepwise
 import spock.lang.Unroll

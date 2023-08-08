@@ -1,4 +1,5 @@
 introduction: Introduction
+releaseHistory: Release History
 configuration:
   title: Configuration
 challenges:
@@ -13,4 +14,4 @@ cli:
   title: CLI
   usage:
     title: Usage
-
+repository: Repository

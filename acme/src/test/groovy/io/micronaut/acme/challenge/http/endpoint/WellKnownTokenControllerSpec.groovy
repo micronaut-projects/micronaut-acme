@@ -6,9 +6,8 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.reactivex.Flowable
 
-import static org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils.randomAlphanumeric
+import static org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 
 class WellKnownTokenControllerSpec extends AcmeBaseSpec {
 
@@ -32,7 +31,7 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
         then:
         def ex = thrown(HttpClientResponseException)
         ex.response.status() == HttpStatus.NOT_FOUND
-        new JsonSlurper().parseText(ex.response.body()).message == "Not found"
+        new JsonSlurper().parseText(ex.response.body()).message == "Not Found"
     }
 
     void "pass valid token"(){
@@ -52,9 +51,6 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
     }
 
     private HttpResponse<String> callWellKnownEndpoint(String randomToken) {
-        Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                HttpRequest.GET("/.well-known/acme-challenge/$randomToken"), String
-        ))
-        flowable.blockingFirst()
+        client.toBlocking().exchange(HttpRequest.GET("/.well-known/acme-challenge/$randomToken"), String)
     }
 }

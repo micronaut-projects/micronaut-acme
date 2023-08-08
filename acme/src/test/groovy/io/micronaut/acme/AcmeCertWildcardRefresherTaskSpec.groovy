@@ -1,12 +1,10 @@
 package io.micronaut.acme
 
-
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import io.reactivex.Flowable
 import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
 
@@ -57,13 +55,17 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
             try {
                 conn.connect()
                 Certificate[] certs = conn.getServerCertificates()
-                certs.length == 1
-                def cert = (X509Certificate) certs[0]
+                certs.length == 2
+                X509Certificate cert = certs[0]
                 cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
                 cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
                 cert.getSubjectAlternativeNames().size() == 2
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(WILDCARD_DOMAIN)
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(EXPECTED_BASE_DOMAIN)
+
+                X509Certificate cert2 = certs[1]
+                cert2.issuerDN.name.contains("Pebble Root CA")
+                cert2.subjectDN.name.contains("Pebble Intermediate CA")
             }finally{
                 if(conn != null){
                     conn.disconnect()
@@ -74,13 +76,10 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
 
     void "test send https request when the cert is in place"() {
         when:
-            Flowable<HttpResponse<String>> flowable = Flowable.fromPublisher(client.exchange(
-                    HttpRequest.GET("/wildcardssl"), String
-            ))
-            HttpResponse<String> response = flowable.blockingFirst()
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET("/wildcardssl"), String)
 
         then:
-            response.body() == "Hello Wildcard"
+        response.body() == "Hello Wildcard"
     }
 
     @Controller('/')

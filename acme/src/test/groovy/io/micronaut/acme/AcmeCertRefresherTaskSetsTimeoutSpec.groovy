@@ -7,11 +7,10 @@ import io.micronaut.mock.slow.SlowAcmeServer
 import io.micronaut.mock.slow.SlowServerConfig
 import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.micronaut.runtime.server.EmbeddedServer
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
 import org.shredzone.acme4j.exception.AcmeNetworkException
 import org.shredzone.acme4j.util.KeyPairUtils
-import org.testcontainers.shaded.org.apache.commons.lang.exception.ExceptionUtils
+import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
+import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -26,10 +25,7 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
     public static final String EXPECTED_DOMAIN = "localhost"
 
     @Shared
-    @ClassRule
-    TemporaryFolder temporaryFolder
-
-    @Shared
+    @AutoCleanup("deleteDir")
     File certFolder
 
     @Shared
@@ -53,9 +49,7 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
     @Shared
     int networkTimeoutInSecs
 
-
     def setupSpec() {
-        certFolder = temporaryFolder.newFolder()
         networkTimeoutInSecs = 2
 
         generateDomainKeypair()
@@ -80,21 +74,21 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         keyPair
     }
 
-
     Map<String, Object> getConfiguration() {
+        certFolder = File.createTempDir()
         [
-                "acme.domains"                 : EXPECTED_DOMAIN,
-                "micronaut.server.ssl.enabled" : true,
-                "micronaut.server.port"        : expectedHttpPort,
-                "micronaut.server.dualProtocol": true,
-                "micronaut.server.ssl.port"    : expectedSecurePort,
-                "micronaut.server.host"        : EXPECTED_DOMAIN,
-                "acme.tosAgree"                : true,
-                "acme.cert-location"           : certFolder.toString(),
-                "acme.domain-key"              : domainKey,
-                "acme.account-key"             : accountKey,
-                'acme.acme-server'             : acmeServerUrl,
-                'acme.enabled'                 : true,
+            "acme.domains"                 : EXPECTED_DOMAIN,
+            "micronaut.server.ssl.enabled" : true,
+            "micronaut.server.port"        : expectedHttpPort,
+            "micronaut.server.dualProtocol": true,
+            "micronaut.server.ssl.port"    : expectedSecurePort,
+            "micronaut.server.host"        : EXPECTED_DOMAIN,
+            "acme.tosAgree"                : true,
+            "acme.cert-location"           : certFolder.toString(),
+            "acme.domain-key"              : domainKey,
+            "acme.account-key"             : accountKey,
+            'acme.acme-server'             : acmeServerUrl,
+            'acme.enabled'                 : true,
         ] as Map<String, Object>
     }
 
@@ -118,8 +112,8 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
 
         when: "we configure network timeouts"
         EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
-                getConfiguration() << ["acme.timeout": "${networkTimeoutInSecs}s"],
-                "test")
+                                                          getConfiguration() << ["acme.timeout": "${networkTimeoutInSecs}s"],
+                                                          "test")
 
         then: "we get network errors b/c of the timeout"
         def ex = thrown(Throwable)

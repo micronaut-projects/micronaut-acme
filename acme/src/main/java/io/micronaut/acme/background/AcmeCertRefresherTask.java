@@ -23,12 +23,12 @@ import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.runtime.exceptions.ApplicationStartupException;
 import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Singleton;
 import org.shredzone.acme4j.Order;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -94,7 +94,7 @@ public final class AcmeCertRefresherTask {
             } else {
                 acmeService.setupCurrentCertificate();
             }
-        } catch (Exception e) {
+        } catch (Exception e) { //NOSONAR
             LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
             throw new ServerStartupException("Failed to start due to SSL configuration issue.", e);
         }

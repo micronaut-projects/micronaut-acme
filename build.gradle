@@ -1,32 +1,8 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        jcenter()
-        maven { url "https://dl.bintray.com/micronaut/core-releases-local" }
-        maven { url "https://repo.grails.org/grails/core" }
-    }
-    dependencies {
-        classpath "io.micronaut.build:micronaut-gradle-plugins:2.0.0.RC10"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
-    }
+plugins {
+    id "io.micronaut.build.internal.docs"
+    id "io.micronaut.build.internal.quality-reporting"
 }
 
-subprojects { Project subproject ->
-    group "io.micronaut.acme"
-
-    apply plugin: "io.micronaut.build.common"
-    apply plugin: "io.micronaut.build.dependency-updates"
-
-    if (subproject.parent.name == "examples" || subproject.name.contains("example")) {
-        return
-    }
-
-    apply plugin: "io.micronaut.build.publishing"
-}
-
-apply plugin: "io.micronaut.build.docs"
-apply plugin: "io.micronaut.build.dependency-updates"
-
-task buildScriptDependencies(type: DependencyReportTask) {
-    configurations = project.buildscript.configurations
+repositories {
+    mavenCentral()
 }

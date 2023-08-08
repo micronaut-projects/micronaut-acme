@@ -15,6 +15,7 @@
  */
 package io.micronaut.acme.events;
 
+import io.micronaut.core.annotation.NonNull;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
@@ -22,27 +23,30 @@ import java.security.cert.X509Certificate;
  * Event used to alert when a new ACME certificate is ready for use.
  */
 public class CertificateEvent {
-    private final X509Certificate certificate;
     private final KeyPair domainKeyPair;
+    private final X509Certificate[] fullCertificateChain;
     private boolean validationCert;
 
     /**
-     * Creates a new CertificateEvent.
-     * @param certificate X509 certificate file
+     * Creates a new CertificateEvent containing the full certificate chain.
      * @param domainKeyPair key pair used to encrypt the certificate
      * @param validationCert if this certificate is to be used for tls-apln-01 account validation
+     * @param fullCertificateChain X509 certificate file
      */
-    public CertificateEvent(X509Certificate certificate, KeyPair domainKeyPair, boolean validationCert) {
-        this.certificate = certificate;
-        this.domainKeyPair = domainKeyPair;
+    public CertificateEvent(KeyPair domainKeyPair, boolean validationCert, X509Certificate... fullCertificateChain) {
+        if (fullCertificateChain == null || fullCertificateChain.length == 0) {
+            throw new IllegalArgumentException("Certificate chain must not be empty");
+        }
         this.validationCert = validationCert;
+        this.domainKeyPair = domainKeyPair;
+        this.fullCertificateChain = fullCertificateChain;
     }
 
     /**
      * @return Certificate created by ACME server
      */
     public X509Certificate getCert() {
-        return certificate;
+        return fullCertificateChain[0];
     }
 
     /**
@@ -57,5 +61,15 @@ public class CertificateEvent {
      */
     public boolean isValidationCert() {
         return validationCert;
+    }
+
+    /**
+     * Return the full certificate chain.
+     *
+     * @return array of certificates in the chain.
+     */
+    @NonNull
+    public X509Certificate[] getFullCertificateChain() {
+        return fullCertificateChain;
     }
 }

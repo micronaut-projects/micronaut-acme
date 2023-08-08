@@ -1,14 +1,32 @@
-rootProject.name = "micronaut-acme"
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
 
+plugins {
+    id 'io.micronaut.build.shared.settings' version '6.5.4'
+}
+
+rootProject.name = "acme-parent"
+
+include 'acme-bom'
 include "acme"
 
-String[] examples = [
+[
         "hello-world-acme"
-]
-
-examples.each { name ->
+].each { name ->
     include name
     def project = findProject(":${name}")
-    project.name = "acme-example-${name}"
+    project.name = "micronaut-acme-example-${name}"
     project.projectDir = new File(settingsDir, "examples/${name}")
 }
+
+micronautBuild {
+    useStandardizedProjectNames=true
+    importMicronautCatalog()
+    importMicronautCatalog("micronaut-serde")
+    importMicronautCatalog("micronaut-validation")
+}
+

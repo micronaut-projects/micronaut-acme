@@ -1,0 +1,7 @@
+[
+  {
+    "type": "io.micronaut.acme.events.CertificateEvent",
+    "member": "Constructor io.micronaut.acme.events.CertificateEvent(java.security.cert.X509Certificate,java.security.KeyPair,boolean)",
+    "reason": "Removed deprecated constructor for Micronaut 4"
+  }
+]
