@@ -29,11 +29,12 @@ import org.shredzone.acme4j.exception.AcmeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.cert.X509Certificate;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Background task to automatically refresh the certificates from an ACME server on a configurable interval.
@@ -114,17 +115,9 @@ public final class AcmeCertRefresherTask {
     }
 
     private boolean needsToOrderNewCertificate() {
-        boolean orderCertificate = false;
-        X509Certificate currentCertificate = acmeService.getCurrentCertificate();
-        if (currentCertificate != null) {
-            long daysTillExpiration = ChronoUnit.SECONDS.between(Instant.now(), currentCertificate.getNotAfter().toInstant());
-            if (daysTillExpiration <= acmeConfiguration.getRenewWitin().getSeconds()) {
-                orderCertificate = true;
-            }
-        } else {
-            orderCertificate = true;
-        }
-        return orderCertificate;
+        return Optional.ofNullable(acmeService.getCurrentCertificate())
+            .map(c -> SECONDS.between(now(), c.getNotAfter().toInstant()) <= acmeConfiguration.getRenewWitin().getSeconds())
+            .orElse(true);
     }
 
     private List<String> getDomains() {
