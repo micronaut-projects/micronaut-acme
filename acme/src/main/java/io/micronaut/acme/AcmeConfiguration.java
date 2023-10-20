@@ -240,7 +240,7 @@ public class AcmeConfiguration implements Toggleable {
     }
 
     /**
-     * Get the challenge type to be used to validate the account. Default {@code DEFAULT_CHALLENGE_TYPE}.
+     * Get the challenge type to be used to validate the account. Default {@code tls-alpn-01}.
      * @return the challenge type
      */
     public ChallengeType getChallengeType() {
