@@ -13,13 +13,11 @@ import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUti
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Stepwise
-import spock.lang.Unroll
 
+import java.net.http.HttpTimeoutException
 import java.security.KeyPair
 import java.time.Duration
 
-@Stepwise
 class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
 
     public static final String EXPECTED_DOMAIN = "localhost"
@@ -92,8 +90,7 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         ] as Map<String, Object>
     }
 
-    @Unroll
-    def "validate timeout applied if signup is slow"(SlowServerConfig config, Class exType) {
+    def "validate timeout applied if signup is #config"(SlowServerConfig config, Class exType) {
         given: "we have all the ports we could ever need"
         expectedHttpPort = SocketUtils.findAvailableTcpPort()
         expectedSecurePort = SocketUtils.findAvailableTcpPort()
@@ -124,8 +121,8 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         ane?.message == "Network error"
 
         Throwable rootEx = ExceptionUtils.getRootCause(ex)
-        rootEx instanceof SocketTimeoutException
-        rootEx.message == "Read timed out"
+        rootEx instanceof HttpTimeoutException
+        rootEx.message == "request timed out"
 
         cleanup:
         appServer?.stop()
@@ -139,9 +136,14 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
     }
 
     class ActualSlowServerConfig implements SlowServerConfig {
+
         boolean slowSignup
         boolean slowOrdering
         boolean slowAuthorization
         Duration duration = Duration.ofSeconds(networkTimeoutInSecs + 2)
+
+        String toString() {
+            "slowSignup: $slowSignup, slowOrdering: $slowOrdering, slowAuthorization: $slowAuthorization, duration: $duration"
+        }
     }
 }

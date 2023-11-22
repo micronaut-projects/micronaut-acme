@@ -9,7 +9,6 @@ dependencies {
     implementation mn.micronaut.http.server
     implementation mn.micronaut.http.server.netty
     implementation libs.managed.acme4j.client
-    implementation libs.managed.acme4j.utils
     implementation libs.netty.tcnative.boringssl.static
     compileOnly libs.netty.incubator.codec.http3
     testImplementation(mnSerde.micronaut.serde.jackson)

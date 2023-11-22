@@ -1,3 +1,11 @@
 plugins {
     id "io.micronaut.build.internal.bom"
 }
+
+micronautBom {
+    suppressions {
+        // as of micronaut-acme 5.0.0
+        // acme removed this acme4j-utils and included it in the acme4j-client lib as of v3.0.0
+        acceptedLibraryRegressions.add("acme4j-utils")
+    }
+}
