@@ -4,7 +4,7 @@ micronaut = "4.2.3"
 micronaut-platform = "4.2.3"
 micronaut-test = "4.1.0"
 
-groovy = "4.0.15"
+groovy = "4.0.17"
 spock = '2.3-groovy-4.0'
 testcontainers = "1.19.3"
 netty-http3 = "0.0.23.Final"
