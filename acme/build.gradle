@@ -12,7 +12,7 @@ dependencies {
     implementation libs.netty.tcnative.boringssl.static
     compileOnly libs.netty.incubator.codec.http3
     testImplementation(mnSerde.micronaut.serde.jackson)
-    testImplementation libs.testcontainers.spock
+    testImplementation(mnTestResources.testcontainers.core)
     testImplementation libs.groovy.json
     testImplementation libs.groovy.dateutil
     testImplementation mn.micronaut.http.client
