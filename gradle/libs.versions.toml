@@ -6,7 +6,7 @@ micronaut-test = "4.1.0"
 
 groovy = "4.0.17"
 spock = '2.3-groovy-4.0'
-netty-http3 = "0.0.23.Final"
+netty-http3 = "0.0.25.Final"
 
 managed-acme4j = "3.1.1"
 micronaut-serde = "2.7.0"
