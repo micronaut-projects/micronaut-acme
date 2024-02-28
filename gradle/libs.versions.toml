@@ -9,7 +9,7 @@ spock = '2.3-groovy-4.0'
 netty-http3 = "0.0.23.Final"
 
 managed-acme4j = "3.1.1"
-micronaut-serde = "2.7.0"
+micronaut-serde = "2.8.1"
 micronaut-test-resources="2.3.3"
 micronaut-validation = "4.2.0"
 micronaut-gradle-plugin = "4.3.3"
