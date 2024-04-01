@@ -6,7 +6,6 @@ micronaut-test = "4.1.0"
 
 groovy = "4.0.17"
 spock = '2.3-groovy-4.0'
-netty-http3 = "0.0.23.Final"
 
 managed-acme4j = "3.2.1"
 micronaut-serde = "2.8.2"
@@ -26,7 +25,6 @@ micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-
 
 graal = { module = "org.graalvm.nativeimage:svm" }
 netty-tcnative-boringssl-static = { module = 'io.netty:netty-tcnative-boringssl-static' }
-netty-incubator-codec-http3 = { module = "io.netty.incubator:netty-incubator-codec-http3", version.ref = "netty-http3" }
 
 groovy-json = { module = 'org.apache.groovy:groovy-json' }
 groovy-dateutil = { module = 'org.apache.groovy:groovy-dateutil' }
