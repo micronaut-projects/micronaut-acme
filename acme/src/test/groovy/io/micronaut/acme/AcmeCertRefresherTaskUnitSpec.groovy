@@ -2,11 +2,10 @@ package io.micronaut.acme
 
 import io.micronaut.acme.background.AcmeCertRefresherTask
 import io.micronaut.acme.services.AcmeService
-import io.micronaut.runtime.EmbeddedApplication
-import io.micronaut.runtime.event.ApplicationStartupEvent
-import io.micronaut.runtime.exceptions.ApplicationStartupException
+import io.micronaut.http.server.exceptions.ServerStartupException
 import io.netty.handler.ssl.util.SelfSignedCertificate
 import org.shredzone.acme4j.exception.AcmeException
+import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
 import spock.lang.Specification
 import spock.lang.Stepwise
 import spock.lang.Unroll
@@ -21,7 +20,22 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
             def task = new AcmeCertRefresherTask(Mock(AcmeService), Mock(AcmeConfiguration))
 
         when:
-            task.renewCertIfNeeded()
+            task.onServerStartup(null)
+
+        then:
+            def ex = thrown(ServerStartupException.class)
+
+            Throwable rootEx = ExceptionUtils.getRootCause(ex)
+            rootEx instanceof IllegalStateException
+            rootEx.message == "Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"acme.tos-agree\" to \"true\" in configuration once complete"
+    }
+
+    def "throw exception if TOS has not been accepted when doing background reneal"() {
+        given:
+            def task = new AcmeCertRefresherTask(Mock(AcmeService), Mock(AcmeConfiguration))
+
+        when:
+            task.backgroundRenewal()
 
         then:
             def ex = thrown(IllegalStateException.class)
@@ -37,7 +51,7 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
 
         when:
-            task.renewCertIfNeeded()
+            task.onServerStartup(null)
 
         then:
             1 * mockAcmeSerivce.getCurrentCertificate() >> new SelfSignedCertificate(expectedDomain, new Date(), new Date() + 31).cert()
@@ -54,11 +68,11 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
 
         when:
-            task.renewCertIfNeeded()
+            task.onServerStartup(null)
 
         then:
             1 * mockAcmeSerivce.getCurrentCertificate() >> new SelfSignedCertificate(expectedDomain, new Date(), new Date() + 31).cert()
-            1 * mockAcmeSerivce.orderCertificate([expectedDomain])
+            1 * mockAcmeSerivce.createOrder([expectedDomain])
 
         where:
             daysToRenew | description
@@ -75,15 +89,15 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
 
         when:
-            task.onStartup(new ApplicationStartupEvent(Mock(EmbeddedApplication)))
+            task.onServerStartup(null)
 
         then:
-            def ex = thrown(ApplicationStartupException)
+            def ex = thrown(ServerStartupException)
             ex.message == "Failed to start due to SSL configuration issue."
 
         and:
             1 * mockAcmeSerivce.getCurrentCertificate() >> null
-            1 * mockAcmeSerivce.orderCertificate(expectedDomains) >> { List<String> domains ->
+            1 * mockAcmeSerivce.createOrder(expectedDomains) >> { List<String> domains ->
                 throw new AcmeException("Failed to do some ACME related task")
             }
     }

@@ -174,8 +174,20 @@ public class AcmeService {
      * @throws AcmeException if any issues occur during ordering of certificate
      */
     public void orderCertificate(List<String> domains) throws AcmeException {
-        AtomicInteger orderRetryAttempts = new AtomicInteger(acmeConfiguration.getOrder().getRefreshAttempts());
+        final Order order = createOrder(domains);
+        authorizeCertificate(domains, order);
+    }
 
+    /**
+     * Orders a new certificate using ACME protocol.
+     *
+     * @param domains List of domains to order a certificate for
+     * @throws AcmeException if any issues occur during ordering of certificate
+     *
+     * @return order for the given list of domains
+     * @since 4.1
+     */
+    public Order createOrder(List<String> domains) throws AcmeException {
         Session session = new Session(acmeServerUrl);
         if (timeout != null) {
             session.networkSettings().setTimeout(timeout);
@@ -185,14 +197,27 @@ public class AcmeService {
         try {
             accountKeyPair = getKeyPairFromConfigValue(this.accountKeyString);
         } catch (IOException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("ACME certificate order failed. Failed to read the account keys", e);
-            }
-            return;
+            throw new AcmeException("ACME certificate order failed. Failed to read the account keys", e);
         }
 
         Login login = doLogin(session, accountKeyPair);
-        Order order = createOrder(domains, login);
+        return createOrder(domains, login);
+    }
+
+    /**
+     * Authorizes an order and if successful emits a certificate via an event.
+     *
+     * @param domains List of domains to order a certificate for
+     * @param order acme order for the given set of domains
+     * @throws AcmeException if any issues occur during authorization of a certificate order
+     * @since 4.1
+     */
+    public void authorizeCertificate(List<String> domains, Order order) throws AcmeException {
+        if (order == null) {
+            throw new AcmeException("Order is required before you can authorize it.");
+        }
+
+        AtomicInteger orderRetryAttempts = new AtomicInteger(acmeConfiguration.getOrder().getRefreshAttempts());
         for (Authorization auth : order.getAuthorizations()) {
             try {
                 authorize(auth);

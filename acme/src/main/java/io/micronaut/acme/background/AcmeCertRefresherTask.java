@@ -17,20 +17,24 @@ package io.micronaut.acme.background;
 
 import io.micronaut.acme.AcmeConfiguration;
 import io.micronaut.acme.services.AcmeService;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.http.server.exceptions.ServerStartupException;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.runtime.exceptions.ApplicationStartupException;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
+import org.shredzone.acme4j.Order;
 import org.shredzone.acme4j.exception.AcmeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.cert.X509Certificate;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Background task to automatically refresh the certificates from an ACME server on a configurable interval.
@@ -42,6 +46,7 @@ public final class AcmeCertRefresherTask {
 
     private AcmeService acmeService;
     private final AcmeConfiguration acmeConfiguration;
+    private Order order;
 
     /**
      * Constructs a new Acme cert refresher background task.
@@ -69,6 +74,26 @@ public final class AcmeCertRefresherTask {
         renewCertIfNeeded();
     }
 
+    @EventListener
+    void onServerStartup(StartupEvent startupEvent) {
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Running server startup setup process");
+            }
+            if (!acmeConfiguration.isTosAgree()) {
+                throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
+            }
+            if (needsToOrderNewCertificate()) {
+                order = acmeService.createOrder(getDomains());
+            } else {
+                acmeService.setupCurrentCertificate();
+            }
+        } catch (Exception e) { //NOSONAR
+            LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
+            throw new ServerStartupException("Failed to start due to SSL configuration issue.", e);
+        }
+    }
+
     /**
      * Checks to see if certificate needs renewed on app startup.
      *
@@ -76,26 +101,26 @@ public final class AcmeCertRefresherTask {
      */
     @EventListener
     void onStartup(ApplicationStartupEvent startupEvent) {
-        try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Running startup renewal process");
+        if (needsToOrderNewCertificate()) {
+            try {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Running application startup order/authorization process");
+                }
+                acmeService.authorizeCertificate(getDomains(), order);
+            } catch (Exception e) {
+                LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
+                throw new ApplicationStartupException("Failed to start due to SSL configuration issue.", e);
             }
-            renewCertIfNeeded();
-        } catch (Exception e) { //NOSONAR
-            LOG.error("Failed to initialize certificate for SSL no requests would be secure. Stopping application", e);
-            throw new ApplicationStartupException("Failed to start due to SSL configuration issue.", e);
         }
     }
 
-    /**
-     * Does the work to actually renew the certificate if it needs to be done.
-     * @throws AcmeException if any issues occur during certificate renewal
-     */
-    protected void renewCertIfNeeded() throws AcmeException {
-        if (!acmeConfiguration.isTosAgree()) {
-            throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
-        }
+    private boolean needsToOrderNewCertificate() {
+        return Optional.ofNullable(acmeService.getCurrentCertificate())
+            .map(c -> SECONDS.between(now(), c.getNotAfter().toInstant()) <= acmeConfiguration.getRenewWitin().getSeconds())
+            .orElse(true);
+    }
 
+    private List<String> getDomains() {
         List<String> domains = new ArrayList<>();
         for (String domain : acmeConfiguration.getDomains()) {
             domains.add(domain);
@@ -107,17 +132,19 @@ public final class AcmeCertRefresherTask {
                 domains.add(baseDomain);
             }
         }
+        return domains;
+    }
 
-        X509Certificate currentCertificate = acmeService.getCurrentCertificate();
-        if (currentCertificate != null) {
-            long daysTillExpiration = ChronoUnit.SECONDS.between(Instant.now(), currentCertificate.getNotAfter().toInstant());
-
-            if (daysTillExpiration <= acmeConfiguration.getRenewWitin().getSeconds()) {
-                acmeService.orderCertificate(domains);
-            } else {
-                acmeService.setupCurrentCertificate();
-            }
-        } else {
+    /**
+     * Does the work to actually renew the certificate if it needs to be done.
+     * @throws AcmeException if any issues occur during certificate renewal
+     */
+    protected void renewCertIfNeeded() throws AcmeException {
+        if (!acmeConfiguration.isTosAgree()) {
+            throw new IllegalStateException(String.format("Cannot refresh certificates until terms of service is accepted. Please review the TOS for Let's Encrypt and set \"%s\" to \"%s\" in configuration once complete", "acme.tos-agree", "true"));
+        }
+        List<String> domains = getDomains();
+        if (needsToOrderNewCertificate()) {
             acmeService.orderCertificate(domains);
         }
     }
