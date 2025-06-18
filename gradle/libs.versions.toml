@@ -4,7 +4,7 @@ micronaut = "4.9.2"
 micronaut-platform = "4.7.6"
 micronaut-test = "4.7.0"
 
-groovy = "4.0.26"
+groovy = "4.0.27"
 spock = '2.3-groovy-4.0'
 
 managed-acme4j = "3.5.1"
