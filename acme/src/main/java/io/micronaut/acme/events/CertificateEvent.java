@@ -15,7 +15,7 @@
  */
 package io.micronaut.acme.events;
 
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
