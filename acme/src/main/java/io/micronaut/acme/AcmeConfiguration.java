@@ -16,7 +16,7 @@
 package io.micronaut.acme;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import io.micronaut.core.util.Toggleable;
 
 import jakarta.validation.constraints.NotBlank;

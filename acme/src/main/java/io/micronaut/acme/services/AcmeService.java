@@ -20,7 +20,7 @@ import io.micronaut.acme.challenge.dns.DnsChallengeSolver;
 import io.micronaut.acme.challenge.http.endpoint.HttpChallengeDetails;
 import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
