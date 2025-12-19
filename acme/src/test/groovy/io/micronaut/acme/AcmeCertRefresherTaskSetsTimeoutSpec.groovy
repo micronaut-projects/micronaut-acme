@@ -8,7 +8,6 @@ import io.micronaut.runtime.exceptions.ApplicationStartupException
 import io.micronaut.runtime.server.EmbeddedServer
 import org.shredzone.acme4j.exception.AcmeNetworkException
 import org.shredzone.acme4j.util.KeyPairUtils
-import org.testcontainers.shaded.org.apache.commons.lang3.exception.ExceptionUtils
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
@@ -114,10 +113,10 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         then: "we get network errors b/c of the timeout"
         ApplicationStartupException ex = thrown()
 
-        def ane = ExceptionUtils.getThrowables(ex).find { it instanceof AcmeNetworkException }
+        def ane = getThrowables(ex).find { it instanceof AcmeNetworkException }
         ane?.message == "Network error"
 
-        Throwable rootEx = ExceptionUtils.getRootCause(ex)
+        Throwable rootEx = getRootCause(ex)
         rootEx instanceof HttpTimeoutException
         rootEx.message == "request timed out"
 
@@ -142,5 +141,30 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         String toString() {
             "slowSignup: $slowSignup, slowOrdering: $slowOrdering, slowAuthorization: $slowAuthorization, duration: $duration"
         }
+    }
+
+    static Throwable getRootCause(Throwable throwable) {
+        if (throwable == null) {
+            return null
+        }
+        Throwable root = throwable
+        for (Throwable cause; (cause = root.getCause()) != null && cause != root; ) {
+            root = cause
+        }
+        root
+    }
+
+    static List<Throwable> getThrowables(Throwable throwable) {
+        if (throwable == null) {
+            return Collections.emptyList();
+        }
+
+        List<Throwable> list = new ArrayList<>();
+        while (throwable != null && !list.contains(throwable)) {
+            list.add(throwable);
+            throwable = throwable.getCause();
+        }
+
+        return list;
     }
 }
