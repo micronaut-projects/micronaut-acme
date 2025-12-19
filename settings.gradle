@@ -13,7 +13,6 @@ rootProject.name = "acme-parent"
 
 include 'acme-bom'
 include "acme"
-include 'test-suite-utils'
 
 [
         "hello-world-acme"
