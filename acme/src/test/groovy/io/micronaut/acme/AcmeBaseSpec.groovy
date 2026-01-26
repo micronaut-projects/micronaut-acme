@@ -21,7 +21,12 @@ import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import java.security.KeyPair
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.time.Duration
 
 abstract class AcmeBaseSpec extends Specification {
@@ -74,10 +79,10 @@ abstract class AcmeBaseSpec extends Specification {
         KeyPair keyPair = getAccountKeypair()
         getDomainKeypair()
 
-        acmeServerUrl = "acme://pebble/${certServerContainer.containerIpAddress}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}"
-
+        acmeServerUrl = "https://localhost:${certServerContainer.getMappedPort(expectedPebbleServerPort)}/dir"
         // Create an account with the acme server
         Session session = new Session(acmeServerUrl)
+        SSLContext.setDefault(trustAllSslContext())
         Account createNewAccount = new AccountBuilder()
                 .agreeToTermsOfService()
                 .addEmail("test@micronaut.io")
@@ -97,27 +102,29 @@ abstract class AcmeBaseSpec extends Specification {
 
         def file = File.createTempFile("pebble", "config")
         file.write """{
-              "pebble": {
-                "listenAddress": "0.0.0.0:${expectedPebbleServerPort}",
-                "certificate": "test/certs/localhost/cert.pem",
-                "privateKey": "test/certs/localhost/key.pem",
-                "httpPort": $expectedHttpPort,
-                "tlsPort": $expectedSecurePort
-              }
-            }"""
+          "pebble": {
+            "listenAddress": "0.0.0.0:${expectedPebbleServerPort}",
+            "certificate": "test/certs/localhost/cert.pem",
+            "privateKey": "test/certs/localhost/key.pem",
+            "httpPort": $expectedHttpPort,
+            "tlsPort": $expectedSecurePort
+          }
+        }"""
 
         log.info("Expected micronaut ports - http : {}, secure : {} ", expectedHttpPort, expectedSecurePort)
         log.info("Expected pebble config : {}", file.text)
 
-        GenericContainer certServerContainer = new GenericContainer("letsencrypt/pebble:latest")
-                .withCopyFileToContainer(MountableFile.forHostPath(file.toPath()), "/test/config/pebble-config.json")
-                .withCommand("/usr/bin/pebble", "-strict", "false")
+        GenericContainer certServerContainer = new GenericContainer(org.testcontainers.utility.DockerImageName.parse("ghcr.io/letsencrypt/pebble:latest"))
+                .withCopyFileToContainer(MountableFile.forHostPath(file.toPath()), "/test/my-config.json")
+                .withCommand("-config", "/test/my-config.json")
                 .withEnv(pebbleEnvConfig)
                 .withExposedPorts(expectedPebbleServerPort)
-                .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*\n"))
+                .withLogConsumer(outputFrame -> log.info("PEBBLE: {}", outputFrame.getUtf8String().trim()))
+                .waitingFor(new WaitAllStrategy().withStrategy(new LogMessageWaitStrategy().withRegEx(".*ACME directory available.*"))
                         .withStrategy(new HostPortWaitStrategy())
                         .withStartupTimeout(Duration.ofMinutes(2)));
         certServerContainer.start()
+        Thread.sleep(1000)
         return certServerContainer
     }
 
@@ -162,4 +169,26 @@ abstract class AcmeBaseSpec extends Specification {
             'acme.auth.pause'             : "1s"
         ] as Map<String, Object>
     }
+
+    static SSLContext trustAllSslContext() {
+        TrustManager[] trustAll = [
+                new X509TrustManager() {
+                    @Override
+                    void checkClientTrusted(X509Certificate[] chain, String authType) {}
+
+                    @Override
+                    void checkServerTrusted(X509Certificate[] chain, String authType) {}
+
+                    @Override
+                    X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0]
+                    }
+                }
+        ]
+
+        SSLContext ctx = SSLContext.getInstance("TLS")
+        ctx.init(null, trustAll, new SecureRandom())
+        return ctx
+    }
+
 }
