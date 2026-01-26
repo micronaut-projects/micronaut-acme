@@ -52,12 +52,17 @@ class AcmeCertRefresherTaskUnitSpec extends Specification {
             String expectedDomain = "example.com"
             AcmeConfiguration config = new AcmeConfiguration(tosAgree: true, domains: [expectedDomain], renewWitin: Duration.ofDays(daysToRenew))
             def task = new AcmeCertRefresherTask(mockAcmeSerivce, config)
+        def now = new Date()
+        def expires = Date.from(
+                now.toInstant().plus(Duration.ofDays(31))
+        )
 
         when:
             task.renewCertIfNeeded()
 
         then:
-            1 * mockAcmeSerivce.getCurrentCertificate() >> new SelfSignedCertificate(expectedDomain, new Date(), new Date() + 31).cert()
+
+        1 * mockAcmeSerivce.getCurrentCertificate() >> new SelfSignedCertificate(expectedDomain, now, expires).cert()
             1 * mockAcmeSerivce.orderCertificate([expectedDomain])
 
         where:
