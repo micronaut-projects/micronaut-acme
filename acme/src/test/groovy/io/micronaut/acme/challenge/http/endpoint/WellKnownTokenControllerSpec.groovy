@@ -7,7 +7,8 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 
-import static org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import java.util.random.RandomGenerator
+
 
 class WellKnownTokenControllerSpec extends AcmeBaseSpec {
 
@@ -52,5 +53,17 @@ class WellKnownTokenControllerSpec extends AcmeBaseSpec {
 
     private HttpResponse<String> callWellKnownEndpoint(String randomToken) {
         client.toBlocking().exchange(HttpRequest.GET("/.well-known/acme-challenge/$randomToken"), String)
+    }
+
+    static String randomAlphanumeric(int length) {
+        if (length <= 0) {
+            return ""
+        }
+
+        RandomGenerator.getDefault()
+                .ints(length, 0, 62)
+                .mapToObj("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"::charAt)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString()
     }
 }

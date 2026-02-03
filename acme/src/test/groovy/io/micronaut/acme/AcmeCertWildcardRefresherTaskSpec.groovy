@@ -58,7 +58,9 @@ class AcmeCertWildcardRefresherTaskSpec extends AcmeBaseSpec {
                 certs.length == 2
                 X509Certificate cert = certs[0]
                 cert.getIssuerDN().getName().contains("Pebble Intermediate CA")
-                cert.getSubjectDN().getName().contains(WILDCARD_DOMAIN)
+                def sans = cert.getSubjectAlternativeNames()
+                        .collect { it[1] as String }
+                sans.contains(EXPECTED_DOMAIN)
                 cert.getSubjectAlternativeNames().size() == 2
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(WILDCARD_DOMAIN)
                 cert.getSubjectAlternativeNames().collect({d-> d.get(1)}).contains(EXPECTED_BASE_DOMAIN)

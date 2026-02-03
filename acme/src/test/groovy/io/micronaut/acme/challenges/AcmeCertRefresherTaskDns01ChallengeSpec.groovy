@@ -85,8 +85,10 @@ class AcmeCertRefresherTaskDns01ChallengeSpec extends AcmeBaseSpec {
             certs.length > 0
             def cert = (X509Certificate) certs[0]
             cert.getIssuerX500Principal().getName().contains("Pebble Intermediate CA")
-            cert.getSubjectX500Principal().getName().contains(EXPECTED_ACME_DOMAIN)
-            cert.getSubjectAlternativeNames().size() == 1
+        def sans = cert.getSubjectAlternativeNames()
+                .collect { it[1] as String }
+        sans.contains(EXPECTED_ACME_DOMAIN)
+        cert.getSubjectAlternativeNames().size() == 1
     }
 
     void "test send https request when the cert is in place"() {
