@@ -26,7 +26,13 @@ import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.scheduling.TaskScheduler;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import org.shredzone.acme4j.*;
+import org.shredzone.acme4j.AccountBuilder;
+import org.shredzone.acme4j.Authorization;
+import org.shredzone.acme4j.Certificate;
+import org.shredzone.acme4j.Login;
+import org.shredzone.acme4j.Order;
+import org.shredzone.acme4j.Session;
+import org.shredzone.acme4j.Status;
 import org.shredzone.acme4j.challenge.Challenge;
 import org.shredzone.acme4j.challenge.Dns01Challenge;
 import org.shredzone.acme4j.challenge.Http01Challenge;
@@ -39,7 +45,13 @@ import org.shredzone.acme4j.util.KeyPairUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.security.KeyPair;
@@ -57,7 +69,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static io.micronaut.acme.AcmeConfiguration.ChallengeType;
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * Service to contact an ACME server and setup a certificate on a given basis.
