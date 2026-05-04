@@ -17,4 +17,9 @@ dependencies {
     testImplementation libs.groovy.json
     testImplementation libs.groovy.dateutil
     testImplementation mn.micronaut.http.client
+    constraints {
+        // Force Bouncy Castle >= 1.84 to fix GHSA-wg6q-6289-32hp and GHSA-c3fc-8qff-9hwx
+        implementation(libs.bouncycastle.bcpkix)
+        implementation(libs.bouncycastle.bcprov)
+    }
 }
