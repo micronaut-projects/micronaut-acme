@@ -5,6 +5,7 @@ managed-acme4j = "3.5.1"
 micronaut-serde = "3.0.0-M8"
 micronaut-validation = "5.0.0-M2"
 micronaut-gradle-plugin = "4.6.2"
+bouncycastle = "1.84"
 [libraries]
 # Core
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
@@ -16,6 +17,8 @@ micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-
 
 graal = { module = "org.graalvm.nativeimage:svm" }
 netty-tcnative-boringssl-static = { module = 'io.netty:netty-tcnative-boringssl-static' }
+bouncycastle-bcpkix = { module = 'org.bouncycastle:bcpkix-jdk18on', version.ref = 'bouncycastle' }
+bouncycastle-bcprov = { module = 'org.bouncycastle:bcprov-jdk18on', version.ref = 'bouncycastle' }
 
 groovy-json = { module = 'org.apache.groovy:groovy-json' }
 groovy-dateutil = { module = 'org.apache.groovy:groovy-dateutil' }
