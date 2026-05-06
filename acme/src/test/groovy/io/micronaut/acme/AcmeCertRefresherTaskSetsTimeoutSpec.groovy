@@ -19,6 +19,7 @@ import java.time.Duration
 class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
 
     public static final String EXPECTED_DOMAIN = "localhost"
+    private static final int NETWORK_TIMEOUT_IN_MILLIS = 1000
 
     @Shared
     @AutoCleanup("deleteDir")
@@ -107,7 +108,13 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
 
         when: "we configure network timeouts"
         EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
-                                                          getConfiguration() << ["acme.timeout": "${networkTimeoutInSecs}s"],
+                                                          getConfiguration() << [
+                                                                  "acme.timeout"               : "${networkTimeoutInSecs}s",
+                                                                  "acme.order.pause"           : "100ms",
+                                                                  "acme.order.refresh-attempts": 2,
+                                                                  "acme.request-retry.attempts": 2,
+                                                                  "acme.request-retry.delay": "100ms",
+                                                          ],
                                                           "test")
 
         then: "we get network errors b/c of the timeout"
@@ -131,15 +138,78 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         new ActualSlowServerConfig(slowAuthorization: true) | _
     }
 
+    def "retries timed out #description requests"(String description,
+                                                  int slowSignupAttempts,
+                                                  int slowOrderingAttempts,
+                                                  int expectedSignupRequests,
+                                                  int expectedOrderRequests) {
+        given: "we have all the ports we could ever need"
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedAcmePort = SocketUtils.findAvailableTcpPort()
+        acmeServerUrl = "http://localhost:$expectedAcmePort/acme/dir"
+        SlowServerConfig config = new ActualSlowServerConfig(
+                slowSignupAttempts: slowSignupAttempts,
+                slowOrderingAttempts: slowOrderingAttempts,
+                duration: Duration.ofMillis(NETWORK_TIMEOUT_IN_MILLIS + 100)
+        )
+
+        and: "we have an acme server with one transiently slow endpoint"
+        EmbeddedServer mockAcmeServer = ApplicationContext.builder(['micronaut.server.port': expectedAcmePort])
+                .environments("test")
+                .packages(SlowAcmeServer.getPackage().getName(), AcmeCertRefresherTaskSetsTimeoutSpec.getPackage().getName())
+                .run(EmbeddedServer)
+        SlowAcmeServer slowAcmeServer = mockAcmeServer.getApplicationContext().getBean(SlowAcmeServer.class)
+        slowAcmeServer.setAcmeServerUrl(acmeServerUrl)
+        slowAcmeServer.setSlowServerConfig(config)
+
+        when: "we configure network timeouts and retries"
+        EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
+                                                          getConfiguration() << [
+                                                                  "acme.timeout"               : "${NETWORK_TIMEOUT_IN_MILLIS}ms",
+                                                                  "acme.order.pause"           : "${NETWORK_TIMEOUT_IN_MILLIS}ms",
+                                                                  "acme.order.refresh-attempts": 3,
+                                                                  "acme.request-retry.attempts": 2,
+                                                                  "acme.request-retry.delay": "100ms",
+                                                          ],
+                                                          "test")
+
+        then: "startup succeeds after a retry"
+        appServer.running
+        slowAcmeServer.signupRequestCounter.get() == expectedSignupRequests
+        slowAcmeServer.orderRequestCounter.get() == expectedOrderRequests
+
+        cleanup:
+        appServer?.stop()
+        mockAcmeServer?.stop()
+
+        where:
+        description | slowSignupAttempts | slowOrderingAttempts | expectedSignupRequests | expectedOrderRequests
+        "login"     | 1                   | 0                    | 2                      | 1
+        "order"     | 0                   | 1                    | 1                      | 2
+    }
+
     class ActualSlowServerConfig implements SlowServerConfig {
 
         boolean slowSignup
         boolean slowOrdering
         boolean slowAuthorization
+        int slowSignupAttempts
+        int slowOrderingAttempts
         Duration duration = Duration.ofSeconds(networkTimeoutInSecs + 2)
 
         String toString() {
             "slowSignup: $slowSignup, slowOrdering: $slowOrdering, slowAuthorization: $slowAuthorization, duration: $duration"
+        }
+
+        @Override
+        int slowSignupAttempts() {
+            slowSignup ? Integer.MAX_VALUE : slowSignupAttempts
+        }
+
+        @Override
+        int slowOrderingAttempts() {
+            slowOrdering ? Integer.MAX_VALUE : slowOrderingAttempts
         }
     }
 

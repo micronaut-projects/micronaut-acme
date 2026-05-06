@@ -7,4 +7,12 @@ interface SlowServerConfig {
     boolean isSlowAuthorization()
     boolean isSlowOrdering()
     Duration getDuration()
+
+    default int slowSignupAttempts() {
+        isSlowSignup() ? Integer.MAX_VALUE : 0
+    }
+
+    default int slowOrderingAttempts() {
+        isSlowOrdering() ? Integer.MAX_VALUE : 0
+    }
 }

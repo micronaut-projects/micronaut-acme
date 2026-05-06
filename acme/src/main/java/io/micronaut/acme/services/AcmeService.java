@@ -23,7 +23,11 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import org.jspecify.annotations.NonNull;
 import io.micronaut.core.io.IOUtils;
 import io.micronaut.core.io.ResourceResolver;
+import io.micronaut.retry.RetryOperations;
+import io.micronaut.retry.RetryOperationsFactory;
+import io.micronaut.retry.RetryPolicy;
 import io.micronaut.scheduling.TaskScheduler;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.shredzone.acme4j.AccountBuilder;
@@ -38,6 +42,7 @@ import org.shredzone.acme4j.challenge.Dns01Challenge;
 import org.shredzone.acme4j.challenge.Http01Challenge;
 import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
+import org.shredzone.acme4j.exception.AcmeNetworkException;
 import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.CertificateUtils;
 import org.shredzone.acme4j.util.KeyPairUtils;
@@ -104,6 +109,7 @@ public class AcmeService {
     private final Duration orderPause;
     private final Duration timeout;
     private final DnsChallengeSolver dnsChallengeSolver;
+    private RetryOperations requestRetryOperations;
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -133,6 +139,16 @@ public class AcmeService {
         this.resourceResolver = resourceResolver;
         this.taskScheduler = taskScheduler;
         this.dnsChallengeSolver = dnsChallengeSolver;
+    }
+
+    /**
+     * Sets the retry operations factory.
+     *
+     * @param retryOperationsFactory Retry Operations Factory
+     */
+    @Inject
+    void setRetryOperationsFactory(RetryOperationsFactory retryOperationsFactory) {
+        this.requestRetryOperations = retryOperationsFactory.createRetryOperations(createRequestRetryPolicy(acmeConfiguration.getRequestRetry()));
     }
 
     /**
@@ -204,8 +220,8 @@ public class AcmeService {
             return;
         }
 
-        Login login = doLogin(session, accountKeyPair);
-        Order order = createOrder(domains, login);
+        Login login = withOrderRequestRetries(() -> doLogin(session, accountKeyPair));
+        Order order = withOrderRequestRetries(() -> createOrder(domains, login));
         for (Authorization auth : order.getAuthorizations()) {
             try {
                 authorize(auth);
@@ -249,6 +265,38 @@ public class AcmeService {
                 .useKeyPair(accountKeyPair)
                 .createLogin(session);
         return login;
+    }
+
+    private RetryPolicy createRequestRetryPolicy(AcmeConfiguration.RetryConfiguration retryConfiguration) {
+        return RetryPolicy.builder()
+                .maxAttempts(retryConfiguration.getAttempts())
+                .delay(retryConfiguration.getDelay())
+                .maxDelay(retryConfiguration.getMaxDelay())
+                .multiplier(retryConfiguration.getMultiplier())
+                .jitter(retryConfiguration.getJitter())
+                .capturedException(RetryableAcmeNetworkException.class)
+                .build();
+    }
+
+    private <T> T withOrderRequestRetries(AcmeRequest<T> request) throws AcmeException {
+        if (requestRetryOperations == null) {
+            return request.execute();
+        }
+        try {
+            return requestRetryOperations.execute(() -> executeAcmeRequest(request));
+        } catch (AcmeRequestRuntimeException e) {
+            throw e.getAcmeException();
+        }
+    }
+
+    private <T> T executeAcmeRequest(AcmeRequest<T> request) {
+        try {
+            return request.execute();
+        } catch (AcmeNetworkException e) {
+            throw new RetryableAcmeNetworkException(e);
+        } catch (AcmeException e) {
+            throw new NonRetryableAcmeException(e);
+        }
     }
 
     @SuppressWarnings("java:S3776")
@@ -568,6 +616,38 @@ public class AcmeService {
 
         void cancel() {
             future.cancel(false);
+        }
+    }
+
+    private interface AcmeRequest<T> {
+        T execute() throws AcmeException;
+    }
+
+    private abstract static class AcmeRequestRuntimeException extends RuntimeException {
+
+        private final AcmeException acmeException;
+
+        AcmeRequestRuntimeException(AcmeException acmeException) {
+            super(acmeException);
+            this.acmeException = acmeException;
+        }
+
+        AcmeException getAcmeException() {
+            return acmeException;
+        }
+    }
+
+    private static final class RetryableAcmeNetworkException extends AcmeRequestRuntimeException {
+
+        RetryableAcmeNetworkException(AcmeNetworkException acmeException) {
+            super(acmeException);
+        }
+    }
+
+    private static final class NonRetryableAcmeException extends AcmeRequestRuntimeException {
+
+        NonRetryableAcmeException(AcmeException acmeException) {
+            super(acmeException);
         }
     }
 }

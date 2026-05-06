@@ -41,6 +41,8 @@ class SlowAcmeServer {
     }
 
     AtomicInteger requestCounter = new AtomicInteger()
+    AtomicInteger signupRequestCounter = new AtomicInteger()
+    AtomicInteger orderRequestCounter = new AtomicInteger()
 
     @Consumes("application/jose+json")
     @Post('/your-order')
@@ -97,7 +99,7 @@ class SlowAcmeServer {
     @Consumes("application/jose+json")
     @Post('/sign-me-up')
     HttpResponse<String> signmeup() {
-        if (slowServerConfig.isSlowSignup()) {
+        if (signupRequestCounter.getAndIncrement() < slowServerConfig.slowSignupAttempts()) {
             doItSlowly(slowServerConfig.duration)
         }
         return HttpResponse.ok(
@@ -135,7 +137,7 @@ class SlowAcmeServer {
     @Consumes("application/jose+json")
     @Post('/order-plz')
     HttpResponse<String> order() {
-        if (slowServerConfig.isSlowOrdering()) {
+        if (orderRequestCounter.getAndIncrement() < slowServerConfig.slowOrderingAttempts()) {
             doItSlowly(slowServerConfig.duration)
         }
         return HttpResponse.ok(
