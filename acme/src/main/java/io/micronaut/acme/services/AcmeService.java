@@ -244,10 +244,14 @@ public class AcmeService {
     }
 
     private Login doLogin(Session session, KeyPair accountKeyPair) throws AcmeException {
-        Login login = new AccountBuilder()
-                .onlyExisting()
-                .useKeyPair(accountKeyPair)
-                .createLogin(session);
+        AccountBuilder accountBuilder = new AccountBuilder()
+                .useKeyPair(accountKeyPair);
+        if (acmeConfiguration.isTosAgree()) {
+            accountBuilder.agreeToTermsOfService();
+        } else {
+            accountBuilder.onlyExisting();
+        }
+        Login login = accountBuilder.createLogin(session);
         return login;
     }
 

@@ -60,7 +60,7 @@ acme:
 <8> How long to wait until the server starts up the ACME background process. Default is `24 hours`
 <9> How often the server will check for a new ACME cert and refresh it if needed. Default is `24 hours`
 <10> Private key used to encrypt the certificate. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. It is advisable to not check this into source control as this is the secret to handle the domain encryption.
-<11> Private key used to when setting up your account with the ACME provider. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`.  It is advisable to not check this into source control as this is your account identifier.
+<11> Private key used when setting up your account with the ACME provider. Other options you can use here are `classpath:/path/to/key.pem` or `file:/path/to/key.pem`. When `acme.tos-agree` is `true`, Micronaut ACME can create or reuse the ACME account with this key at startup. It is advisable to not check this into source control as this is your account identifier.
 <12> Url of the ACME server (ex. acme://letsencrypt.org/staging)
 <13> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
 <14> Number of times to poll an order status of the ACME server. Default is `10`

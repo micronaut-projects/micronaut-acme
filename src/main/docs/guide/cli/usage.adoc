@@ -58,7 +58,17 @@ Creates an keypair for use with ACME integration
 Creates a new account for a given ACME provider. This command will either create a new account keypair for you or you can pass
 the account keypair that you have generated using the `mn create-key` or via `openssl` or other means in as a parameter.
 
-https://certbot.eff.org/[Certbot] or many of the other tools out there can also accomplish this step if you dont want to use this tool.
+You do not need this command at deployment time if your application has an account key. When `acme.tos-agree` is set to `true`, Micronaut ACME can create or reuse the ACME account at startup with the configured `acme.account-key`. This is useful for container images and released native-image binaries that do not include the Micronaut CLI.
+
+[configuration]
+----
+acme:
+    tos-agree: true
+    account-key: file:/etc/acme/account-key.pem
+    acme-server: acme://letsencrypt.org/staging
+----
+
+The `mn create-acme-account` command remains useful when you want account registration as a separate provisioning step before the application starts.
 
 Usage:
 

@@ -1,2 +1,3 @@
 To be able to secure your application using ACME there will be a few setup steps necessary before you can start using
 the new certificates. Support for ACME and this setup has been baked into micronaut-starter (https://github.com/micronaut-projects/micronaut-starter).
+These CLI commands are optional provisioning helpers. Applications deployed from a container image or released native-image binary can also create or reuse the ACME account at startup from the configured account key.
