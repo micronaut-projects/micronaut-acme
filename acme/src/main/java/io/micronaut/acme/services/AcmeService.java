@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.shredzone.acme4j.challenge.Dns01Challenge;
 import org.shredzone.acme4j.challenge.Http01Challenge;
 import org.shredzone.acme4j.challenge.TlsAlpn01Challenge;
 import org.shredzone.acme4j.exception.AcmeException;
-import org.shredzone.acme4j.exception.AcmeRetryAfterException;
 import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.CertificateUtils;
 import org.shredzone.acme4j.util.KeyPairUtils;
@@ -262,7 +261,8 @@ public class AcmeService {
                 if (retryAttempt > 0) {
                     if (retryAfter.get() < Instant.now().toEpochMilli()) {
                         try {
-                            order.update();
+                            Optional<Instant> retryAfterInstant = order.fetch();
+                            retryAfterInstant.ifPresent(instant -> retryAfter.set(instant.toEpochMilli()));
                             Status status = order.getStatus();
                             if (status == Status.INVALID) {
                                 throw new AcmeRuntimeException("ACME certificate order failed. The certificate order was invalid: " + order.getError());
@@ -303,8 +303,6 @@ public class AcmeService {
                                     LOG.debug("Waiting on valid order status. Attempt : {}", retryAttempt);
                                 }
                             }
-                        } catch (AcmeRetryAfterException e) {
-                            retryAfter.set(e.getRetryAfter().toEpochMilli());
                         } catch (AcmeException e) {
                             throw new AcmeRuntimeException("ACME certificate order failed. Failed to update the certificate order. Reason : " + e.getMessage());
                         }
@@ -469,7 +467,7 @@ public class AcmeService {
                         throw new AcmeRuntimeException("ACME certificate order failed. Challenge of type " + challenge.getType() + " failed. With error : " + challenge.getError() + ", for domain" + auth.getIdentifier() + " ... Giving up.");
                     } else {
                         try {
-                            challenge.update();
+                            challenge.fetch();
                         } catch (AcmeException e) {
                             if (LOG.isWarnEnabled()) {
                                 LOG.warn("ACME certificate order failed. Challenge of type {} failed.", challenge.getType(), e);

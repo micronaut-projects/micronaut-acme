@@ -23,3 +23,9 @@ dependencies {
         implementation(libs.bouncycastle.bcprov)
     }
 }
+
+tasks.withType(Test).configureEach {
+    if (System.getenv("TESTCONTAINERS_HOST_OVERRIDE")) {
+        systemProperty "jdk.internal.httpclient.disableHostnameVerification", "true"
+    }
+}
