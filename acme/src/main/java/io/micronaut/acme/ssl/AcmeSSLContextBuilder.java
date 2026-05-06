@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ import io.micronaut.acme.events.CertificateEvent;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.http.server.netty.ssl.CertificateProvidedSslBuilder;
 import io.micronaut.http.server.netty.ssl.ServerSslBuilder;
+import io.micronaut.http.ssl.ClientAuthentication;
 import io.micronaut.http.ssl.ServerSslConfiguration;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
+import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLException;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -66,8 +69,8 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
             }
             if (certificateEvent.isValidationCert()) {
                 SslProvider provider = SslProvider.isAlpnSupported(SslProvider.OPENSSL) ? SslProvider.OPENSSL : SslProvider.JDK;
-                SslContext sslContext = SslContextBuilder
-                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert())
+                SslContext sslContext = applyProtocolsAndCiphers(SslContextBuilder
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getCert()))
                         .sslProvider(provider)
                         .applicationProtocolConfig(new ApplicationProtocolConfig(
                                 ApplicationProtocolConfig.Protocol.ALPN,
@@ -79,8 +82,8 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
                         .build();
                 delegatedSslContext.setNewSslContext(sslContext);
             } else {
-                SslContext sslContext = SslContextBuilder
-                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getFullCertificateChain())
+                SslContext sslContext = applySslConfiguration(SslContextBuilder
+                        .forServer(certificateEvent.getDomainKeyPair().getPrivate(), certificateEvent.getFullCertificateChain()))
                         .build();
                 delegatedSslContext.setNewSslContext(sslContext);
             }
@@ -104,5 +107,27 @@ public class AcmeSSLContextBuilder implements ServerSslBuilder {
     @Override
     public Optional<SslContext> build() {
         return Optional.of(delegatedSslContext);
+    }
+
+    private SslContextBuilder applySslConfiguration(SslContextBuilder builder) {
+        applyProtocolsAndCiphers(builder);
+        applyClientAuthentication(builder);
+        return builder;
+    }
+
+    private SslContextBuilder applyProtocolsAndCiphers(SslContextBuilder builder) {
+        ssl.getProtocols().ifPresent(builder::protocols);
+        ssl.getCiphers().ifPresent(ciphers -> builder.ciphers(Arrays.asList(ciphers)));
+        return builder;
+    }
+
+    private void applyClientAuthentication(SslContextBuilder builder) {
+        ssl.getClientAuthentication().ifPresent(clientAuthentication -> {
+            if (clientAuthentication == ClientAuthentication.NEED) {
+                builder.clientAuth(ClientAuth.REQUIRE);
+            } else if (clientAuthentication == ClientAuthentication.WANT) {
+                builder.clientAuth(ClientAuth.OPTIONAL);
+            }
+        });
     }
 }
