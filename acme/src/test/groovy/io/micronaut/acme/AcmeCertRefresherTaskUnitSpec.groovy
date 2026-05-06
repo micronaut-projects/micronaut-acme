@@ -2,6 +2,8 @@ package io.micronaut.acme
 
 import io.micronaut.acme.background.AcmeCertRefresherTask
 import io.micronaut.acme.services.AcmeService
+import io.micronaut.context.ApplicationContext
+import io.micronaut.scheduling.annotation.Scheduled
 import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.runtime.event.ApplicationStartupEvent
 import io.micronaut.runtime.exceptions.ApplicationStartupException
@@ -15,6 +17,41 @@ import java.time.Duration
 
 @Stepwise
 class AcmeCertRefresherTaskUnitSpec extends Specification {
+
+    def "default refresh schedule uses ISO-8601 durations"() {
+        given:
+            def scheduled = AcmeCertRefresherTask.getDeclaredMethod("backgroundRenewal").getAnnotation(Scheduled)
+
+        expect:
+            scheduled.fixedDelay() == '${acme.refresh.frequency:PT24H}'
+            scheduled.initialDelay() == '${acme.refresh.delay:PT24H}'
+    }
+
+    def "context starts with default refresh schedule"() {
+        given:
+            ApplicationContext applicationContext = null
+            File temporaryFolder = File.createTempDir()
+
+        when:
+            applicationContext = ApplicationContext.builder([
+                    "acme.enabled": true,
+                    "acme.tos-agree": true,
+                    "acme.domains": ["example.com"],
+                    "acme.account-key": "test-account-key",
+                    "acme.domain-key": "test-domain-key",
+                    "acme.cert-location": temporaryFolder.toString(),
+                    "acme.acme-server": "https://localhost/acme",
+                    "micronaut.server.ssl.enabled": true
+            ]).start()
+
+        then:
+            noExceptionThrown()
+            applicationContext.getBean(AcmeCertRefresherTask)
+
+        cleanup:
+            applicationContext?.close()
+            temporaryFolder?.deleteDir()
+    }
 
     def "throw exception if TOS has not been accepted"() {
         given:
