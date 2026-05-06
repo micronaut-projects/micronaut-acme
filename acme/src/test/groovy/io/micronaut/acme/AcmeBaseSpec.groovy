@@ -79,7 +79,7 @@ abstract class AcmeBaseSpec extends Specification {
         KeyPair keyPair = getAccountKeypair()
         getDomainKeypair()
 
-        acmeServerUrl = "https://localhost:${certServerContainer.getMappedPort(expectedPebbleServerPort)}/dir"
+        acmeServerUrl = "https://${certServerContainer.getHost()}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}/dir"
         // Create an account with the acme server
         Session session = new Session(acmeServerUrl)
         SSLContext.setDefault(trustAllSslContext())
