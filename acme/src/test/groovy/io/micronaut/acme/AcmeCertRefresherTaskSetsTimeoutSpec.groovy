@@ -127,15 +127,19 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         rootEx instanceof HttpTimeoutException
         rootEx.message == "request timed out"
 
+        slowAcmeServer.signupRequestCounter.get() == expectedSignupRequests
+        slowAcmeServer.orderRequestCounter.get() == expectedOrderRequests
+        slowAcmeServer.authorizationRequestCounter.get() == expectedAuthorizationRequests
+
         cleanup:
         appServer?.stop()
         mockAcmeServer?.stop()
 
         where:
-        config                                              | _
-        new ActualSlowServerConfig(slowSignup: true)        | _
-        new ActualSlowServerConfig(slowOrdering: true)      | _
-        new ActualSlowServerConfig(slowAuthorization: true) | _
+        config                                              | expectedSignupRequests | expectedOrderRequests | expectedAuthorizationRequests
+        new ActualSlowServerConfig(slowSignup: true)        | 3                      | 0                     | 0
+        new ActualSlowServerConfig(slowOrdering: true)      | 1                      | 3                     | 0
+        new ActualSlowServerConfig(slowAuthorization: true) | 1                      | 1                     | 1
     }
 
     def "retries timed out #description requests"(String description,
@@ -189,11 +193,79 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         "order"     | 0                   | 1                    | 1                      | 2
     }
 
+    def "binds request retry configuration"() {
+        given:
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedAcmePort = SocketUtils.findAvailableTcpPort()
+        acmeServerUrl = "http://localhost:$expectedAcmePort/acme/dir"
+
+        ApplicationContext context = ApplicationContext.run(getConfiguration() << [
+                "acme.request-retry.attempts"  : 4,
+                "acme.request-retry.delay"     : "200ms",
+                "acme.request-retry.max-delay" : "2s",
+                "acme.request-retry.multiplier": 1.5,
+                "acme.request-retry.jitter"    : 0.25,
+        ], "test")
+
+        when:
+        AcmeConfiguration.RetryConfiguration requestRetry = context.getBean(AcmeConfiguration).requestRetry
+
+        then:
+        requestRetry.attempts == 4
+        requestRetry.delay == Duration.ofMillis(200)
+        requestRetry.maxDelay == Duration.ofSeconds(2)
+        requestRetry.multiplier == 1.5d
+        requestRetry.jitter == 0.25d
+
+        cleanup:
+        context?.close()
+    }
+
+    def "does not retry non-network order failures"() {
+        given: "we have all the ports we could ever need"
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedAcmePort = SocketUtils.findAvailableTcpPort()
+        acmeServerUrl = "http://localhost:$expectedAcmePort/acme/dir"
+        SlowServerConfig config = new ActualSlowServerConfig(failOrdering: true)
+
+        and: "we have an acme server that rejects new orders"
+        EmbeddedServer mockAcmeServer = ApplicationContext.builder(['micronaut.server.port': expectedAcmePort])
+                .environments("test")
+                .packages(SlowAcmeServer.getPackage().getName(), AcmeCertRefresherTaskSetsTimeoutSpec.getPackage().getName())
+                .run(EmbeddedServer)
+        SlowAcmeServer slowAcmeServer = mockAcmeServer.getApplicationContext().getBean(SlowAcmeServer.class)
+        slowAcmeServer.setAcmeServerUrl(acmeServerUrl)
+        slowAcmeServer.setSlowServerConfig(config)
+
+        when: "we configure request retries"
+        EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
+                                                          getConfiguration() << [
+                                                                  "acme.timeout"               : "${NETWORK_TIMEOUT_IN_MILLIS}ms",
+                                                                  "acme.order.pause"           : "${NETWORK_TIMEOUT_IN_MILLIS}ms",
+                                                                  "acme.order.refresh-attempts": 3,
+                                                                  "acme.request-retry.attempts": 3,
+                                                                  "acme.request-retry.delay"   : "100ms",
+                                                          ],
+                                                          "test")
+
+        then: "the non-network failure is not retried"
+        thrown(ApplicationStartupException)
+        slowAcmeServer.signupRequestCounter.get() == 1
+        slowAcmeServer.orderRequestCounter.get() == 1
+
+        cleanup:
+        appServer?.stop()
+        mockAcmeServer?.stop()
+    }
+
     class ActualSlowServerConfig implements SlowServerConfig {
 
         boolean slowSignup
         boolean slowOrdering
         boolean slowAuthorization
+        boolean failOrdering
         int slowSignupAttempts
         int slowOrderingAttempts
         Duration duration = Duration.ofSeconds(networkTimeoutInSecs + 2)

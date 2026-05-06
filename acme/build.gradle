@@ -22,6 +22,8 @@ dependencies {
         // Force Bouncy Castle >= 1.84 to fix GHSA-wg6q-6289-32hp and GHSA-c3fc-8qff-9hwx
         implementation(libs.bouncycastle.bcpkix)
         implementation(libs.bouncycastle.bcprov)
+        // Force Netty HTTP codec >= 4.2.13.Final to fix GHSA-v8h7-rr48-vmmv
+        implementation(libs.netty.codec.http)
     }
 }
 

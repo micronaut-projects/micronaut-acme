@@ -43,6 +43,7 @@ class SlowAcmeServer {
     AtomicInteger requestCounter = new AtomicInteger()
     AtomicInteger signupRequestCounter = new AtomicInteger()
     AtomicInteger orderRequestCounter = new AtomicInteger()
+    AtomicInteger authorizationRequestCounter = new AtomicInteger()
 
     @Consumes("application/jose+json")
     @Post('/your-order')
@@ -140,6 +141,9 @@ class SlowAcmeServer {
         if (orderRequestCounter.getAndIncrement() < slowServerConfig.slowOrderingAttempts()) {
             doItSlowly(slowServerConfig.duration)
         }
+        if (slowServerConfig.isFailOrdering()) {
+            return HttpResponse.serverError("order failed")
+        }
         return HttpResponse.ok(
                 """
                 {
@@ -163,7 +167,7 @@ class SlowAcmeServer {
     @Consumes("application/jose+json")
     @Post('/authz')
     String authz() {
-        if (slowServerConfig.isSlowAuthorization()) {
+        if (authorizationRequestCounter.getAndIncrement() < slowServerConfig.slowAuthorizationAttempts()) {
             doItSlowly(slowServerConfig.duration)
         }
         return """
