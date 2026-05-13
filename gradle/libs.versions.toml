@@ -1,6 +1,6 @@
 [versions]
-micronaut-platform = "5.0.0-M3"
 micronaut = "5.0.0"
+micronaut-platform = "5.0.0-RC1"
 managed-acme4j = "5.1.0"
 micronaut-serde = "3.0.0-RC2"
 micronaut-validation = "5.0.0-RC2"
