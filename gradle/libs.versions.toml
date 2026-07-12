@@ -5,7 +5,7 @@ managed-acme4j = "5.1.0"
 micronaut-serde = "3.0.0"
 micronaut-validation = "5.0.0"
 micronaut-gradle-plugin = "5.0.0-M1"
-bouncycastle = "1.84"
+bouncycastle = "1.85"
 [libraries]
 # Core
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
