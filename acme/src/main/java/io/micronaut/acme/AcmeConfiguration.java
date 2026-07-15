@@ -18,6 +18,7 @@ package io.micronaut.acme;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import org.jspecify.annotations.NonNull;
 import io.micronaut.core.util.Toggleable;
+import io.micronaut.retry.RetryPolicy;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -54,6 +55,7 @@ public class AcmeConfiguration implements Toggleable {
     private Integer httpChallengeServerPort = 9999;
     private OrderConfiguration order = new OrderConfiguration();
     private AuthConfiguration auth = new AuthConfiguration();
+    private RetryConfiguration requestRetry = new RetryConfiguration();
 
     /**
      * If acme certificate background and setup process should be enabled.
@@ -159,6 +161,24 @@ public class AcmeConfiguration implements Toggleable {
      */
     public void setAuth(AuthConfiguration auth) {
         this.auth = auth;
+    }
+
+    /**
+     * Gets retry configuration for login and new order requests.
+     *
+     * @return retry configuration for login and new order requests
+     */
+    public RetryConfiguration getRequestRetry() {
+        return requestRetry;
+    }
+
+    /**
+     * Sets retry configuration for login and new order requests.
+     *
+     * @param requestRetry retry configuration for login and new order requests
+     */
+    public void setRequestRetry(RetryConfiguration requestRetry) {
+        this.requestRetry = requestRetry;
     }
 
     /**
@@ -368,5 +388,107 @@ public class AcmeConfiguration implements Toggleable {
      */
     @ConfigurationProperties("auth")
     public static class AuthConfiguration extends AbstractConfiguration {
+    }
+
+    /**
+     * Allows configuration of ACME retry policy.
+     */
+    @ConfigurationProperties("request-retry")
+    public static class RetryConfiguration {
+        private int attempts = RetryPolicy.DEFAULT_MAX_ATTEMPTS;
+        private Duration delay = RetryPolicy.DEFAULT_DELAY;
+        private Duration maxDelay;
+        private double multiplier = RetryPolicy.DEFAULT_MULTIPLIER;
+        private double jitter = RetryPolicy.DEFAULT_JITTER;
+
+        /**
+         * Gets maximum retry attempts.
+         *
+         * @return maximum retry attempts
+         */
+        public int getAttempts() {
+            return attempts;
+        }
+
+        /**
+         * Sets maximum retry attempts.
+         *
+         * @param attempts maximum retry attempts
+         */
+        public void setAttempts(int attempts) {
+            this.attempts = attempts;
+        }
+
+        /**
+         * Gets delay between retry attempts.
+         *
+         * @return delay between retry attempts
+         */
+        public Duration getDelay() {
+            return delay;
+        }
+
+        /**
+         * Sets delay between retry attempts.
+         *
+         * @param delay delay between retry attempts
+         */
+        public void setDelay(Duration delay) {
+            this.delay = delay;
+        }
+
+        /**
+         * Gets maximum overall retry delay.
+         *
+         * @return maximum overall retry delay
+         */
+        public Duration getMaxDelay() {
+            return maxDelay;
+        }
+
+        /**
+         * Sets maximum overall retry delay.
+         *
+         * @param maxDelay maximum overall retry delay
+         */
+        public void setMaxDelay(Duration maxDelay) {
+            this.maxDelay = maxDelay;
+        }
+
+        /**
+         * Gets retry delay multiplier.
+         *
+         * @return retry delay multiplier
+         */
+        public double getMultiplier() {
+            return multiplier;
+        }
+
+        /**
+         * Sets retry delay multiplier.
+         *
+         * @param multiplier retry delay multiplier
+         */
+        public void setMultiplier(double multiplier) {
+            this.multiplier = multiplier;
+        }
+
+        /**
+         * Gets retry jitter factor.
+         *
+         * @return retry jitter factor
+         */
+        public double getJitter() {
+            return jitter;
+        }
+
+        /**
+         * Sets retry jitter factor.
+         *
+         * @param jitter retry jitter factor
+         */
+        public void setJitter(double jitter) {
+            this.jitter = jitter;
+        }
     }
 }

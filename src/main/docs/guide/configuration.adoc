@@ -43,12 +43,18 @@ acme:
     order:
         pause: 3s // <13>
         refresh-attempts: 10 // <14>
+    request-retry:
+        attempts: 3 // <15>
+        delay: 1s // <16>
+        max-delay: 5s // <17>
+        multiplier: 1.5 // <18>
+        jitter: 0.1 // <19>
     auth:
-        pause: 1m // <15>
-        refresh-attempts: 10 // <16>
-    renew-within: 30 // <17>
-    challenge-type: tls // <18>
-    timeout: 10s //<19>
+        pause: 1m // <20>
+        refresh-attempts: 10 // <21>
+    renew-within: 30 // <22>
+    challenge-type: tls // <23>
+    timeout: 10s //<24>
 ----
 <1> Set the http port for micronaut. If using http challenge-type this must be set to port 80, unless using a load balancer or some other proxy as Let's Encrypt for example only sends request to port 80.
 <2> Enables dual port mode that allows for both http and https to be bound. Default is `false`
@@ -64,8 +70,13 @@ acme:
 <12> Url of the ACME server (ex. acme://letsencrypt.org/staging)
 <13> Time to wait in between polling order status of the ACME server. Default is `3 seconds`
 <14> Number of times to poll an order status of the ACME server. Default is `10`
-<15> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
-<16> Number of times to poll an authorization status of the ACME server. Default is `10`
-<17> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
-<18> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
-<19> Sets the connection/read timeout when making http calls to the ACME server. Default comes from here https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61
+<15> Number of times to retry login and new order requests after network failures. Default is `3`
+<16> Delay between login and new order request retries. Default is `1 second`
+<17> Maximum overall delay for login and new order request retries. Default is unset
+<18> Delay multiplier for login and new order request retries. Default is `1.0`
+<19> Jitter factor for login and new order request retries. Default is `0.0`
+<20> Time to wait in between polling authorization status of the ACME server. Default is `3 seconds`
+<21> Number of times to poll an authorization status of the ACME server. Default is `10`
+<22> Number of days before the process will start to try to refresh the certificate from the ACME provider. Default is `30 days`
+<23> The challenge type you would like to use. Default is `tls`. Possible options : http, tls, dns
+<24> Sets the connection/read timeout when making http calls to the ACME server. Default comes from here https://shredzone.org/maven/acme4j/acme4j-client/apidocs/src-html/org/shredzone/acme4j/connector/NetworkSettings.html#line.61
