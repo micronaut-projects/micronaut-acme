@@ -1,5 +1,5 @@
 [versions]
-micronaut = "5.1.6"
+micronaut = "5.1.9"
 micronaut-platform = "5.0.4"
 managed-acme4j = "5.1.0"
 micronaut-serde = "3.1.0"
