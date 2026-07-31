@@ -64,6 +64,7 @@ import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -451,7 +452,7 @@ public class AcmeService {
     @SuppressWarnings("java:S3776")
     private void doChallengeAuthorization(Authorization auth, Challenge challenge) throws AcmeException {
         AtomicInteger authRetryAttempts = new AtomicInteger(acmeConfiguration.getAuth().getRefreshAttempts());
-        challenge.trigger();
+        triggerChallenge(challenge);
         SelfCancellable authStatusPoll = new SelfCancellable() {
             @Override
             public void run() {
@@ -503,6 +504,22 @@ public class AcmeService {
             //cancel is used in happy path so, ignoring this
         } finally {
             doChallengeSpecificCleanup(auth, challenge);
+        }
+    }
+
+    final void triggerChallenge(Challenge challenge) throws AcmeException {
+        waitForDnsChallengePropagation(challenge);
+        challenge.trigger();
+    }
+
+    private void waitForDnsChallengePropagation(Challenge challenge) throws AcmeException {
+        if (challenge instanceof Dns01Challenge && !authPause.isZero() && !authPause.isNegative()) {
+            try {
+                TimeUnit.NANOSECONDS.sleep(authPause.toNanos());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new AcmeException("ACME certificate challenge initial DNS delay interrupted", e);
+            }
         }
     }
 
