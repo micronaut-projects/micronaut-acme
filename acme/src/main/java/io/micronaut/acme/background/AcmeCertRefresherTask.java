@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ public final class AcmeCertRefresherTask {
      * @throws AcmeException if any issues occur during certificate renewal
      */
     @Scheduled(
-            fixedDelay = "${acme.refresh.frequency:24h}",
-            initialDelay = "${acme.refresh.delay:24h}")
+            fixedDelay = "${acme.refresh.frequency:PT24H}",
+            initialDelay = "${acme.refresh.delay:PT24H}")
     void backgroundRenewal() throws AcmeException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Running background/scheduled renewal process");
