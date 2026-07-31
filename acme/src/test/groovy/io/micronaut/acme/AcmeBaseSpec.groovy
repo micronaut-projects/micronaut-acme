@@ -80,15 +80,17 @@ abstract class AcmeBaseSpec extends Specification {
         getDomainKeypair()
 
         acmeServerUrl = "https://${certServerContainer.getHost()}:${certServerContainer.getMappedPort(expectedPebbleServerPort)}/dir"
-        // Create an account with the acme server
-        Session session = new Session(acmeServerUrl)
         SSLContext.setDefault(trustAllSslContext())
-        Account createNewAccount = new AccountBuilder()
-                .agreeToTermsOfService()
-                .addEmail("test@micronaut.io")
-                .useKeyPair(keyPair)
-                .create(session)
-        assert createNewAccount.status == Status.VALID
+        if (registerAccountBeforeStartup()) {
+            // Create an account with the acme server
+            Session session = new Session(acmeServerUrl)
+            Account createNewAccount = new AccountBuilder()
+                    .agreeToTermsOfService()
+                    .addEmail("test@micronaut.io")
+                    .useKeyPair(keyPair)
+                    .create(session)
+            assert createNewAccount.status == Status.VALID
+        }
 
         embeddedServer = ApplicationContext.run(EmbeddedServer,
                                                 getConfiguration(),
@@ -150,6 +152,10 @@ abstract class AcmeBaseSpec extends Specification {
         return [
             "PEBBLE_VA_ALWAYS_VALID": "1"
         ]
+    }
+
+    boolean registerAccountBeforeStartup() {
+        true
     }
 
     Map<String, Object> getConfiguration() {

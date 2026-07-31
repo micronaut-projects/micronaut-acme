@@ -131,6 +131,38 @@ class AcmeCertRefresherTaskSetsTimeoutSpec extends Specification {
         new ActualSlowServerConfig(slowAuthorization: true) | _
     }
 
+    def "requests account creation during startup when configured account key is not pre-registered"() {
+        given: "we have all the ports we could ever need"
+        expectedHttpPort = SocketUtils.findAvailableTcpPort()
+        expectedSecurePort = SocketUtils.findAvailableTcpPort()
+        expectedAcmePort = SocketUtils.findAvailableTcpPort()
+        acmeServerUrl = "http://localhost:$expectedAcmePort/acme/dir"
+
+        and: "we have a slow acme server that times out after account registration"
+        EmbeddedServer mockAcmeServer = ApplicationContext.builder(['micronaut.server.port': expectedAcmePort])
+                .environments("test")
+                .packages(SlowAcmeServer.getPackage().getName(), AcmeCertRefresherTaskSetsTimeoutSpec.getPackage().getName())
+                .run(EmbeddedServer)
+        SlowAcmeServer slowAcmeServer = mockAcmeServer.getApplicationContext().getBean(SlowAcmeServer.class)
+        slowAcmeServer.setAcmeServerUrl(acmeServerUrl)
+        slowAcmeServer.setSlowServerConfig(new ActualSlowServerConfig(slowOrdering: true))
+
+        when: "the application starts without an account pre-registration step"
+        EmbeddedServer appServer = ApplicationContext.run(EmbeddedServer,
+                                                          getConfiguration() << ["acme.timeout": "${networkTimeoutInSecs}s"],
+                                                          "test")
+
+        then: "the account request can create the account for the configured account key"
+        thrown(ApplicationStartupException)
+        slowAcmeServer.signupPayload.get() != null
+        slowAcmeServer.signupPayload.get().termsOfServiceAgreed == true
+        !slowAcmeServer.signupPayload.get().containsKey("onlyReturnExisting")
+
+        cleanup:
+        appServer?.stop()
+        mockAcmeServer?.stop()
+    }
+
     class ActualSlowServerConfig implements SlowServerConfig {
 
         boolean slowSignup

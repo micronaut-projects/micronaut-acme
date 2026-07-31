@@ -15,7 +15,9 @@ the front runner for integration with Acme and is completely free.
 See the [stable](https://micronaut-projects.github.io/micronaut-acme/latest/guide) or [snapshot](https://micronaut-projects.github.io/micronaut-acme/snapshot/guide) documentation for more information.
 
 ## ACME Tooling ##
-Since ACME servers do require some pre setup support has been baked into the micronaut-cli found [here](https://github.com/micronaut-projects/micronaut-starter). Which can help you create keys, create/deactivate accounts, etc.
+Since ACME servers do require some pre setup support has been baked into the micronaut-cli found [here](https://github.com/micronaut-projects/micronaut-starter). It can help you create keys, create/deactivate accounts, etc.
+
+The Micronaut ACME runtime can also create or reuse an ACME account at startup from the configured account key, so deployed container images and native-image binaries do not need the Micronaut CLI available.
 
 ## Example Application ##
 
@@ -46,4 +48,3 @@ A release is performed with the following steps:
 1. Checkout from Github (e.g. `git clone git@github.com:micronaut/micronaut-acme.git`)
 2. `cd micronaut-acme`
 3. `./gradlew build`
-

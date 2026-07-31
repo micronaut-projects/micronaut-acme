@@ -1,7 +1,9 @@
 package io.micronaut.mock.slow
 
+import groovy.json.JsonSlurper
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -9,8 +11,10 @@ import io.micronaut.http.annotation.Head
 import io.micronaut.http.annotation.Post
 import io.netty.handler.ssl.util.SelfSignedCertificate
 
+import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 @Requires(env = "test")
 @Controller('/acme')
@@ -41,6 +45,7 @@ class SlowAcmeServer {
     }
 
     AtomicInteger requestCounter = new AtomicInteger()
+    AtomicReference<Map> signupPayload = new AtomicReference<>()
 
     @Consumes("application/jose+json")
     @Post('/your-order')
@@ -96,7 +101,8 @@ class SlowAcmeServer {
 
     @Consumes("application/jose+json")
     @Post('/sign-me-up')
-    HttpResponse<String> signmeup() {
+    HttpResponse<String> signmeup(@Body String requestBody) {
+        signupPayload.set(readJosePayload(requestBody))
         if (slowServerConfig.isSlowSignup()) {
             doItSlowly(slowServerConfig.duration)
         }
@@ -207,6 +213,20 @@ class SlowAcmeServer {
                   "revokeCert": "$acmeServerUrl/revoke-cert"
                 }
             """
+    }
+
+    private static Map readJosePayload(String requestBody) {
+        if (!requestBody) {
+            return Collections.emptyMap()
+        }
+        def jose = new JsonSlurper().parseText(requestBody) as Map
+        String payload = jose.payload
+        if (!payload) {
+            return Collections.emptyMap()
+        }
+        String paddedPayload = payload + ("=" * ((4 - payload.length() % 4) % 4))
+        byte[] decoded = Base64.getUrlDecoder().decode(paddedPayload)
+        return new JsonSlurper().parseText(new String(decoded, StandardCharsets.UTF_8)) as Map
     }
 
     private void doItSlowly(Duration sleepTime) {

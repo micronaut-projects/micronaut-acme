@@ -25,6 +25,7 @@ dependencies {
 }
 
 tasks.withType(Test).configureEach {
+    // Pebble's test certificate is issued for localhost, while remote Docker exposes it through the Testcontainers host.
     if (System.getenv("TESTCONTAINERS_HOST_OVERRIDE")) {
         systemProperty "jdk.internal.httpclient.disableHostnameVerification", "true"
     }
