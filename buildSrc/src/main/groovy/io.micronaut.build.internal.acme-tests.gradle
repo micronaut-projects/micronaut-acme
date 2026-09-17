@@ -1,3 +1,7 @@
 plugins {
     id "io.micronaut.build.internal.acme-base"
 }
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}

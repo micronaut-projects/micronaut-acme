@@ -6,13 +6,18 @@ pluginManagement {
 }
 
 plugins {
-    id 'io.micronaut.build.shared.settings' version '8.0.2'
+    id 'io.micronaut.build.shared.settings' version '8.1.1'
 }
 
 rootProject.name = "acme-parent"
 
 include 'acme-bom'
 include "acme"
+
+include "test-suite"
+include "test-suite-kotlin"
+include "test-suite-groovy"
+include "test-suite-python"
 
 [
         "hello-world-acme"
