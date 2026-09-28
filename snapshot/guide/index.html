@@ -173,6 +173,15 @@
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.acme:micronaut-acme"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -442,10 +451,14 @@ and time take for the manual entry/DNS propagation.</p>
 <div class="paragraph">
 <p>An implementation of <a href="../api/io/micronaut/acme/challenge/dns/DnsChallengeSolver.html">DnsChallengeSolver</a> can be provided to automate the creation and cleanup of the necessary DNS records.</p>
 </div>
-<div class="listingblock">
-<div class="title">CustomDnsChallengeSolver.java</div>
+<div class="listingblock multi-language-sample">
+<div class="title">CustomDnsChallengeSolver</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Singleton
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.acme.challenge.dns.DnsChallengeSolver;
+import io.micronaut.context.annotation.Replaces;
+import jakarta.inject.Singleton;
+
+@Singleton
 @Replaces(DnsChallengeSolver.class)
 class CustomDnsChallengeSolver implements DnsChallengeSolver {
     @Override
@@ -455,6 +468,68 @@ class CustomDnsChallengeSolver implements DnsChallengeSolver {
 
     @Override
     public void destroyRecord(String domain) {
+        // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">CustomDnsChallengeSolver</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from jakarta.inject import Singleton
+from micronaut.acme.challenge.dns import DnsChallengeSolver
+from micronaut.context.annotation import Replaces
+
+@Singleton
+@Replaces(DnsChallengeSolver)
+class CustomDnsChallengeSolver(DnsChallengeSolver):
+
+    def createRecord(self, domain: str, digest: str) -&gt; None:
+        # Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+        pass
+
+    def destroyRecord(self, domain: str) -&gt; None:
+        # Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+        pass</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">CustomDnsChallengeSolver</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.acme.challenge.dns.DnsChallengeSolver
+import io.micronaut.context.annotation.Replaces
+import jakarta.inject.Singleton
+
+@Singleton
+@Replaces(DnsChallengeSolver::class)
+class CustomDnsChallengeSolver : DnsChallengeSolver {
+    override fun createRecord(domain: String, digest: String) {
+        // Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+    }
+
+    override fun destroyRecord(domain: String) {
+        // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">CustomDnsChallengeSolver</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.acme.challenge.dns.DnsChallengeSolver
+import io.micronaut.context.annotation.Replaces
+import jakarta.inject.Singleton
+
+@Singleton
+@Replaces(DnsChallengeSolver)
+class CustomDnsChallengeSolver implements DnsChallengeSolver {
+    @Override
+    void createRecord(String domain, String digest) {
+        // Create a TXT record for $domain with the key "_acme-challenge" and the value of $digest
+    }
+
+    @Override
+    void destroyRecord(String domain) {
         // Remove the TXT record for $domain with the key "_acme-challenge" if it exists
     }
 }</code></pre>
