@@ -23,7 +23,7 @@ Since this is a manual process you will also want to bump up your `acme.auth.pau
 and time take for the manual entry/DNS propagation.
 
 .src/main/resources/application.yml
-[source,yaml]
+[configuration]
 ----
 acme:
   challenge-type: 'dns'
