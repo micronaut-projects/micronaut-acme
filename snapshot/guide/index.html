@@ -354,8 +354,16 @@ acme:
 <p>The reason for this is that Let&#8217;s Encrypt for example will only call out to
 the http challenge type over http and nothing else but will follow redirects.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">acme.challenge-type=http
+micronaut.server.dual-protocol=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
   challenge-type: 'http'
@@ -363,6 +371,54 @@ the http challenge type over http and nothing else but will follow redirects.</p
 micronaut:
   server:
     dual-protocol: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "http"}
+micronaut = {server = {dual-protocol = true}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">acme {
+  challengeType = "http"
+}
+micronaut {
+  server {
+    dualProtocol = true
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  acme {
+    challenge-type = "http"
+  }
+  micronaut {
+    server {
+      dual-protocol = true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "acme": {
+    "challenge-type": "http"
+  },
+  "micronaut": {
+    "server": {
+      "dual-protocol": true
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 
@@ -379,11 +435,50 @@ micronaut:
 <p>Utilizing <code>tls</code> challenge type is the simplest to configure and thus the default because you will only be required
 to open up the default secure port for the server to allow the challenge server to validate it.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">acme.challenge-type=tls</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
   challenge-type: 'tls'</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "tls"}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">acme {
+  challengeType = "tls"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  acme {
+    challenge-type = "tls"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "acme": {
+    "challenge-type": "tls"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 
@@ -432,8 +527,16 @@ to open up the default secure port for the server to allow the challenge server 
 <p>Since this is a manual process you will also want to bump up your <code>acme.auth.pause</code> duration so that there is enough time between retries
 and time take for the manual entry/DNS propagation.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">acme.challenge-type=dns
+acme.auth.pause=2m</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">acme:
   challenge-type: 'dns'
@@ -443,6 +546,47 @@ and time take for the manual entry/DNS propagation.</p>
     # is time for us logging into the dns interface, setting a TXT record and waiting for it
     # to propagate.
     pause: 2m</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "dns", auth = {pause = "2m"}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">acme {
+  challengeType = "dns"
+  auth {
+    pause = "2m"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  acme {
+    challenge-type = "dns"
+    auth {
+      pause = "2m"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "acme": {
+    "challenge-type": "dns",
+    "auth": {
+      "pause": "2m"
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
