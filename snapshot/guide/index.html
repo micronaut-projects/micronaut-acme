@@ -375,8 +375,11 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "http"}
-micronaut = {server = {dual-protocol = true}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[acme]
+challenge-type = "http"
+
+[micronaut.server]
+dual-protocol = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -451,7 +454,8 @@ to open up the default secure port for the server to allow the challenge server 
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "tls"}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[acme]
+challenge-type = "tls"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -550,7 +554,11 @@ acme.auth.pause=2m</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">acme = {challenge-type = "dns", auth = {pause = "2m"}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[acme]
+challenge-type = "dns"
+
+[acme.auth]
+pause = "2m"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
