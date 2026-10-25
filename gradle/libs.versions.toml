@@ -1,8 +1,8 @@
 [versions]
-micronaut = "5.2.15"
+micronaut = "5.2.20"
 micronaut-platform = "5.0.4"
 managed-acme4j = "5.1.0"
-micronaut-serde = "3.2.4"
+micronaut-serde = "3.2.6"
 micronaut-validation = "5.2.1"
 micronaut-gradle-plugin = "5.0.2"
 bouncycastle = "1.86"
