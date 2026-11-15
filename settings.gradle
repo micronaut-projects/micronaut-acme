@@ -34,4 +34,3 @@ micronautBuild {
     importMicronautCatalog("micronaut-serde")
     importMicronautCatalog("micronaut-validation")
 }
-
